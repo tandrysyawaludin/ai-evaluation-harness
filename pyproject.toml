@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evalharness"
+version = "0.1.0"
+description = "AI evaluation harness for a brokerage text-to-SQL agent (stdlib only)"
+requires-python = ">=3.10"
+dependencies = []  # Python standard library only — no installs required
+
+[tool.setuptools.packages.find]
+where = ["src"]
