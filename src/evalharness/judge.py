@@ -16,6 +16,7 @@ fooled, in both directions:
 """
 import json
 import os
+import random
 import re
 
 
@@ -59,6 +60,30 @@ def cohens_kappa(pairs):
     return (observed - expected) / (1 - expected)
 
 
+def kappa_bootstrap_ci(pairs, n_boot=2000, seed=123, alpha=0.05):
+    """Percentile bootstrap CI for Cohen's kappa.
+
+    Resamples the (human, judge) pairs with replacement, recomputes
+    kappa on each resample, and returns the central (1 - alpha)
+    percentile interval. Seeded, so the interval is reproducible.
+    With only 44 labelled answers the point estimate alone overstates
+    how precisely the judge's agreement is known — the interval is the
+    honest version of the number. Returns (0.0, 0.0) for no pairs.
+    """
+    if not pairs:
+        return (0.0, 0.0)
+    rng = random.Random(seed)
+    n = len(pairs)
+    stats = []
+    for _ in range(n_boot):
+        sample = [pairs[rng.randrange(n)] for _ in range(n)]
+        stats.append(cohens_kappa(sample))
+    stats.sort()
+    lo = stats[int((alpha / 2) * n_boot)]
+    hi = stats[min(n_boot - 1, int((1 - alpha / 2) * n_boot))]
+    return (lo, hi)
+
+
 def calibrate(labels):
     """labels: list of dicts with gold_answer, candidate_answer, human_label."""
     pairs, rows = [], []
@@ -83,6 +108,7 @@ def calibrate(labels):
         "n": len(labels),
         "agreement": sum(1 for h, j in pairs if h == j) / len(pairs) if pairs else 0.0,
         "cohens_kappa": cohens_kappa(pairs),
+        "cohens_kappa_bootstrap_95ci": kappa_bootstrap_ci(pairs),
         "precision_correct": precision,
         "recall_correct": recall,
         "confusion": {"tp": tp, "fp": fp, "fn": fn, "tn": tn},

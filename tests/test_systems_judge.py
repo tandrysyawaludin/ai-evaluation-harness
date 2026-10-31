@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from evalharness.db import build_db
 from evalharness.gold import generate_gold
-from evalharness.judge import calibrate, cohens_kappa, judge
+from evalharness.judge import calibrate, cohens_kappa, judge, kappa_bootstrap_ci
 from evalharness.metrics import evaluate_system
 from evalharness.regression_gate import check
 from evalharness.systems import system_a, system_b
@@ -46,6 +46,26 @@ class TestJudge(unittest.TestCase):
     def test_kappa_perfect_agreement(self):
         pairs = [("correct", "correct"), ("incorrect", "incorrect")] * 5
         self.assertAlmostEqual(cohens_kappa(pairs), 1.0)
+
+    def test_kappa_bootstrap_ci_brackets_point_estimate(self):
+        with open(os.path.join(ROOT, "data", "human_labels.jsonl")) as f:
+            labels = [json.loads(line) for line in f]
+        result = calibrate(labels)
+        lo, hi = result["cohens_kappa_bootstrap_95ci"]
+        self.assertLessEqual(lo, result["cohens_kappa"])
+        self.assertGreaterEqual(hi, result["cohens_kappa"])
+        self.assertGreaterEqual(lo, -1.0)
+        self.assertLessEqual(hi, 1.0)
+        # With only 44 labels the interval must be honestly wide, not a
+        # point: the judge's agreement is not known to a hair's breadth.
+        self.assertGreater(hi - lo, 0.1)
+
+    def test_kappa_bootstrap_ci_is_reproducible_and_degenerate_safe(self):
+        pairs = [("correct", "correct"), ("incorrect", "incorrect")] * 5
+        self.assertEqual(kappa_bootstrap_ci(pairs, n_boot=200),
+                         kappa_bootstrap_ci(pairs, n_boot=200))
+        self.assertEqual(kappa_bootstrap_ci(pairs, n_boot=200), (1.0, 1.0))
+        self.assertEqual(kappa_bootstrap_ci([]), (0.0, 0.0))
 
     def test_calibration_on_checked_in_labels(self):
         with open(os.path.join(ROOT, "data", "human_labels.jsonl")) as f:

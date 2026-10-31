@@ -77,6 +77,6 @@ Reading: system_a's failures are not random. They cluster exactly on questions w
 
 ## Judge calibration (judge vs human labels)
 
-On 44 human-labelled answers, the heuristic judge agreed with humans 77.3% of the time: **Cohen's kappa = 0.545** (moderate agreement), precision 0.773, recall 0.773, confusion {'tp': 17, 'fp': 5, 'fn': 5, 'tn': 17}.
+On 44 human-labelled answers, the heuristic judge agreed with humans 77.3% of the time: **Cohen's kappa = 0.545** (95% bootstrap CI [0.289, 0.773]) (moderate agreement), precision 0.773, recall 0.773, confusion {'tp': 17, 'fp': 5, 'fn': 5, 'tn': 17}.
 
 Conclusion: at kappa ≈ 0.55 this judge is useful as a cheap first pass but **must not gate a release alone** — it is fooled by the right number attached to the wrong symbol/side/metric, and it rejects correct answers written in words or sensibly rounded. Execution accuracy against ground truth remains the headline metric; the judge is a supplement with known, measured limits.

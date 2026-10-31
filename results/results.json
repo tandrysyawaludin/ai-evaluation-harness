@@ -1521,6 +1521,10 @@
     "n": 44,
     "agreement": 0.7727272727272727,
     "cohens_kappa": 0.5454545454545454,
+    "cohens_kappa_bootstrap_95ci": [
+      0.28879310344827575,
+      0.7727272727272727
+    ],
     "precision_correct": 0.7727272727272727,
     "recall_correct": 0.7727272727272727,
     "confusion": {

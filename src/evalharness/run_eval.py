@@ -172,9 +172,12 @@ def render_report(res):
     L.append("")
     if j:
         L.append("## Judge calibration (judge vs human labels)\n")
+        ci = j.get("cohens_kappa_bootstrap_95ci")
+        ci_text = (f" (95% bootstrap CI [{ci[0]:.3f}, {ci[1]:.3f}])"
+                   if ci else "")
         L.append(f"On {j['n']} human-labelled answers, the heuristic judge agreed with "
                  f"humans {j['agreement']:.1%} of the time: **Cohen's kappa = "
-                 f"{j['cohens_kappa']:.3f}** (moderate agreement), precision "
+                 f"{j['cohens_kappa']:.3f}**{ci_text} (moderate agreement), precision "
                  f"{j['precision_correct']:.3f}, recall {j['recall_correct']:.3f}, "
                  f"confusion {j['confusion']}.")
         L.append("")
