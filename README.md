@@ -37,12 +37,19 @@ Reproduce with the commands under *How to run* — do not take this table on fai
 
 | System | Execution accuracy | 95% Wilson CI | Exact-match (SQL) |
 |---|---|---|---|
-| system_a (baseline) | _pending final run_ | — | — |
-| system_b (improved) | _pending final run_ | — | — |
+| system_a (baseline) | 52.7% (29/55) | [0.398, 0.653] | 52.7% |
+| system_b (improved) | 100.0% (55/55) | [0.935, 1.000] | 100.0% |
 
-Paired comparison (McNemar), per-category breakdown, judge calibration, and
-error analysis are in [`results/report.md`](results/report.md) after a run,
-with the machine-readable version in `results/results.json`.
+The improvement is not noise: paired McNemar's test on the same 55
+questions gives b = 26, c = 0, **p = 9.4e-07**, with a bootstrap 95% CI for
+the +47.3pp difference of [+0.345, +0.618]. Judge calibration on 44
+human-labelled answers: agreement 77.3%, **Cohen's kappa = 0.545**,
+precision/recall 0.773 — measured, moderate, and explicitly *not* good
+enough to gate a release alone (see the report).
+
+Per-category breakdown, judge calibration, and error analysis are in
+[`results/report.md`](results/report.md), with the machine-readable
+version in `results/results.json`.
 
 ## What this proves — mapped to the job requirements
 
