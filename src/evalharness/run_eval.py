@@ -84,7 +84,6 @@ def run(runs=3, seed=42):
     labels_path = os.path.join(ROOT, "data", "human_labels.jsonl")
     if os.path.exists(labels_path):
         judge_result = calibrate(load_jsonl(labels_path))
-        judge_result.pop("disagreements", None) if False else None
         judge_result["disagreements"] = [
             {k: d[k] for k in ("id", "gold_answer", "candidate_answer",
                                "human_label", "judge_label")}
