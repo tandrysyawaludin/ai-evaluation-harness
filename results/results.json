@@ -1,0 +1,1605 @@
+{
+  "gold_size": 55,
+  "runs_per_system": 3,
+  "db_seed": 42,
+  "systems": {
+    "system_a": {
+      "n": 55,
+      "correct": 29,
+      "execution_accuracy": 0.5272727272727272,
+      "wilson_95ci": [
+        0.39791319071629383,
+        0.6530711468951917
+      ],
+      "bootstrap_95ci": [
+        0.4,
+        0.6545454545454545
+      ],
+      "exact_match_rate": 0.5272727272727272,
+      "pass_consistency_mean": 0.5272727272727272,
+      "questions_correct_on_every_run": 0.5272727272727272,
+      "error_counts": {
+        "wrong_result": 26
+      },
+      "records": [
+        {
+          "id": "q001",
+          "category": "count_total",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders",
+          "gold_sql": "SELECT COUNT(*) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q002",
+          "category": "count_total",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM clients",
+          "gold_sql": "SELECT COUNT(*) FROM clients",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q003",
+          "category": "count_total",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM accounts",
+          "gold_sql": "SELECT COUNT(*) FROM accounts",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q004",
+          "category": "count_total",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM securities",
+          "gold_sql": "SELECT COUNT(*) FROM securities",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q005",
+          "category": "count_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'BUY'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q006",
+          "category": "count_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'SELL'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q007",
+          "category": "count_by_status",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE status = 'FILLED'",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE status = 'FILLED'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q008",
+          "category": "count_by_status",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE status = 'CANCELLED'",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE status = 'CANCELLED'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q009",
+          "category": "count_by_status",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE status = 'PENDING'",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE status = 'PENDING'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q010",
+          "category": "count_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT COUNT(*) FROM orders",
+          "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q011",
+          "category": "count_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT COUNT(*) FROM orders",
+          "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q012",
+          "category": "count_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT COUNT(*) FROM orders",
+          "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Canada'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q013",
+          "category": "count_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT COUNT(*) FROM orders",
+          "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Brazil'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q014",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q015",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q016",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q017",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q018",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AMZN'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AMZN'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q019",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'AAPL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q020",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'MSFT'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'MSFT'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q021",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'NVDA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q022",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'TSLA'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'TSLA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q023",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'AMZN'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'AMZN'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q024",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AAPL'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q025",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'MSFT'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'MSFT'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q026",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'NVDA'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q027",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'TSLA'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'TSLA'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q028",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'AMZN'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AMZN'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q029",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'AAPL'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q030",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'NVDA'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q031",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'TSLA'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q032",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'AAPL'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q033",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'NVDA'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q034",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'TSLA'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q035",
+          "category": "top_symbol_by_volume",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT symbol FROM orders GROUP BY symbol ORDER BY SUM(quantity) DESC LIMIT 1",
+          "gold_sql": "SELECT symbol FROM orders GROUP BY symbol ORDER BY SUM(quantity) DESC LIMIT 1",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q036",
+          "category": "top_symbol_by_value",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT symbol FROM orders GROUP BY symbol ORDER BY SUM(quantity * price) DESC LIMIT 1",
+          "gold_sql": "SELECT symbol FROM orders GROUP BY symbol ORDER BY SUM(quantity * price) DESC LIMIT 1",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q037",
+          "category": "top_account_by_orders",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT account_id FROM orders GROUP BY account_id ORDER BY COUNT(*) DESC LIMIT 1",
+          "gold_sql": "SELECT account_id FROM orders GROUP BY account_id ORDER BY COUNT(*) DESC LIMIT 1",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q038",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 1",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 1",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q039",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 2",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 2",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q040",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 3",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 3",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q041",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 5",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 5",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q042",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 8",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 8",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q043",
+          "category": "sum_value_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'BUY'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q044",
+          "category": "sum_value_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'SELL'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q045",
+          "category": "distinct_count",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(DISTINCT symbol) FROM orders",
+          "gold_sql": "SELECT COUNT(DISTINCT symbol) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q046",
+          "category": "distinct_count",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(DISTINCT account_id) FROM orders",
+          "gold_sql": "SELECT COUNT(DISTINCT account_id) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q047",
+          "category": "max_quantity",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT MAX(quantity) FROM orders",
+          "gold_sql": "SELECT MAX(quantity) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q048",
+          "category": "avg_quantity",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders",
+          "gold_sql": "SELECT AVG(quantity) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q049",
+          "category": "avg_quantity_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders",
+          "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'BUY'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q050",
+          "category": "avg_quantity_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders",
+          "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'SELL'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q051",
+          "category": "sum_value_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders",
+          "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q052",
+          "category": "sum_value_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders",
+          "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q053",
+          "category": "sum_quantity_filled_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'AAPL'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q054",
+          "category": "sum_quantity_filled_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'MSFT'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        },
+        {
+          "id": "q055",
+          "category": "sum_quantity_filled_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'NVDA'",
+          "execution_correct": false,
+          "exact_match": false,
+          "error": "wrong_result"
+        }
+      ]
+    },
+    "system_b": {
+      "n": 55,
+      "correct": 55,
+      "execution_accuracy": 1.0,
+      "wilson_95ci": [
+        0.9347128562105721,
+        0.9999999999999999
+      ],
+      "bootstrap_95ci": [
+        1.0,
+        1.0
+      ],
+      "exact_match_rate": 1.0,
+      "pass_consistency_mean": 1.0,
+      "questions_correct_on_every_run": 1.0,
+      "error_counts": {},
+      "records": [
+        {
+          "id": "q001",
+          "category": "count_total",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders",
+          "gold_sql": "SELECT COUNT(*) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q002",
+          "category": "count_total",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM clients",
+          "gold_sql": "SELECT COUNT(*) FROM clients",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q003",
+          "category": "count_total",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM accounts",
+          "gold_sql": "SELECT COUNT(*) FROM accounts",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q004",
+          "category": "count_total",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM securities",
+          "gold_sql": "SELECT COUNT(*) FROM securities",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q005",
+          "category": "count_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE side = 'BUY'",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'BUY'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q006",
+          "category": "count_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE side = 'SELL'",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'SELL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q007",
+          "category": "count_by_status",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE status = 'FILLED'",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE status = 'FILLED'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q008",
+          "category": "count_by_status",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE status = 'CANCELLED'",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE status = 'CANCELLED'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q009",
+          "category": "count_by_status",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE status = 'PENDING'",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE status = 'PENDING'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q010",
+          "category": "count_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
+          "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q011",
+          "category": "count_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
+          "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q012",
+          "category": "count_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Canada'",
+          "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Canada'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q013",
+          "category": "count_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Brazil'",
+          "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Brazil'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q014",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q015",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q016",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q017",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q018",
+          "category": "sum_quantity_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AMZN'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AMZN'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q019",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'AAPL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q020",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'MSFT'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'MSFT'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q021",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'NVDA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q022",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'TSLA'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'TSLA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q023",
+          "category": "sum_value_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'AMZN'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE symbol = 'AMZN'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q024",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AAPL'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AAPL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q025",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'MSFT'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'MSFT'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q026",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'NVDA'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'NVDA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q027",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'TSLA'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'TSLA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q028",
+          "category": "avg_price_by_symbol",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AMZN'",
+          "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AMZN'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q029",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'AAPL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q030",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'NVDA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q031",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'TSLA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'TSLA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q032",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'AAPL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q033",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'NVDA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q034",
+          "category": "sum_quantity_by_side_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'TSLA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'TSLA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q035",
+          "category": "top_symbol_by_volume",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT symbol FROM orders GROUP BY symbol ORDER BY SUM(quantity) DESC LIMIT 1",
+          "gold_sql": "SELECT symbol FROM orders GROUP BY symbol ORDER BY SUM(quantity) DESC LIMIT 1",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q036",
+          "category": "top_symbol_by_value",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT symbol FROM orders GROUP BY symbol ORDER BY SUM(quantity * price) DESC LIMIT 1",
+          "gold_sql": "SELECT symbol FROM orders GROUP BY symbol ORDER BY SUM(quantity * price) DESC LIMIT 1",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q037",
+          "category": "top_account_by_orders",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT account_id FROM orders GROUP BY account_id ORDER BY COUNT(*) DESC LIMIT 1",
+          "gold_sql": "SELECT account_id FROM orders GROUP BY account_id ORDER BY COUNT(*) DESC LIMIT 1",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q038",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 1",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 1",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q039",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 2",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 2",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q040",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 3",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 3",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q041",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 5",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 5",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q042",
+          "category": "count_by_account",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 8",
+          "gold_sql": "SELECT COUNT(*) FROM orders WHERE account_id = 8",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q043",
+          "category": "sum_value_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'BUY'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'BUY'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q044",
+          "category": "sum_value_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'SELL'",
+          "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'SELL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q045",
+          "category": "distinct_count",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(DISTINCT symbol) FROM orders",
+          "gold_sql": "SELECT COUNT(DISTINCT symbol) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q046",
+          "category": "distinct_count",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT COUNT(DISTINCT account_id) FROM orders",
+          "gold_sql": "SELECT COUNT(DISTINCT account_id) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q047",
+          "category": "max_quantity",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT MAX(quantity) FROM orders",
+          "gold_sql": "SELECT MAX(quantity) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q048",
+          "category": "avg_quantity",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders",
+          "gold_sql": "SELECT AVG(quantity) FROM orders",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q049",
+          "category": "avg_quantity_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'BUY'",
+          "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'BUY'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q050",
+          "category": "avg_quantity_by_side",
+          "difficulty": "easy",
+          "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'SELL'",
+          "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'SELL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q051",
+          "category": "sum_value_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
+          "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q052",
+          "category": "sum_value_by_country",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
+          "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q053",
+          "category": "sum_quantity_filled_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'AAPL'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'AAPL'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q054",
+          "category": "sum_quantity_filled_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'MSFT'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'MSFT'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        },
+        {
+          "id": "q055",
+          "category": "sum_quantity_filled_by_symbol",
+          "difficulty": "hard",
+          "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'NVDA'",
+          "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'NVDA'",
+          "execution_correct": true,
+          "exact_match": true,
+          "error": null
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "accuracy_difference_b_minus_a": 0.4727272727272728,
+    "difference_bootstrap_95ci": [
+      0.34545454545454546,
+      0.6181818181818182
+    ],
+    "mcnemar": {
+      "b": 26,
+      "c": 0,
+      "statistic": 24.03846153846154,
+      "p_value": 9.443043861123432e-07
+    },
+    "sample_size_to_detect_5pp_from_a": 1550
+  },
+  "per_category": {
+    "avg_price_by_symbol": {
+      "n": 5,
+      "system_a_accuracy": 0.0,
+      "system_b_accuracy": 1.0
+    },
+    "avg_quantity": {
+      "n": 1,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "avg_quantity_by_side": {
+      "n": 2,
+      "system_a_accuracy": 0.0,
+      "system_b_accuracy": 1.0
+    },
+    "count_by_account": {
+      "n": 5,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "count_by_country": {
+      "n": 4,
+      "system_a_accuracy": 0.0,
+      "system_b_accuracy": 1.0
+    },
+    "count_by_side": {
+      "n": 2,
+      "system_a_accuracy": 0.0,
+      "system_b_accuracy": 1.0
+    },
+    "count_by_status": {
+      "n": 3,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "count_total": {
+      "n": 4,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "distinct_count": {
+      "n": 2,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "max_quantity": {
+      "n": 1,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "sum_quantity_by_side_symbol": {
+      "n": 6,
+      "system_a_accuracy": 0.0,
+      "system_b_accuracy": 1.0
+    },
+    "sum_quantity_by_symbol": {
+      "n": 5,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "sum_quantity_filled_by_symbol": {
+      "n": 3,
+      "system_a_accuracy": 0.0,
+      "system_b_accuracy": 1.0
+    },
+    "sum_value_by_country": {
+      "n": 2,
+      "system_a_accuracy": 0.0,
+      "system_b_accuracy": 1.0
+    },
+    "sum_value_by_side": {
+      "n": 2,
+      "system_a_accuracy": 0.0,
+      "system_b_accuracy": 1.0
+    },
+    "sum_value_by_symbol": {
+      "n": 5,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "top_account_by_orders": {
+      "n": 1,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "top_symbol_by_value": {
+      "n": 1,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    },
+    "top_symbol_by_volume": {
+      "n": 1,
+      "system_a_accuracy": 1.0,
+      "system_b_accuracy": 1.0
+    }
+  },
+  "system_a_errors": [
+    {
+      "id": "q005",
+      "category": "count_by_side",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT COUNT(*) FROM orders",
+      "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'BUY'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q006",
+      "category": "count_by_side",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT COUNT(*) FROM orders",
+      "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'SELL'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q010",
+      "category": "count_by_country",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT COUNT(*) FROM orders",
+      "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q011",
+      "category": "count_by_country",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT COUNT(*) FROM orders",
+      "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q012",
+      "category": "count_by_country",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT COUNT(*) FROM orders",
+      "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Canada'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q013",
+      "category": "count_by_country",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT COUNT(*) FROM orders",
+      "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Brazil'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q024",
+      "category": "avg_price_by_symbol",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'AAPL'",
+      "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AAPL'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q025",
+      "category": "avg_price_by_symbol",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'MSFT'",
+      "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'MSFT'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q026",
+      "category": "avg_price_by_symbol",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'NVDA'",
+      "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'NVDA'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q027",
+      "category": "avg_price_by_symbol",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'TSLA'",
+      "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'TSLA'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q028",
+      "category": "avg_price_by_symbol",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT AVG(quantity) FROM orders WHERE symbol = 'AMZN'",
+      "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AMZN'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q029",
+      "category": "sum_quantity_by_side_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'AAPL'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q030",
+      "category": "sum_quantity_by_side_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'NVDA'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q031",
+      "category": "sum_quantity_by_side_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'TSLA'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q032",
+      "category": "sum_quantity_by_side_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'AAPL'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q033",
+      "category": "sum_quantity_by_side_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'NVDA'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q034",
+      "category": "sum_quantity_by_side_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'TSLA'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q043",
+      "category": "sum_value_by_side",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT SUM(quantity * price) FROM orders",
+      "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'BUY'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q044",
+      "category": "sum_value_by_side",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT SUM(quantity * price) FROM orders",
+      "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'SELL'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q049",
+      "category": "avg_quantity_by_side",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT AVG(quantity) FROM orders",
+      "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'BUY'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q050",
+      "category": "avg_quantity_by_side",
+      "difficulty": "easy",
+      "candidate_sql": "SELECT AVG(quantity) FROM orders",
+      "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'SELL'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q051",
+      "category": "sum_value_by_country",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity * price) FROM orders",
+      "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q052",
+      "category": "sum_value_by_country",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity * price) FROM orders",
+      "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q053",
+      "category": "sum_quantity_filled_by_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'AAPL'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q054",
+      "category": "sum_quantity_filled_by_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'MSFT'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    },
+    {
+      "id": "q055",
+      "category": "sum_quantity_filled_by_symbol",
+      "difficulty": "hard",
+      "candidate_sql": "SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'",
+      "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'NVDA'",
+      "execution_correct": false,
+      "exact_match": false,
+      "error": "wrong_result"
+    }
+  ],
+  "judge_calibration": {
+    "n": 44,
+    "agreement": 0.7727272727272727,
+    "cohens_kappa": 0.5454545454545454,
+    "precision_correct": 0.7727272727272727,
+    "recall_correct": 0.7727272727272727,
+    "confusion": {
+      "tp": 17,
+      "fp": 5,
+      "fn": 5,
+      "tn": 17
+    },
+    "disagreements": [
+      {
+        "id": "h35",
+        "gold_answer": "The total quantity traded for NVDA was 12,400.",
+        "candidate_answer": "The total quantity traded for AAPL was 12,400.",
+        "human_label": "incorrect",
+        "judge_label": "correct"
+      },
+      {
+        "id": "h36",
+        "gold_answer": "There were 185 BUY orders.",
+        "candidate_answer": "There were 185 SELL orders and 90 BUY orders.",
+        "human_label": "incorrect",
+        "judge_label": "correct"
+      },
+      {
+        "id": "h37",
+        "gold_answer": "Account 3 placed 17 orders.",
+        "candidate_answer": "Account 17 placed 3 orders, the busiest of any account.",
+        "human_label": "incorrect",
+        "judge_label": "correct"
+      },
+      {
+        "id": "h38",
+        "gold_answer": "Japan clients placed 61 orders.",
+        "candidate_answer": "Canada clients placed 61 orders.",
+        "human_label": "incorrect",
+        "judge_label": "correct"
+      },
+      {
+        "id": "h39",
+        "gold_answer": "The average price for MSFT was 421.55.",
+        "candidate_answer": "The average quantity for MSFT was 421.55 shares.",
+        "human_label": "incorrect",
+        "judge_label": "correct"
+      },
+      {
+        "id": "h40",
+        "gold_answer": "360 orders were placed in total.",
+        "candidate_answer": "Three hundred sixty orders were placed in total.",
+        "human_label": "correct",
+        "judge_label": "incorrect"
+      },
+      {
+        "id": "h41",
+        "gold_answer": "The total traded value was 1,234,500.",
+        "candidate_answer": "The total traded value was about 1.23 million.",
+        "human_label": "correct",
+        "judge_label": "incorrect"
+      },
+      {
+        "id": "h42",
+        "gold_answer": "The average order quantity was 54.20.",
+        "candidate_answer": "The average order quantity was roughly fifty-four.",
+        "human_label": "correct",
+        "judge_label": "incorrect"
+      },
+      {
+        "id": "h43",
+        "gold_answer": "There were 200 shares in the largest order.",
+        "candidate_answer": "The largest order was for two hundred shares.",
+        "human_label": "correct",
+        "judge_label": "incorrect"
+      },
+      {
+        "id": "h44",
+        "gold_answer": "Account 5 placed 20 orders.",
+        "candidate_answer": "Account 5 placed twenty orders.",
+        "human_label": "correct",
+        "judge_label": "incorrect"
+      }
+    ]
+  }
+}
