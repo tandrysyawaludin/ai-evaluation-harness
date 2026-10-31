@@ -30,14 +30,16 @@ def _numbers(text):
 
 
 def judge(gold_answer, candidate_answer):
-    """Heuristic judge: 'correct' if the gold headline number appears
-    verbatim among the candidate's numbers. Naive by design — its
-    failure modes are the subject of the calibration study."""
+    """Heuristic judge: 'correct' if the gold headline number (the final
+    number in the gold answer — earlier numbers are usually identifiers
+    such as account ids) appears verbatim among the candidate's numbers.
+    Naive by design — its failure modes are the subject of the
+    calibration study."""
     gold_nums = _numbers(gold_answer)
     cand_nums = _numbers(candidate_answer)
     if not gold_nums or not cand_nums:
         return "incorrect"
-    return "correct" if gold_nums[0] in cand_nums else "incorrect"
+    return "correct" if gold_nums[-1] in cand_nums else "incorrect"
 
 
 def cohens_kappa(pairs):
