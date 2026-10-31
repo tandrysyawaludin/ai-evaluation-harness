@@ -1,0 +1,9 @@
+{
+  "system_b": {
+    "execution_accuracy": 1.0,
+    "n": 55,
+    "gold_size": 55,
+    "db_seed": 42
+  },
+  "note": "Reference accuracy for the regression gate. Update deliberately, in its own commit, when a new baseline is accepted \u2014 never silently."
+}
