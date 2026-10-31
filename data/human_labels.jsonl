@@ -1,0 +1,44 @@
+{"id": "h01", "gold_answer": "360 orders were placed in total.", "candidate_answer": "There were 360 orders in total.", "human_label": "correct"}
+{"id": "h02", "gold_answer": "The total quantity traded for AAPL was 4,250.", "candidate_answer": "AAPL total quantity: 4,250.", "human_label": "correct"}
+{"id": "h03", "gold_answer": "There were 185 BUY orders.", "candidate_answer": "185 BUY orders were placed.", "human_label": "correct"}
+{"id": "h04", "gold_answer": "The average price for MSFT was 421.55.", "candidate_answer": "MSFT averaged 421.55 per order.", "human_label": "correct"}
+{"id": "h05", "gold_answer": "42 orders have status CANCELLED.", "candidate_answer": "42 orders were CANCELLED.", "human_label": "correct"}
+{"id": "h06", "gold_answer": "Account 3 placed 17 orders.", "candidate_answer": "Account 3 placed 17 orders.", "human_label": "correct"}
+{"id": "h07", "gold_answer": "The largest order quantity was 200.", "candidate_answer": "Maximum quantity: 200.", "human_label": "correct"}
+{"id": "h08", "gold_answer": "There are 24 clients.", "candidate_answer": "24 clients in total.", "human_label": "correct"}
+{"id": "h09", "gold_answer": "The total traded value for NVDA was 918,240.50.", "candidate_answer": "NVDA traded value was 918,240.50.", "human_label": "correct"}
+{"id": "h10", "gold_answer": "Japan clients placed 61 orders.", "candidate_answer": "Clients from Japan placed 61 orders.", "human_label": "correct"}
+{"id": "h11", "gold_answer": "There are 38 accounts.", "candidate_answer": "38 accounts exist.", "human_label": "correct"}
+{"id": "h12", "gold_answer": "SELL orders totalled 1,975 shares for TSLA.", "candidate_answer": "TSLA SELL quantity was 1,975.", "human_label": "correct"}
+{"id": "h13", "gold_answer": "The average order quantity was 54.2.", "candidate_answer": "Average quantity: 54.2.", "human_label": "correct"}
+{"id": "h14", "gold_answer": "12 distinct symbols appear in orders.", "candidate_answer": "12 distinct symbols were traded.", "human_label": "correct"}
+{"id": "h15", "gold_answer": "Account 7 placed the most orders, with 29.", "candidate_answer": "Account 7 placed the most orders: 29.", "human_label": "correct"}
+{"id": "h16", "gold_answer": "PENDING orders numbered 35.", "candidate_answer": "35 orders are PENDING.", "human_label": "correct"}
+{"id": "h17", "gold_answer": "The total BUY traded value was 2,410,300.75.", "candidate_answer": "BUY value totalled 2,410,300.75.", "human_label": "correct"}
+{"id": "h18", "gold_answer": "360 orders were placed in total.", "candidate_answer": "There were 320 orders in total.", "human_label": "incorrect"}
+{"id": "h19", "gold_answer": "The total quantity traded for AAPL was 4,250.", "candidate_answer": "AAPL total quantity: 3,900.", "human_label": "incorrect"}
+{"id": "h20", "gold_answer": "There were 185 BUY orders.", "candidate_answer": "210 BUY orders were placed.", "human_label": "incorrect"}
+{"id": "h21", "gold_answer": "The average price for MSFT was 421.55.", "candidate_answer": "MSFT averaged 398.10 per order.", "human_label": "incorrect"}
+{"id": "h22", "gold_answer": "42 orders have status CANCELLED.", "candidate_answer": "18 orders were CANCELLED.", "human_label": "incorrect"}
+{"id": "h23", "gold_answer": "Account 3 placed 17 orders.", "candidate_answer": "Account 3 placed 22 orders.", "human_label": "incorrect"}
+{"id": "h24", "gold_answer": "The largest order quantity was 200.", "candidate_answer": "Maximum quantity: 500.", "human_label": "incorrect"}
+{"id": "h25", "gold_answer": "There are 24 clients.", "candidate_answer": "31 clients in total.", "human_label": "incorrect"}
+{"id": "h26", "gold_answer": "The total traded value for NVDA was 918,240.50.", "candidate_answer": "NVDA traded value was 750,000.00.", "human_label": "incorrect"}
+{"id": "h27", "gold_answer": "Japan clients placed 61 orders.", "candidate_answer": "Clients from Japan placed 44 orders.", "human_label": "incorrect"}
+{"id": "h28", "gold_answer": "There are 38 accounts.", "candidate_answer": "41 accounts exist.", "human_label": "incorrect"}
+{"id": "h29", "gold_answer": "SELL orders totalled 1,975 shares for TSLA.", "candidate_answer": "TSLA SELL quantity was 2,400.", "human_label": "incorrect"}
+{"id": "h30", "gold_answer": "The average order quantity was 54.2.", "candidate_answer": "Average quantity: 61.8.", "human_label": "incorrect"}
+{"id": "h31", "gold_answer": "12 distinct symbols appear in orders.", "candidate_answer": "9 distinct symbols were traded.", "human_label": "incorrect"}
+{"id": "h32", "gold_answer": "Account 7 placed the most orders, with 29.", "candidate_answer": "Account 7 placed the most orders: 24.", "human_label": "incorrect"}
+{"id": "h33", "gold_answer": "PENDING orders numbered 35.", "candidate_answer": "52 orders are PENDING.", "human_label": "incorrect"}
+{"id": "h34", "gold_answer": "The total BUY traded value was 2,410,300.75.", "candidate_answer": "BUY value totalled 1,900,000.00.", "human_label": "incorrect"}
+{"id": "h35", "gold_answer": "The total quantity traded for NVDA was 12,400.", "candidate_answer": "The total quantity traded for AAPL was 12,400.", "human_label": "incorrect"}
+{"id": "h36", "gold_answer": "There were 185 BUY orders.", "candidate_answer": "There were 185 SELL orders and 90 BUY orders.", "human_label": "incorrect"}
+{"id": "h37", "gold_answer": "Account 3 placed 17 orders.", "candidate_answer": "Account 17 placed 3 orders, the busiest of any account.", "human_label": "incorrect"}
+{"id": "h38", "gold_answer": "Japan clients placed 61 orders.", "candidate_answer": "Canada clients placed 61 orders.", "human_label": "incorrect"}
+{"id": "h39", "gold_answer": "The average price for MSFT was 421.55.", "candidate_answer": "The average quantity for MSFT was 421.55 shares.", "human_label": "incorrect"}
+{"id": "h40", "gold_answer": "360 orders were placed in total.", "candidate_answer": "Three hundred sixty orders were placed in total.", "human_label": "correct"}
+{"id": "h41", "gold_answer": "The total traded value was 1,234,500.", "candidate_answer": "The total traded value was about 1.23 million.", "human_label": "correct"}
+{"id": "h42", "gold_answer": "The average order quantity was 54.20.", "candidate_answer": "The average order quantity was roughly fifty-four.", "human_label": "correct"}
+{"id": "h43", "gold_answer": "There were 200 shares in the largest order.", "candidate_answer": "The largest order was for two hundred shares.", "human_label": "correct"}
+{"id": "h44", "gold_answer": "Account 5 placed 20 orders.", "candidate_answer": "Account 5 placed twenty orders.", "human_label": "correct"}
