@@ -78,6 +78,23 @@ def run(runs=3, seed=42):
                         "system_b_accuracy": v["b"] / v["n"]}
                   for cat, v in sorted(by_cat.items())}
 
+    # Per-difficulty breakdown (easy / medium / hard), same shape as above.
+    # Difficulties are ordered easy -> medium -> hard; any unexpected value
+    # sorts after those, alphabetically, rather than crashing the report.
+    difficulty_order = {"easy": 0, "medium": 1, "hard": 2}
+    by_diff = defaultdict(lambda: {"n": 0, "a": 0, "b": 0})
+    for item, ra, rb in zip(gold, per_system["system_a"]["records"],
+                            per_system["system_b"]["records"]):
+        d = by_diff[item["difficulty"]]
+        d["n"] += 1
+        d["a"] += int(ra["execution_correct"])
+        d["b"] += int(rb["execution_correct"])
+    difficulties = {diff: {"n": v["n"], "system_a_accuracy": v["a"] / v["n"],
+                           "system_b_accuracy": v["b"] / v["n"]}
+                    for diff, v in sorted(
+                        by_diff.items(),
+                        key=lambda kv: (difficulty_order.get(kv[0], 99), kv[0]))}
+
     errors_a = [r for r in per_system["system_a"]["records"] if r["error"]]
 
     judge_result = None
@@ -109,6 +126,7 @@ def run(runs=3, seed=42):
             "sample_size_to_detect_5pp_from_a": n_needed,
         },
         "per_category": categories,
+        "per_difficulty": difficulties,
         "system_a_errors": errors_a,
         "judge_calibration": judge_result,
     }
@@ -151,6 +169,12 @@ def render_report(res):
     L.append("|---|---|---|---|")
     for cat, v in res["per_category"].items():
         L.append(f"| {cat} | {v['n']} | {v['system_a_accuracy']:.0%} | {v['system_b_accuracy']:.0%} |")
+    L.append("")
+    L.append("## Per-difficulty accuracy\n")
+    L.append("| Difficulty | n | system_a | system_b |")
+    L.append("|---|---|---|---|")
+    for diff, v in res["per_difficulty"].items():
+        L.append(f"| {diff} | {v['n']} | {v['system_a_accuracy']:.0%} | {v['system_b_accuracy']:.0%} |")
     L.append("")
     L.append("## Error analysis — system_a\n")
     if res["system_a_errors"]:

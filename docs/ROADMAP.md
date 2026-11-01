@@ -6,7 +6,7 @@ commit with tests passing and the regression gate green.
 ## Queue
 
 - [x] Bootstrap confidence interval for the judge's Cohen's kappa, with tests
-- [ ] Per-difficulty breakdown (easy / medium / hard) in the eval report
+- [x] Per-difficulty breakdown (easy / medium / hard) in the eval report
 - [ ] New gold category: date-range questions over orders
 - [ ] Per-system latency measurement (mean / p95) in harness output and report
 - [ ] Sample-size planner CLI built on the existing estimator in stats.py

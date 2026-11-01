@@ -40,6 +40,13 @@ Gold set: **55 questions** · DB seed: 42 · Runs per system: 3
 | top_symbol_by_value | 1 | 100% | 100% |
 | top_symbol_by_volume | 1 | 100% | 100% |
 
+## Per-difficulty accuracy
+
+| Difficulty | n | system_a | system_b |
+|---|---|---|---|
+| easy | 32 | 66% | 100% |
+| hard | 23 | 35% | 100% |
+
 ## Error analysis — system_a
 
 system_a failed 26 of 55 questions. Error categories: {'wrong_result': 26}.

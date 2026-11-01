@@ -1255,6 +1255,18 @@
       "system_b_accuracy": 1.0
     }
   },
+  "per_difficulty": {
+    "easy": {
+      "n": 32,
+      "system_a_accuracy": 0.65625,
+      "system_b_accuracy": 1.0
+    },
+    "hard": {
+      "n": 23,
+      "system_a_accuracy": 0.34782608695652173,
+      "system_b_accuracy": 1.0
+    }
+  },
   "system_a_errors": [
     {
       "id": "q005",

@@ -10,6 +10,7 @@ from evalharness.gold import generate_gold
 from evalharness.judge import calibrate, cohens_kappa, judge, kappa_bootstrap_ci
 from evalharness.metrics import evaluate_system
 from evalharness.regression_gate import check
+from evalharness.run_eval import render_report, run
 from evalharness.systems import system_a, system_b
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -89,6 +90,39 @@ class TestRegressionGate(unittest.TestCase):
 
     def test_gate_fails_on_big_drop(self):
         self.assertFalse(check(0.90, 1.0))
+
+
+class TestPerDifficultyBreakdown(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.res = run(runs=1)
+
+    def test_per_difficulty_counts_cover_gold_set(self):
+        by_diff = self.res["per_difficulty"]
+        self.assertEqual(sum(v["n"] for v in by_diff.values()),
+                         self.res["gold_size"])
+        for v in by_diff.values():
+            self.assertGreater(v["n"], 0)
+            self.assertGreaterEqual(v["system_a_accuracy"], 0.0)
+            self.assertLessEqual(v["system_a_accuracy"], 1.0)
+            self.assertGreaterEqual(v["system_b_accuracy"], 0.0)
+            self.assertLessEqual(v["system_b_accuracy"], 1.0)
+
+    def test_per_difficulty_matches_record_counts(self):
+        # Recompute from the per-system records: the breakdown must agree
+        # with the underlying per-question results, not just sum correctly.
+        records = self.res["systems"]["system_a"]["records"]
+        for diff, v in self.res["per_difficulty"].items():
+            subset = [r for r in records if r["difficulty"] == diff]
+            self.assertEqual(len(subset), v["n"])
+            expected = (sum(r["execution_correct"] for r in subset) / len(subset))
+            self.assertAlmostEqual(v["system_a_accuracy"], expected)
+
+    def test_report_contains_per_difficulty_table(self):
+        report = render_report(self.res)
+        self.assertIn("## Per-difficulty accuracy", report)
+        for diff in self.res["per_difficulty"]:
+            self.assertIn(f"| {diff} |", report)
 
 
 if __name__ == "__main__":
