@@ -110,6 +110,35 @@ def generate_gold():
         add(f"What is the total quantity of FILLED orders for {sym}?",
             f"SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = '{sym}'",
             "sum_quantity_filled_by_symbol", "hard")
+    # 15. counts by date range over orders. Order dates are ISO dates in
+    # 2025, so BETWEEN on order_date is exact; months use their full span.
+    for month, start, end in [("January", "2025-01-01", "2025-01-31"),
+                              ("March", "2025-03-01", "2025-03-31"),
+                              ("June", "2025-06-01", "2025-06-30"),
+                              ("October", "2025-10-01", "2025-10-31")]:
+        add(f"How many orders were placed in {month} 2025?",
+            f"SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '{start}' AND '{end}'",
+            "count_by_date_range")
+    add("How many orders were placed between 2025-02-01 and 2025-02-28?",
+        "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-02-01' AND '2025-02-28'",
+        "count_by_date_range", "medium")
+    add("How many orders were placed between 2025-07-01 and 2025-09-30?",
+        "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-07-01' AND '2025-09-30'",
+        "count_by_date_range", "medium")
+    add("How many orders were placed in the first quarter of 2025?",
+        "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-03-31'",
+        "count_by_date_range", "medium")
+    add("How many orders were placed in the third quarter of 2025?",
+        "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-07-01' AND '2025-09-30'",
+        "count_by_date_range", "medium")
+    add("How many AAPL orders were placed in April 2025?",
+        "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-04-01' AND '2025-04-30' "
+        "AND symbol = 'AAPL'",
+        "count_by_date_range", "hard")
+    add("How many NVDA orders were placed between 2025-05-01 and 2025-05-31?",
+        "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-05-01' AND '2025-05-31' "
+        "AND symbol = 'NVDA'",
+        "count_by_date_range", "hard")
     return items
 
 

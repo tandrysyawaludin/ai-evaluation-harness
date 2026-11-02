@@ -32,6 +32,30 @@ class TestSystems(unittest.TestCase):
         self.assertGreaterEqual(b["execution_accuracy"], 0.85)
         self.assertGreater(b["execution_accuracy"], a["execution_accuracy"] + 0.2)
 
+    def test_date_range_category(self):
+        by_cat = {}
+        for g in self.gold:
+            by_cat.setdefault(g["category"], []).append(g)
+        self.assertIn("count_by_date_range", by_cat)
+        dated = by_cat["count_by_date_range"]
+        # Month, explicit range, quarter, and date+symbol forms all present.
+        questions = [g["question"] for g in dated]
+        self.assertTrue(any("in January 2025" in q for q in questions))
+        self.assertTrue(any("between 2025-02-01 and 2025-02-28" in q
+                            for q in questions))
+        self.assertTrue(any("first quarter of 2025" in q for q in questions))
+        self.assertTrue(any("AAPL" in q and "April 2025" in q for q in questions))
+        # system_b gets every date-range question right; system_a, which
+        # drops the date filter, gets none of the plain ones right.
+        b = evaluate_system(self.conn, system_b, dated)
+        self.assertEqual(b["execution_accuracy"], 1.0)
+        a = evaluate_system(self.conn, system_a, dated)
+        self.assertLess(a["execution_accuracy"], 1.0)
+        plain = [g for g in dated if "AAPL" not in g["question"]
+                 and "NVDA" not in g["question"]]
+        a_plain = evaluate_system(self.conn, system_a, plain)
+        self.assertEqual(a_plain["execution_accuracy"], 0.0)
+
     def test_checked_in_gold_matches_generator(self):
         with open(os.path.join(ROOT, "data", "gold.jsonl")) as f:
             checked = [json.loads(line) for line in f]

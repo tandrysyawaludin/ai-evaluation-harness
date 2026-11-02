@@ -187,8 +187,8 @@ def render_report(res):
             L.append(f"| {r['id']} | {r['category']} | {r['error']} | `{r['candidate_sql']}` |")
         L.append("")
         L.append("Reading: system_a's failures are not random. They cluster exactly on "
-                 "questions with a side, status, or country filter, and on average-price "
-                 "questions — the documented weaknesses in `systems.py`. That clustering, "
+                 "questions with a side, status, country, or date-range filter, and on "
+                 "average-price questions — the documented weaknesses in `systems.py`. That clustering, "
                  "not the headline number, is what tells engineering what to fix, and "
                  "system_b is precisely that fix.")
     else:

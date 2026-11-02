@@ -1,20 +1,20 @@
 # Evaluation Report — Brokerage Text-to-SQL Agent
 
-Gold set: **55 questions** · DB seed: 42 · Runs per system: 3
+Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
 ## Headline results
 
 | System | Execution accuracy | 95% Wilson CI | 95% bootstrap CI | Exact match | Pass-consistency |
 |---|---|---|---|---|---|
-| system_a (baseline) | 52.7% (29/55) | [0.398, 0.653] | [0.400, 0.655] | 52.7% | 0.527 |
-| system_b (improved) | 100.0% (55/55) | [0.935, 1.000] | [1.000, 1.000] | 100.0% | 1.000 |
+| system_a (baseline) | 44.6% (29/65) | [0.332, 0.567] | [0.323, 0.569] | 44.6% | 0.446 |
+| system_b (improved) | 100.0% (65/65) | [0.944, 1.000] | [1.000, 1.000] | 92.3% | 1.000 |
 
 ## Is the improvement real? (paired comparison)
 
-- Accuracy difference (B − A): **+47.3%**, bootstrap 95% CI [+0.345, +0.618]
-- McNemar's test (paired, same questions): b = 26 (A wrong, B right), c = 0 (A right, B wrong), p = 9.443e-07
+- Accuracy difference (B − A): **+55.4%**, bootstrap 95% CI [+0.431, +0.677]
+- McNemar's test (paired, same questions): b = 36 (A wrong, B right), c = 0 (A right, B wrong), p = 5.433e-09
 - Verdict: the difference is **statistically significant at the 5% level**.
-- To detect a further 5pp improvement over system_a with 80% power would need ~1550 gold questions per system (normal approximation) — a concrete argument for growing the gold set.
+- To detect a further 5pp improvement over system_a with 80% power would need ~1562 gold questions per system (normal approximation) — a concrete argument for growing the gold set.
 
 ## Per-category accuracy
 
@@ -25,6 +25,7 @@ Gold set: **55 questions** · DB seed: 42 · Runs per system: 3
 | avg_quantity_by_side | 2 | 0% | 100% |
 | count_by_account | 5 | 100% | 100% |
 | count_by_country | 4 | 0% | 100% |
+| count_by_date_range | 10 | 0% | 100% |
 | count_by_side | 2 | 0% | 100% |
 | count_by_status | 3 | 100% | 100% |
 | count_total | 4 | 100% | 100% |
@@ -44,12 +45,13 @@ Gold set: **55 questions** · DB seed: 42 · Runs per system: 3
 
 | Difficulty | n | system_a | system_b |
 |---|---|---|---|
-| easy | 32 | 66% | 100% |
-| hard | 23 | 35% | 100% |
+| easy | 36 | 58% | 100% |
+| medium | 4 | 0% | 100% |
+| hard | 25 | 32% | 100% |
 
 ## Error analysis — system_a
 
-system_a failed 26 of 55 questions. Error categories: {'wrong_result': 26}.
+system_a failed 36 of 65 questions. Error categories: {'wrong_result': 36}.
 
 | ID | Category | Error | Candidate SQL |
 |---|---|---|---|
@@ -79,8 +81,18 @@ system_a failed 26 of 55 questions. Error categories: {'wrong_result': 26}.
 | q053 | sum_quantity_filled_by_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'` |
 | q054 | sum_quantity_filled_by_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'` |
 | q055 | sum_quantity_filled_by_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'` |
+| q056 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
+| q057 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
+| q058 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
+| q059 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
+| q060 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
+| q061 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
+| q062 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
+| q063 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
+| q064 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders WHERE symbol = 'AAPL'` |
+| q065 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders WHERE symbol = 'NVDA'` |
 
-Reading: system_a's failures are not random. They cluster exactly on questions with a side, status, or country filter, and on average-price questions — the documented weaknesses in `systems.py`. That clustering, not the headline number, is what tells engineering what to fix, and system_b is precisely that fix.
+Reading: system_a's failures are not random. They cluster exactly on questions with a side, status, country, or date-range filter, and on average-price questions — the documented weaknesses in `systems.py`. That clustering, not the headline number, is what tells engineering what to fix, and system_b is precisely that fix.
 
 ## Judge calibration (judge vs human labels)
 

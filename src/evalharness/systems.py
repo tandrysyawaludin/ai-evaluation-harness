@@ -11,13 +11,23 @@ system_a — baseline with realistic, documented weaknesses:
   3. Ignores the FILLED status filter in filled-quantity questions.
   4. Ignores the client-country filter (counts all orders instead of
      joining through accounts -> clients).
+  5. Ignores the date-range filter in date-range questions (counts all
+     orders, or all orders for the symbol, regardless of date).
 
 system_b — improved system that handles every template, including joins,
-two-filter questions, and top-N rankings.
+two-filter questions, date ranges, and top-N rankings.
 """
 import re
 
 COUNTRIES = ["United States", "United Kingdom", "Japan", "Canada", "Brazil", "Germany"]
+
+MONTHS = {"January": "01", "February": "02", "March": "03", "April": "04",
+          "May": "05", "June": "06", "July": "07", "August": "08",
+          "September": "09", "October": "10", "November": "11", "December": "12"}
+QUARTERS = {"first": ("2025-01-01", "2025-03-31"),
+            "second": ("2025-04-01", "2025-06-30"),
+            "third": ("2025-07-01", "2025-09-30"),
+            "fourth": ("2025-10-01", "2025-12-31")}
 
 
 def _country(q):
@@ -50,6 +60,30 @@ def _translate(question, flawed):
     if "account placed the most orders" in q:
         return ("SELECT account_id FROM orders GROUP BY account_id "
                 "ORDER BY COUNT(*) DESC LIMIT 1")
+
+    # --- date-range questions (month, quarter, or explicit range) ---
+    range_m = re.search(r"between (\d{4}-\d{2}-\d{2}) and (\d{4}-\d{2}-\d{2})", q)
+    month_m = re.search(r"\b(January|February|March|April|May|June|July|August|"
+                        r"September|October|November|December) (\d{4})\b", q)
+    quarter_m = re.search(r"\b(first|second|third|fourth) quarter of (\d{4})\b", q)
+    if range_m or month_m or quarter_m:
+        sym = _symbol(q)
+        if flawed:  # Weakness 5: date filter dropped entirely.
+            if sym:
+                return f"SELECT COUNT(*) FROM orders WHERE symbol = '{sym}'"
+            return "SELECT COUNT(*) FROM orders"
+        if range_m:
+            cond = (f"order_date BETWEEN '{range_m.group(1)}' "
+                    f"AND '{range_m.group(2)}'")
+        elif month_m:
+            cond = (f"strftime('%Y-%m', order_date) = "
+                    f"'{month_m.group(2)}-{MONTHS[month_m.group(1)]}'")
+        else:
+            start, end = QUARTERS[quarter_m.group(1)]
+            cond = f"order_date BETWEEN '{start}' AND '{end}'"
+        if sym:
+            return f"SELECT COUNT(*) FROM orders WHERE {cond} AND symbol = '{sym}'"
+        return f"SELECT COUNT(*) FROM orders WHERE {cond}"
 
     # --- country questions (join) ---
     country = _country(q)
