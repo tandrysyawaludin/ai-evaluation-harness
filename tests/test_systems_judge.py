@@ -56,6 +56,20 @@ class TestSystems(unittest.TestCase):
         a_plain = evaluate_system(self.conn, system_a, plain)
         self.assertEqual(a_plain["execution_accuracy"], 0.0)
 
+    def test_evaluate_records_per_question_latency(self):
+        res = evaluate_system(self.conn, system_a, self.gold[:5])
+        self.assertEqual(len(res["records"]), 5)
+        for r in res["records"]:
+            self.assertIn("latency_ms", r)
+            self.assertGreaterEqual(r["latency_ms"], 0.0)
+        lat = res["latency"]
+        self.assertAlmostEqual(
+            lat["mean_ms"],
+            sum(r["latency_ms"] for r in res["records"]) / 5)
+        # With 5 samples the nearest-rank p95 is the maximum.
+        self.assertEqual(lat["p95_ms"],
+                         max(r["latency_ms"] for r in res["records"]))
+
     def test_checked_in_gold_matches_generator(self):
         with open(os.path.join(ROOT, "data", "gold.jsonl")) as f:
             checked = [json.loads(line) for line in f]
@@ -147,6 +161,30 @@ class TestPerDifficultyBreakdown(unittest.TestCase):
         self.assertIn("## Per-difficulty accuracy", report)
         for diff in self.res["per_difficulty"]:
             self.assertIn(f"| {diff} |", report)
+
+
+class TestLatencyReporting(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.res = run(runs=1)
+
+    def test_results_carry_latency_summary(self):
+        for name in ("system_a", "system_b"):
+            lat = self.res["systems"][name]["latency"]
+            records = self.res["systems"][name]["records"]
+            latencies = sorted(r["latency_ms"] for r in records)
+            # p95 need not exceed the mean: a right-skewed tail can pull
+            # the mean above it. Check it against the records instead.
+            self.assertAlmostEqual(lat["mean_ms"],
+                                   sum(latencies) / len(latencies))
+            self.assertEqual(lat["p95_ms"], latencies[61])  # ceil(.95*65)-1
+            self.assertGreaterEqual(lat["p95_ms"], 0.0)
+
+    def test_report_contains_latency_table(self):
+        report = render_report(self.res)
+        self.assertIn("## Latency", report)
+        self.assertIn("| system_a |", report)
+        self.assertIn("| system_b |", report)
 
 
 if __name__ == "__main__":

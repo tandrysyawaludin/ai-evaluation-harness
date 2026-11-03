@@ -36,6 +36,10 @@ Principles:
 - **Error categorisation.** Every failure is bucketed: `execution_error`
   (SQL raised), `empty_result`, `wrong_result`, or `no_sql_generated`.
   Error analysis drives iteration; a single accuracy number does not.
+- **Latency.** Every question records the time spent inside the system
+  function (generation time, not SQL execution time); the harness reports
+  mean and p95 per system, in the console output, `results.json`, and the
+  report. Accuracy without latency hides the cost of an improvement.
 
 ## 3. Statistics: evals are experiments
 

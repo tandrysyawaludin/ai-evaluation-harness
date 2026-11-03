@@ -1,6 +1,9 @@
 """Metrics: execution accuracy, exact match, error categorisation."""
 import re
 import sqlite3
+import time
+
+from .stats import latency_summary
 
 
 def normalise_sql(sql):
@@ -56,10 +59,19 @@ def categorise_error(conn, candidate_sql, gold_sql):
 
 
 def evaluate_system(conn, system_fn, gold_items):
-    """Run one system over the gold set. Returns per-item records + summary."""
+    """Run one system over the gold set. Returns per-item records + summary.
+
+    Each record carries `latency_ms`: wall time spent inside the system
+    function for that question (generation time, not SQL execution time).
+    Generation is what an LLM-backed system would spend its budget on, so
+    it is the latency that matters when comparing candidate systems; the
+    summary reports its mean and p95.
+    """
     records = []
     for item in gold_items:
+        start = time.perf_counter()
         sql = system_fn(item["question"])
+        latency_ms = (time.perf_counter() - start) * 1000
         err = categorise_error(conn, sql, item["gold_sql"])
         records.append({
             "id": item["id"], "category": item["category"],
@@ -68,6 +80,7 @@ def evaluate_system(conn, system_fn, gold_items):
             "execution_correct": err is None,
             "exact_match": exact_match(sql, item["gold_sql"]),
             "error": err,
+            "latency_ms": latency_ms,
         })
     n = len(records)
     correct = sum(r["execution_correct"] for r in records)
@@ -76,4 +89,5 @@ def evaluate_system(conn, system_fn, gold_items):
         "n": n,
         "execution_accuracy": correct / n if n else 0.0,
         "exact_match_rate": (sum(r["exact_match"] for r in records) / n) if n else 0.0,
+        "latency": latency_summary([r["latency_ms"] for r in records]),
     }

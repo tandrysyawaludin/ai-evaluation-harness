@@ -39,6 +39,25 @@ class TestStats(unittest.TestCase):
         self.assertGreater(stats.sample_size_for_difference(0.7, 0.05),
                            stats.sample_size_for_difference(0.7, 0.10))
 
+    def test_percentile_nearest_rank(self):
+        values = [10, 20, 30, 40]
+        self.assertEqual(stats.percentile(values, 0), 10)
+        self.assertEqual(stats.percentile(values, 50), 20)
+        self.assertEqual(stats.percentile(values, 95), 40)
+        self.assertEqual(stats.percentile(values, 100), 40)
+
+    def test_percentile_empty_and_out_of_range(self):
+        self.assertEqual(stats.percentile([], 95), 0.0)
+        with self.assertRaises(ValueError):
+            stats.percentile([1.0], 101)
+
+    def test_latency_summary_mean_and_p95(self):
+        summary = stats.latency_summary([1.0, 2.0, 3.0, 4.0])
+        self.assertAlmostEqual(summary["mean_ms"], 2.5)
+        self.assertEqual(summary["p95_ms"], 4.0)
+        self.assertEqual(stats.latency_summary([]),
+                         {"mean_ms": 0.0, "p95_ms": 0.0})
+
 
 class TestMetrics(unittest.TestCase):
     def test_normalise_sql(self):

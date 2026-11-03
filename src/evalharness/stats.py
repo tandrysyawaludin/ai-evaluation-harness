@@ -67,6 +67,35 @@ def mcnemar(a_correct, b_correct):
     return {"b": b, "c": c, "statistic": stat, "p_value": p}
 
 
+def percentile(values, q):
+    """q-th percentile (0 <= q <= 100) by the nearest-rank method.
+
+    Returns 0.0 for an empty input, matching the other helpers' convention
+    of never crashing on a degenerate set.
+    """
+    if not values:
+        return 0.0
+    if not 0 <= q <= 100:
+        raise ValueError("percentile q must be between 0 and 100")
+    ordered = sorted(values)
+    rank = math.ceil(q / 100 * len(ordered))
+    return ordered[max(0, rank - 1)]
+
+
+def latency_summary(latencies_ms):
+    """Mean and p95 of per-question latencies, in milliseconds.
+
+    p95 (not max) is the tail statistic: a single slow question should not
+    dominate the headline number, but the slowest 5% still get reported.
+    """
+    if not latencies_ms:
+        return {"mean_ms": 0.0, "p95_ms": 0.0}
+    return {
+        "mean_ms": sum(latencies_ms) / len(latencies_ms),
+        "p95_ms": percentile(latencies_ms, 95),
+    }
+
+
 def sample_size_for_difference(p1, delta, alpha=0.05, power=0.8):
     """Approx. per-group n to detect p1 -> p1+delta (two proportions).
 

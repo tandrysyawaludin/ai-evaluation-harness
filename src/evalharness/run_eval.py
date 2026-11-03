@@ -54,6 +54,9 @@ def run(runs=3, seed=42):
             "wilson_95ci": wilson_interval(k, n),
             "bootstrap_95ci": bootstrap_ci([int(x) for x in correct_flags]),
             "exact_match_rate": result["exact_match_rate"],
+            # Latencies are from the first (recorded) pass only; the
+            # repeated runs measure pass-consistency, not timing.
+            "latency": result["latency"],
             "pass_consistency_mean": sum(frac) / len(frac) if frac else 0.0,
             "questions_correct_on_every_run": (
                 sum(1 for c in per_question_correct if c == runs) / len(gold)),
@@ -164,6 +167,20 @@ def render_report(res):
                  f"would need ~{cmp_['sample_size_to_detect_5pp_from_a']} gold questions per system "
                  f"(normal approximation) — a concrete argument for growing the gold set.")
     L.append("")
+    L.append("## Latency (per-question generation time, first pass)\n")
+    L.append("| System | Mean | p95 |")
+    L.append("|---|---|---|")
+    for name, s in (("system_a", a), ("system_b", b)):
+        lat = s["latency"]
+        L.append(f"| {name} | {lat['mean_ms']:.2f} ms | {lat['p95_ms']:.2f} ms |")
+    L.append("")
+    L.append("The rule-based systems here answer in well under a millisecond, so "
+             "these numbers are a floor, not a finding: they exist so that when an "
+             "LLM-backed system is dropped into the same harness boundary, its "
+             "latency cost shows up next to its accuracy gain instead of hiding "
+             "behind it. A system that is 5 points more accurate but 100x slower "
+             "is a different trade-off, and this table is where it becomes visible.")
+    L.append("")
     L.append("## Per-category accuracy\n")
     L.append("| Category | n | system_a | system_b |")
     L.append("|---|---|---|---|")
@@ -230,9 +247,11 @@ def main():
         f.write(render_report(res))
     for name in ("system_a", "system_b"):
         s = res["systems"][name]
+        lat = s["latency"]
         print(f"{name}: execution accuracy {s['execution_accuracy']:.1%} "
               f"({s['correct']}/{s['n']}), exact match {s['exact_match_rate']:.1%}, "
-              f"pass-consistency {s['pass_consistency_mean']:.3f}")
+              f"pass-consistency {s['pass_consistency_mean']:.3f}, "
+              f"latency mean {lat['mean_ms']:.2f} ms / p95 {lat['p95_ms']:.2f} ms")
     mc = res["comparison"]["mcnemar"]
     print(f"McNemar: b={mc['b']} c={mc['c']} p={mc['p_value']:.4g}")
     print(f"wrote {args.out_dir}/results.json and report.md")

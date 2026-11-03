@@ -16,6 +16,15 @@ Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 - Verdict: the difference is **statistically significant at the 5% level**.
 - To detect a further 5pp improvement over system_a with 80% power would need ~1562 gold questions per system (normal approximation) — a concrete argument for growing the gold set.
 
+## Latency (per-question generation time, first pass)
+
+| System | Mean | p95 |
+|---|---|---|
+| system_a | 0.02 ms | 0.01 ms |
+| system_b | 0.01 ms | 0.01 ms |
+
+The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
+
 ## Per-category accuracy
 
 | Category | n | system_a | system_b |
