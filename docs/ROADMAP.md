@@ -9,7 +9,7 @@ commit with tests passing and the regression gate green.
 - [x] Per-difficulty breakdown (easy / medium / hard) in the eval report
 - [x] New gold category: date-range questions over orders
 - [x] Per-system latency measurement (mean / p95) in harness output and report
-- [ ] Sample-size planner CLI built on the existing estimator in stats.py
+- [x] Sample-size planner CLI built on the existing estimator in stats.py
 - [ ] Schema validation for gold.jsonl and human_labels.jsonl, with tests
 - [ ] Finer error taxonomy: separate wrong-filter, wrong-aggregation and
       wrong-join failures from generic wrong-result where determinable

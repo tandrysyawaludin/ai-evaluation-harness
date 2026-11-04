@@ -79,6 +79,8 @@ src/evalharness/
   judge.py         Heuristic LLM-as-judge simulation + calibration vs human labels
   run_eval.py      CLI harness: builds DB, runs systems, writes report + results.json
   regression_gate.py  CI gate vs results/baseline.json (fails on >2pp drop)
+  plan.py          Sample-size planner CLI: gold-set size needed to detect
+                   an accuracy improvement (delta x power grid, --from-results)
 tests/             unittest suite for stats, metrics, systems, judge
 results/           results.json, report.md, baseline.json (generated, checked in)
 docs/DESIGN.md     Evaluation design, decisions, and limitations
