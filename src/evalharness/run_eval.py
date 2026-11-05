@@ -18,6 +18,7 @@ from .metrics import evaluate_system
 from .stats import (bootstrap_ci, bootstrap_diff_ci, mcnemar,
                     sample_size_for_difference, wilson_interval)
 from .systems import SYSTEMS
+from .validate import validate_gold, validate_labels
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -29,6 +30,12 @@ def load_jsonl(path):
 
 def run(runs=3, seed=42):
     gold = load_jsonl(os.path.join(ROOT, "data", "gold.jsonl"))
+    # Fail fast on a broken ground truth: a malformed gold row would
+    # otherwise silently skew every metric the harness reports.
+    gold_errors = validate_gold(gold)
+    if gold_errors:
+        raise ValueError("gold.jsonl failed schema validation:\n"
+                         + "\n".join(gold_errors))
     conn = build_db(seed=seed)
 
     per_system = {}
@@ -103,7 +110,12 @@ def run(runs=3, seed=42):
     judge_result = None
     labels_path = os.path.join(ROOT, "data", "human_labels.jsonl")
     if os.path.exists(labels_path):
-        judge_result = calibrate(load_jsonl(labels_path))
+        labels = load_jsonl(labels_path)
+        label_errors = validate_labels(labels)
+        if label_errors:
+            raise ValueError("human_labels.jsonl failed schema validation:\n"
+                             + "\n".join(label_errors))
+        judge_result = calibrate(labels)
         judge_result["disagreements"] = [
             {k: d[k] for k in ("id", "gold_answer", "candidate_answer",
                                "human_label", "judge_label")}
