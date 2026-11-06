@@ -43,8 +43,72 @@ def results_equal(conn, candidate_sql, gold_sql):
     return _normalise_rows(cand_rows) == _normalise_rows(gold_rows)
 
 
+def _where_conjuncts(sql):
+    """Sorted set of top-level AND-conjuncts of the WHERE clause.
+
+    Conjunct order does not matter (`A AND B` is the same filter as
+    `B AND A`), so the clause is split and sorted before comparison.
+    """
+    m = re.search(r"\bwhere\b(.*?)(?:\bgroup by\b|\border by\b|\blimit\b|$)",
+                  sql, re.DOTALL)
+    if not m:
+        return frozenset()
+    clause = m.group(1)
+    # Protect BETWEEN ... AND ... so its inner AND is not a conjunct split.
+    protected = re.sub(r"(\bbetween\b\s+\S+\s+)\band\b(\s+\S+)",
+                       r"\1@@@\2", clause)
+    parts = [p.strip() for p in protected.split(" and ")]
+    return frozenset(p.replace("@@@", " and ") for p in parts if p)
+
+
+def _join_tables(sql):
+    """Set of tables named after a JOIN keyword (empty when no join)."""
+    return frozenset(re.findall(r"\bjoin\s+(\w+)", sql))
+
+
+def _aggregation_signature(sql):
+    """Aggregate calls plus GROUP BY, with table qualifiers stripped.
+
+    `SUM(o.quantity * o.price)` and `SUM(quantity * price)` are the same
+    aggregation written against an aliased table, so `alias.` prefixes are
+    removed before comparing. The GROUP BY clause is part of the
+    signature: grouping by the wrong column is an aggregation failure,
+    not a filter failure.
+    """
+    s = re.sub(r"\b\w+\.", "", sql)
+    calls = re.findall(r"\b(?:avg|sum|count|min|max)\s*\([^)]*\)", s)
+    m = re.search(r"\bgroup by\b(.*?)(?:\border by\b|\blimit\b|$)", s, re.DOTALL)
+    group_by = m.group(1).strip() if m else ""
+    return (tuple(sorted(calls)), group_by)
+
+
+def _classify_wrong_result(candidate_sql, gold_sql):
+    """Split a wrong result into wrong_join / wrong_aggregation /
+    wrong_filter / wrong_result, where the SQL shows which part diverged.
+
+    Priority is deliberate: a missing join also drops the join's filter,
+    so the join is checked first; an aggregation error is checked before
+    the filter because a wrong aggregate changes the number even when the
+    rows selected are right. Anything else stays generic wrong_result —
+    e.g. a wrong SELECT column, ORDER BY, or LIMIT with the filter, join,
+    and aggregation all intact.
+    """
+    cand, gold = normalise_sql(candidate_sql), normalise_sql(gold_sql)
+    if _join_tables(cand) != _join_tables(gold):
+        return "wrong_join"
+    if _aggregation_signature(cand) != _aggregation_signature(gold):
+        return "wrong_aggregation"
+    if _where_conjuncts(cand) != _where_conjuncts(gold):
+        return "wrong_filter"
+    return "wrong_result"
+
+
 def categorise_error(conn, candidate_sql, gold_sql):
-    """None if correct, else one of the error categories."""
+    """None if correct, else one of the error categories.
+
+    Categories: no_sql_generated, execution_error, empty_result,
+    wrong_join, wrong_aggregation, wrong_filter, wrong_result.
+    """
     if not candidate_sql:
         return "no_sql_generated"
     cand_rows, cand_err = execute(conn, candidate_sql)
@@ -55,7 +119,7 @@ def categorise_error(conn, candidate_sql, gold_sql):
         return None
     if len(cand_rows) == 0:
         return "empty_result"
-    return "wrong_result"
+    return _classify_wrong_result(candidate_sql, gold_sql)
 
 
 def evaluate_system(conn, system_fn, gold_items):

@@ -17,13 +17,15 @@
       ],
       "exact_match_rate": 0.4461538461538462,
       "latency": {
-        "mean_ms": 0.022041676745105248,
-        "p95_ms": 0.013789998774882406
+        "mean_ms": 0.02655090768082748,
+        "p95_ms": 0.019608999537013005
       },
       "pass_consistency_mean": 0.4461538461538462,
       "questions_correct_on_every_run": 0.4461538461538462,
       "error_counts": {
-        "wrong_result": 36
+        "wrong_filter": 25,
+        "wrong_join": 6,
+        "wrong_aggregation": 5
       },
       "records": [
         {
@@ -35,7 +37,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.8868109998729778
+          "latency_ms": 1.0743230004663928
         },
         {
           "id": "q002",
@@ -46,7 +48,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.017395999748259783
+          "latency_ms": 0.02796199987642467
         },
         {
           "id": "q003",
@@ -57,7 +59,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.013789998774882406
+          "latency_ms": 0.019608999537013005
         },
         {
           "id": "q004",
@@ -68,7 +70,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.013500000932253897
+          "latency_ms": 0.01905899989651516
         },
         {
           "id": "q005",
@@ -78,8 +80,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'BUY'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.02609999864944257
+          "error": "wrong_filter",
+          "latency_ms": 0.019549000171537045
         },
         {
           "id": "q006",
@@ -89,8 +91,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'SELL'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.012649001291720197
+          "error": "wrong_filter",
+          "latency_ms": 0.01668499953666469
         },
         {
           "id": "q007",
@@ -101,7 +103,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011416999768698588
+          "latency_ms": 0.013140000191924628
         },
         {
           "id": "q008",
@@ -112,7 +114,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010354999176342972
+          "latency_ms": 0.02824300008796854
         },
         {
           "id": "q009",
@@ -123,7 +125,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009543999112793244
+          "latency_ms": 0.010065000424219761
         },
         {
           "id": "q010",
@@ -133,8 +135,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.006400001439033076
+          "error": "wrong_join",
+          "latency_ms": 0.006859999302832875
         },
         {
           "id": "q011",
@@ -144,8 +146,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.006299998858594336
+          "error": "wrong_join",
+          "latency_ms": 0.006909999683557544
         },
         {
           "id": "q012",
@@ -155,8 +157,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Canada'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.0059689991758205
+          "error": "wrong_join",
+          "latency_ms": 0.006379999831551686
         },
         {
           "id": "q013",
@@ -166,8 +168,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Brazil'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.005297999450704083
+          "error": "wrong_join",
+          "latency_ms": 0.005818999852635898
         },
         {
           "id": "q014",
@@ -178,7 +180,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.01272899862669874
+          "latency_ms": 0.013169999874662608
         },
         {
           "id": "q015",
@@ -189,7 +191,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010675999874365516
+          "latency_ms": 0.010965999535983428
         },
         {
           "id": "q016",
@@ -200,7 +202,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009093999324250035
+          "latency_ms": 0.010186000508838333
         },
         {
           "id": "q017",
@@ -211,7 +213,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008692999472259544
+          "latency_ms": 0.009203999979945365
         },
         {
           "id": "q018",
@@ -222,7 +224,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008913999408832751
+          "latency_ms": 0.00916399949346669
         },
         {
           "id": "q019",
@@ -233,7 +235,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010154999472433701
+          "latency_ms": 0.010415999895485584
         },
         {
           "id": "q020",
@@ -244,7 +246,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009703999239718542
+          "latency_ms": 0.009184000191453379
         },
         {
           "id": "q021",
@@ -255,7 +257,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009284000043408014
+          "latency_ms": 0.008643000001029577
         },
         {
           "id": "q022",
@@ -266,7 +268,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008582999726058915
+          "latency_ms": 0.008461999641440343
         },
         {
           "id": "q023",
@@ -277,7 +279,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008503000572090968
+          "latency_ms": 0.008402999810641631
         },
         {
           "id": "q024",
@@ -287,8 +289,8 @@
           "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AAPL'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.009485000191489235
+          "error": "wrong_aggregation",
+          "latency_ms": 0.009284000043408014
         },
         {
           "id": "q025",
@@ -298,8 +300,8 @@
           "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'MSFT'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.00859300052979961
+          "error": "wrong_aggregation",
+          "latency_ms": 0.009284000043408014
         },
         {
           "id": "q026",
@@ -309,8 +311,8 @@
           "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'NVDA'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.008363000233657658
+          "error": "wrong_aggregation",
+          "latency_ms": 0.008832999810692854
         },
         {
           "id": "q027",
@@ -320,8 +322,8 @@
           "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'TSLA'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.008293000064441003
+          "error": "wrong_aggregation",
+          "latency_ms": 0.008523000360582955
         },
         {
           "id": "q028",
@@ -331,8 +333,8 @@
           "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AMZN'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.008221999451052397
+          "error": "wrong_aggregation",
+          "latency_ms": 0.008273000275949016
         },
         {
           "id": "q029",
@@ -342,8 +344,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'AAPL'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.009334000424132682
+          "error": "wrong_filter",
+          "latency_ms": 0.009835000128077809
         },
         {
           "id": "q030",
@@ -353,8 +355,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'NVDA'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.00871299926075153
+          "error": "wrong_filter",
+          "latency_ms": 0.009114000022236723
         },
         {
           "id": "q031",
@@ -364,8 +366,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'TSLA'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.008342000000993721
+          "error": "wrong_filter",
+          "latency_ms": 0.008943000466388185
         },
         {
           "id": "q032",
@@ -375,8 +377,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'AAPL'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.00941399957810063
+          "error": "wrong_filter",
+          "latency_ms": 0.009684000360721257
         },
         {
           "id": "q033",
@@ -386,8 +388,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'NVDA'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.008492999768350273
+          "error": "wrong_filter",
+          "latency_ms": 0.009043999853020068
         },
         {
           "id": "q034",
@@ -397,8 +399,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'TSLA'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.008502000127919018
+          "error": "wrong_filter",
+          "latency_ms": 0.0090730000010808
         },
         {
           "id": "q035",
@@ -409,7 +411,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.000740999894333072
+          "latency_ms": 0.0010120002116309479
         },
         {
           "id": "q036",
@@ -420,7 +422,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0010320000001229346
+          "latency_ms": 0.0013220005712355487
         },
         {
           "id": "q037",
@@ -431,7 +433,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0008709994290256873
+          "latency_ms": 0.0011519996405695565
         },
         {
           "id": "q038",
@@ -442,7 +444,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00898400139703881
+          "latency_ms": 0.010225999176327605
         },
         {
           "id": "q039",
@@ -453,7 +455,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0065900003392016515
+          "latency_ms": 0.010396000106993597
         },
         {
           "id": "q040",
@@ -464,7 +466,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0054180000006454065
+          "latency_ms": 0.008463000085612293
         },
         {
           "id": "q041",
@@ -475,7 +477,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005017000148654915
+          "latency_ms": 0.005648999831464607
         },
         {
           "id": "q042",
@@ -486,7 +488,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005067000529379584
+          "latency_ms": 0.008242999683716334
         },
         {
           "id": "q043",
@@ -496,8 +498,8 @@
           "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'BUY'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.012377999155432917
+          "error": "wrong_filter",
+          "latency_ms": 0.019158999748469796
         },
         {
           "id": "q044",
@@ -507,8 +509,8 @@
           "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'SELL'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.011346999599481933
+          "error": "wrong_filter",
+          "latency_ms": 0.012989999959245324
         },
         {
           "id": "q045",
@@ -519,7 +521,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006008998752804473
+          "latency_ms": 0.007161000212363433
         },
         {
           "id": "q046",
@@ -530,7 +532,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0056080007198033854
+          "latency_ms": 0.006139000106486492
         },
         {
           "id": "q047",
@@ -541,7 +543,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0061290011217352
+          "latency_ms": 0.009383999895362649
         },
         {
           "id": "q048",
@@ -552,7 +554,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.007009999535512179
+          "latency_ms": 0.0072710008680587634
         },
         {
           "id": "q049",
@@ -562,8 +564,8 @@
           "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'BUY'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.00942399856285192
+          "error": "wrong_filter",
+          "latency_ms": 0.011437000466685276
         },
         {
           "id": "q050",
@@ -573,8 +575,8 @@
           "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'SELL'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.009172999853035435
+          "error": "wrong_filter",
+          "latency_ms": 0.010486000064702239
         },
         {
           "id": "q051",
@@ -584,8 +586,8 @@
           "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.005978999979561195
+          "error": "wrong_join",
+          "latency_ms": 0.006851000762253534
         },
         {
           "id": "q052",
@@ -595,8 +597,8 @@
           "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.005919000614085235
+          "error": "wrong_join",
+          "latency_ms": 0.006399999620043673
         },
         {
           "id": "q053",
@@ -606,8 +608,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'AAPL'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.011416999768698588
+          "error": "wrong_filter",
+          "latency_ms": 0.012618999789992813
         },
         {
           "id": "q054",
@@ -617,8 +619,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'MSFT'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.01002500175673049
+          "error": "wrong_filter",
+          "latency_ms": 0.016715000128897373
         },
         {
           "id": "q055",
@@ -628,8 +630,8 @@
           "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'NVDA'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.009584999133949168
+          "error": "wrong_filter",
+          "latency_ms": 0.012769000022672117
         },
         {
           "id": "q056",
@@ -639,8 +641,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-01-31'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.007582000762340613
+          "error": "wrong_filter",
+          "latency_ms": 0.012378000064927619
         },
         {
           "id": "q057",
@@ -650,8 +652,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-03-01' AND '2025-03-31'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.0068999997893115506
+          "error": "wrong_filter",
+          "latency_ms": 0.007822000043233857
         },
         {
           "id": "q058",
@@ -661,8 +663,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.006199999916134402
+          "error": "wrong_filter",
+          "latency_ms": 0.0069509997047134675
         },
         {
           "id": "q059",
@@ -672,8 +674,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-10-01' AND '2025-10-31'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.005818999852635898
+          "error": "wrong_filter",
+          "latency_ms": 0.006410000423784368
         },
         {
           "id": "q060",
@@ -683,8 +685,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-02-01' AND '2025-02-28'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.009073999535758048
+          "error": "wrong_filter",
+          "latency_ms": 0.009463999958825298
         },
         {
           "id": "q061",
@@ -694,8 +696,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-07-01' AND '2025-09-30'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.007481001375708729
+          "error": "wrong_filter",
+          "latency_ms": 0.008051999429881107
         },
         {
           "id": "q062",
@@ -705,8 +707,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-03-31'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.007520999133703299
+          "error": "wrong_filter",
+          "latency_ms": 0.013249999938125256
         },
         {
           "id": "q063",
@@ -716,8 +718,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-07-01' AND '2025-09-30'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.00747099875297863
+          "error": "wrong_filter",
+          "latency_ms": 0.008492999768350273
         },
         {
           "id": "q064",
@@ -727,8 +729,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-04-01' AND '2025-04-30' AND symbol = 'AAPL'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.006078998922021128
+          "error": "wrong_filter",
+          "latency_ms": 0.006850999852758832
         },
         {
           "id": "q065",
@@ -738,8 +740,8 @@
           "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-05-01' AND '2025-05-31' AND symbol = 'NVDA'",
           "execution_correct": false,
           "exact_match": false,
-          "error": "wrong_result",
-          "latency_ms": 0.007240998456836678
+          "error": "wrong_filter",
+          "latency_ms": 0.00800199995865114
         }
       ]
     },
@@ -757,8 +759,8 @@
       ],
       "exact_match_rate": 0.9230769230769231,
       "latency": {
-        "mean_ms": 0.008393969311817693,
-        "p95_ms": 0.011988000551355071
+        "mean_ms": 0.009104230789839326,
+        "p95_ms": 0.014962000022933353
       },
       "pass_consistency_mean": 1.0,
       "questions_correct_on_every_run": 1.0,
@@ -773,7 +775,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.020089999452466145
+          "latency_ms": 0.04725100006908178
         },
         {
           "id": "q002",
@@ -784,7 +786,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.012639000487979501
+          "latency_ms": 0.014962000022933353
         },
         {
           "id": "q003",
@@ -795,7 +797,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011617001291597262
+          "latency_ms": 0.012879000678367447
         },
         {
           "id": "q004",
@@ -806,7 +808,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.01189700014947448
+          "latency_ms": 0.012669000170717482
         },
         {
           "id": "q005",
@@ -817,7 +819,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011936999726458453
+          "latency_ms": 0.01569300002302043
         },
         {
           "id": "q006",
@@ -828,7 +830,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010896999810938723
+          "latency_ms": 0.012528999832284171
         },
         {
           "id": "q007",
@@ -839,7 +841,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010555999324424192
+          "latency_ms": 0.010746000043582171
         },
         {
           "id": "q008",
@@ -850,7 +852,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009714000043459237
+          "latency_ms": 0.009905000297294464
         },
         {
           "id": "q009",
@@ -861,7 +863,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008953000360634178
+          "latency_ms": 0.009233999662683345
         },
         {
           "id": "q010",
@@ -872,7 +874,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006610000127693638
+          "latency_ms": 0.007601000106660649
         },
         {
           "id": "q011",
@@ -883,7 +885,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006139000106486492
+          "latency_ms": 0.007190999895101413
         },
         {
           "id": "q012",
@@ -894,7 +896,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0053580006351694465
+          "latency_ms": 0.005898999916098546
         },
         {
           "id": "q013",
@@ -905,7 +907,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.004898000042885542
+          "latency_ms": 0.005228000190982129
         },
         {
           "id": "q014",
@@ -916,7 +918,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011396999980206601
+          "latency_ms": 0.012428999980329536
         },
         {
           "id": "q015",
@@ -927,7 +929,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009334000424132682
+          "latency_ms": 0.009503999535809271
         },
         {
           "id": "q016",
@@ -938,7 +940,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00871299926075153
+          "latency_ms": 0.008641999556857627
         },
         {
           "id": "q017",
@@ -949,7 +951,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008503000572090968
+          "latency_ms": 0.008633000106783584
         },
         {
           "id": "q018",
@@ -960,7 +962,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008583001545048319
+          "latency_ms": 0.008853000508679543
         },
         {
           "id": "q019",
@@ -971,7 +973,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009614001100999303
+          "latency_ms": 0.010224999641650356
         },
         {
           "id": "q020",
@@ -982,7 +984,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008543000149074942
+          "latency_ms": 0.008463000085612293
         },
         {
           "id": "q021",
@@ -993,7 +995,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008162000085576437
+          "latency_ms": 0.008332000106747728
         },
         {
           "id": "q022",
@@ -1004,7 +1006,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008303000868181698
+          "latency_ms": 0.008382000487472396
         },
         {
           "id": "q023",
@@ -1015,7 +1017,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0080619993241271
+          "latency_ms": 0.008181999874068424
         },
         {
           "id": "q024",
@@ -1026,7 +1028,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009174000297207385
+          "latency_ms": 0.009684999895398505
         },
         {
           "id": "q025",
@@ -1037,7 +1039,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00839300082589034
+          "latency_ms": 0.00837299921840895
         },
         {
           "id": "q026",
@@ -1048,7 +1050,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009064000551006757
+          "latency_ms": 0.00876400008564815
         },
         {
           "id": "q027",
@@ -1059,7 +1061,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00837299921840895
+          "latency_ms": 0.01557300038257381
         },
         {
           "id": "q028",
@@ -1070,7 +1072,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008241999239544384
+          "latency_ms": 0.007801999345247168
         },
         {
           "id": "q029",
@@ -1081,7 +1083,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009575000149197876
+          "latency_ms": 0.009944999874278437
         },
         {
           "id": "q030",
@@ -1092,7 +1094,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00833200101624243
+          "latency_ms": 0.008992999937618151
         },
         {
           "id": "q031",
@@ -1103,7 +1105,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.01755700031935703
+          "latency_ms": 0.008463000085612293
         },
         {
           "id": "q032",
@@ -1114,7 +1116,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008823000825941563
+          "latency_ms": 0.008703999810677487
         },
         {
           "id": "q033",
@@ -1125,7 +1127,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00814200029708445
+          "latency_ms": 0.008552000508643687
         },
         {
           "id": "q034",
@@ -1136,7 +1138,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008041999535635114
+          "latency_ms": 0.008322000212501734
         },
         {
           "id": "q035",
@@ -1147,7 +1149,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0007010003173490986
+          "latency_ms": 0.0008810002327663824
         },
         {
           "id": "q036",
@@ -1158,7 +1160,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0007310009095817804
+          "latency_ms": 0.0009520008461549878
         },
         {
           "id": "q037",
@@ -1169,7 +1171,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0008309998520417139
+          "latency_ms": 0.000922000253922306
         },
         {
           "id": "q038",
@@ -1180,7 +1182,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006779999239370227
+          "latency_ms": 0.00732100033928873
         },
         {
           "id": "q039",
@@ -1191,7 +1193,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005687999873771332
+          "latency_ms": 0.005688999408448581
         },
         {
           "id": "q040",
@@ -1202,7 +1204,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.004977000571670942
+          "latency_ms": 0.005167999916011468
         },
         {
           "id": "q041",
@@ -1213,7 +1215,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.004776999048772268
+          "latency_ms": 0.005057999260316137
         },
         {
           "id": "q042",
@@ -1224,7 +1226,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.004977999196853489
+          "latency_ms": 0.004896999598713592
         },
         {
           "id": "q043",
@@ -1235,7 +1237,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011418000212870538
+          "latency_ms": 0.012138999409216922
         },
         {
           "id": "q044",
@@ -1246,7 +1248,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010425999789731577
+          "latency_ms": 0.011337000614730641
         },
         {
           "id": "q045",
@@ -1257,7 +1259,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005687999873771332
+          "latency_ms": 0.005908000275667291
         },
         {
           "id": "q046",
@@ -1268,7 +1270,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005368001438910142
+          "latency_ms": 0.005588000021816697
         },
         {
           "id": "q047",
@@ -1279,7 +1281,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006088999725761823
+          "latency_ms": 0.0061290002122404985
         },
         {
           "id": "q048",
@@ -1290,7 +1292,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006229000064195134
+          "latency_ms": 0.006479000148829073
         },
         {
           "id": "q049",
@@ -1301,7 +1303,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009444000170333311
+          "latency_ms": 0.009243999556929339
         },
         {
           "id": "q050",
@@ -1312,7 +1314,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008893000995158218
+          "latency_ms": 0.008752999747230206
         },
         {
           "id": "q051",
@@ -1323,7 +1325,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00618900048721116
+          "latency_ms": 0.006469000254583079
         },
         {
           "id": "q052",
@@ -1334,7 +1336,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005938998583587818
+          "latency_ms": 0.006399000085366424
         },
         {
           "id": "q053",
@@ -1345,7 +1347,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011456999345682561
+          "latency_ms": 0.011717000234057195
         },
         {
           "id": "q054",
@@ -1356,7 +1358,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00969400025496725
+          "latency_ms": 0.010124999789695721
         },
         {
           "id": "q055",
@@ -1367,7 +1369,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00941399957810063
+          "latency_ms": 0.00958500004344387
         },
         {
           "id": "q056",
@@ -1378,7 +1380,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.00904300031834282
+          "latency_ms": 0.0102359999800683
         },
         {
           "id": "q057",
@@ -1389,7 +1391,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.008323000656673685
+          "latency_ms": 0.008693000381754246
         },
         {
           "id": "q058",
@@ -1400,7 +1402,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.007190999895101413
+          "latency_ms": 0.007060999450914096
         },
         {
           "id": "q059",
@@ -1411,7 +1413,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.006499998562503606
+          "latency_ms": 0.006510000275739003
         },
         {
           "id": "q060",
@@ -1422,7 +1424,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011988000551355071
+          "latency_ms": 0.010335999832022935
         },
         {
           "id": "q061",
@@ -1433,7 +1435,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008273000275949016
+          "latency_ms": 0.008292000529763754
         },
         {
           "id": "q062",
@@ -1444,7 +1446,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009774999853107147
+          "latency_ms": 0.009854999916569795
         },
         {
           "id": "q063",
@@ -1455,7 +1457,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008602999514550902
+          "latency_ms": 0.008472000445181038
         },
         {
           "id": "q064",
@@ -1466,7 +1468,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.0078119992394931614
+          "latency_ms": 0.006960000064282212
         },
         {
           "id": "q065",
@@ -1477,7 +1479,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008152999726007693
+          "latency_ms": 0.007992000064405147
         }
       ]
     }
@@ -1624,8 +1626,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'BUY'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.02609999864944257
+      "error": "wrong_filter",
+      "latency_ms": 0.019549000171537045
     },
     {
       "id": "q006",
@@ -1635,8 +1637,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE side = 'SELL'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.012649001291720197
+      "error": "wrong_filter",
+      "latency_ms": 0.01668499953666469
     },
     {
       "id": "q010",
@@ -1646,8 +1648,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.006400001439033076
+      "error": "wrong_join",
+      "latency_ms": 0.006859999302832875
     },
     {
       "id": "q011",
@@ -1657,8 +1659,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.006299998858594336
+      "error": "wrong_join",
+      "latency_ms": 0.006909999683557544
     },
     {
       "id": "q012",
@@ -1668,8 +1670,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Canada'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.0059689991758205
+      "error": "wrong_join",
+      "latency_ms": 0.006379999831551686
     },
     {
       "id": "q013",
@@ -1679,8 +1681,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Brazil'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.005297999450704083
+      "error": "wrong_join",
+      "latency_ms": 0.005818999852635898
     },
     {
       "id": "q024",
@@ -1690,8 +1692,8 @@
       "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AAPL'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.009485000191489235
+      "error": "wrong_aggregation",
+      "latency_ms": 0.009284000043408014
     },
     {
       "id": "q025",
@@ -1701,8 +1703,8 @@
       "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'MSFT'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.00859300052979961
+      "error": "wrong_aggregation",
+      "latency_ms": 0.009284000043408014
     },
     {
       "id": "q026",
@@ -1712,8 +1714,8 @@
       "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'NVDA'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.008363000233657658
+      "error": "wrong_aggregation",
+      "latency_ms": 0.008832999810692854
     },
     {
       "id": "q027",
@@ -1723,8 +1725,8 @@
       "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'TSLA'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.008293000064441003
+      "error": "wrong_aggregation",
+      "latency_ms": 0.008523000360582955
     },
     {
       "id": "q028",
@@ -1734,8 +1736,8 @@
       "gold_sql": "SELECT AVG(price) FROM orders WHERE symbol = 'AMZN'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.008221999451052397
+      "error": "wrong_aggregation",
+      "latency_ms": 0.008273000275949016
     },
     {
       "id": "q029",
@@ -1745,8 +1747,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'AAPL'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.009334000424132682
+      "error": "wrong_filter",
+      "latency_ms": 0.009835000128077809
     },
     {
       "id": "q030",
@@ -1756,8 +1758,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'NVDA'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.00871299926075153
+      "error": "wrong_filter",
+      "latency_ms": 0.009114000022236723
     },
     {
       "id": "q031",
@@ -1767,8 +1769,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'BUY' AND symbol = 'TSLA'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.008342000000993721
+      "error": "wrong_filter",
+      "latency_ms": 0.008943000466388185
     },
     {
       "id": "q032",
@@ -1778,8 +1780,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'AAPL'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.00941399957810063
+      "error": "wrong_filter",
+      "latency_ms": 0.009684000360721257
     },
     {
       "id": "q033",
@@ -1789,8 +1791,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'NVDA'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.008492999768350273
+      "error": "wrong_filter",
+      "latency_ms": 0.009043999853020068
     },
     {
       "id": "q034",
@@ -1800,8 +1802,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE side = 'SELL' AND symbol = 'TSLA'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.008502000127919018
+      "error": "wrong_filter",
+      "latency_ms": 0.0090730000010808
     },
     {
       "id": "q043",
@@ -1811,8 +1813,8 @@
       "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'BUY'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.012377999155432917
+      "error": "wrong_filter",
+      "latency_ms": 0.019158999748469796
     },
     {
       "id": "q044",
@@ -1822,8 +1824,8 @@
       "gold_sql": "SELECT SUM(quantity * price) FROM orders WHERE side = 'SELL'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.011346999599481933
+      "error": "wrong_filter",
+      "latency_ms": 0.012989999959245324
     },
     {
       "id": "q049",
@@ -1833,8 +1835,8 @@
       "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'BUY'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.00942399856285192
+      "error": "wrong_filter",
+      "latency_ms": 0.011437000466685276
     },
     {
       "id": "q050",
@@ -1844,8 +1846,8 @@
       "gold_sql": "SELECT AVG(quantity) FROM orders WHERE side = 'SELL'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.009172999853035435
+      "error": "wrong_filter",
+      "latency_ms": 0.010486000064702239
     },
     {
       "id": "q051",
@@ -1855,8 +1857,8 @@
       "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'Japan'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.005978999979561195
+      "error": "wrong_join",
+      "latency_ms": 0.006851000762253534
     },
     {
       "id": "q052",
@@ -1866,8 +1868,8 @@
       "gold_sql": "SELECT SUM(o.quantity * o.price) FROM orders o JOIN accounts a ON o.account_id = a.account_id JOIN clients cl ON a.client_id = cl.client_id WHERE cl.country = 'United States'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.005919000614085235
+      "error": "wrong_join",
+      "latency_ms": 0.006399999620043673
     },
     {
       "id": "q053",
@@ -1877,8 +1879,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'AAPL'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.011416999768698588
+      "error": "wrong_filter",
+      "latency_ms": 0.012618999789992813
     },
     {
       "id": "q054",
@@ -1888,8 +1890,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'MSFT'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.01002500175673049
+      "error": "wrong_filter",
+      "latency_ms": 0.016715000128897373
     },
     {
       "id": "q055",
@@ -1899,8 +1901,8 @@
       "gold_sql": "SELECT SUM(quantity) FROM orders WHERE status = 'FILLED' AND symbol = 'NVDA'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.009584999133949168
+      "error": "wrong_filter",
+      "latency_ms": 0.012769000022672117
     },
     {
       "id": "q056",
@@ -1910,8 +1912,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-01-31'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.007582000762340613
+      "error": "wrong_filter",
+      "latency_ms": 0.012378000064927619
     },
     {
       "id": "q057",
@@ -1921,8 +1923,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-03-01' AND '2025-03-31'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.0068999997893115506
+      "error": "wrong_filter",
+      "latency_ms": 0.007822000043233857
     },
     {
       "id": "q058",
@@ -1932,8 +1934,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-06-01' AND '2025-06-30'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.006199999916134402
+      "error": "wrong_filter",
+      "latency_ms": 0.0069509997047134675
     },
     {
       "id": "q059",
@@ -1943,8 +1945,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-10-01' AND '2025-10-31'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.005818999852635898
+      "error": "wrong_filter",
+      "latency_ms": 0.006410000423784368
     },
     {
       "id": "q060",
@@ -1954,8 +1956,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-02-01' AND '2025-02-28'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.009073999535758048
+      "error": "wrong_filter",
+      "latency_ms": 0.009463999958825298
     },
     {
       "id": "q061",
@@ -1965,8 +1967,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-07-01' AND '2025-09-30'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.007481001375708729
+      "error": "wrong_filter",
+      "latency_ms": 0.008051999429881107
     },
     {
       "id": "q062",
@@ -1976,8 +1978,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-03-31'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.007520999133703299
+      "error": "wrong_filter",
+      "latency_ms": 0.013249999938125256
     },
     {
       "id": "q063",
@@ -1987,8 +1989,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-07-01' AND '2025-09-30'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.00747099875297863
+      "error": "wrong_filter",
+      "latency_ms": 0.008492999768350273
     },
     {
       "id": "q064",
@@ -1998,8 +2000,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-04-01' AND '2025-04-30' AND symbol = 'AAPL'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.006078998922021128
+      "error": "wrong_filter",
+      "latency_ms": 0.006850999852758832
     },
     {
       "id": "q065",
@@ -2009,8 +2011,8 @@
       "gold_sql": "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN '2025-05-01' AND '2025-05-31' AND symbol = 'NVDA'",
       "execution_correct": false,
       "exact_match": false,
-      "error": "wrong_result",
-      "latency_ms": 0.007240998456836678
+      "error": "wrong_filter",
+      "latency_ms": 0.00800199995865114
     }
   ],
   "judge_calibration": {

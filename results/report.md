@@ -20,7 +20,7 @@ Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.02 ms | 0.01 ms |
+| system_a | 0.03 ms | 0.02 ms |
 | system_b | 0.01 ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
@@ -60,46 +60,46 @@ The rule-based systems here answer in well under a millisecond, so these numbers
 
 ## Error analysis — system_a
 
-system_a failed 36 of 65 questions. Error categories: {'wrong_result': 36}.
+system_a failed 36 of 65 questions. Error categories: {'wrong_filter': 25, 'wrong_join': 6, 'wrong_aggregation': 5}.
 
 | ID | Category | Error | Candidate SQL |
 |---|---|---|---|
-| q005 | count_by_side | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q006 | count_by_side | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q010 | count_by_country | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q011 | count_by_country | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q012 | count_by_country | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q013 | count_by_country | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q024 | avg_price_by_symbol | wrong_result | `SELECT AVG(quantity) FROM orders WHERE symbol = 'AAPL'` |
-| q025 | avg_price_by_symbol | wrong_result | `SELECT AVG(quantity) FROM orders WHERE symbol = 'MSFT'` |
-| q026 | avg_price_by_symbol | wrong_result | `SELECT AVG(quantity) FROM orders WHERE symbol = 'NVDA'` |
-| q027 | avg_price_by_symbol | wrong_result | `SELECT AVG(quantity) FROM orders WHERE symbol = 'TSLA'` |
-| q028 | avg_price_by_symbol | wrong_result | `SELECT AVG(quantity) FROM orders WHERE symbol = 'AMZN'` |
-| q029 | sum_quantity_by_side_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'` |
-| q030 | sum_quantity_by_side_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'` |
-| q031 | sum_quantity_by_side_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'` |
-| q032 | sum_quantity_by_side_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'` |
-| q033 | sum_quantity_by_side_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'` |
-| q034 | sum_quantity_by_side_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'` |
-| q043 | sum_value_by_side | wrong_result | `SELECT SUM(quantity * price) FROM orders` |
-| q044 | sum_value_by_side | wrong_result | `SELECT SUM(quantity * price) FROM orders` |
-| q049 | avg_quantity_by_side | wrong_result | `SELECT AVG(quantity) FROM orders` |
-| q050 | avg_quantity_by_side | wrong_result | `SELECT AVG(quantity) FROM orders` |
-| q051 | sum_value_by_country | wrong_result | `SELECT SUM(quantity * price) FROM orders` |
-| q052 | sum_value_by_country | wrong_result | `SELECT SUM(quantity * price) FROM orders` |
-| q053 | sum_quantity_filled_by_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'` |
-| q054 | sum_quantity_filled_by_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'` |
-| q055 | sum_quantity_filled_by_symbol | wrong_result | `SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'` |
-| q056 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q057 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q058 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q059 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q060 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q061 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q062 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q063 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders` |
-| q064 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders WHERE symbol = 'AAPL'` |
-| q065 | count_by_date_range | wrong_result | `SELECT COUNT(*) FROM orders WHERE symbol = 'NVDA'` |
+| q005 | count_by_side | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q006 | count_by_side | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q010 | count_by_country | wrong_join | `SELECT COUNT(*) FROM orders` |
+| q011 | count_by_country | wrong_join | `SELECT COUNT(*) FROM orders` |
+| q012 | count_by_country | wrong_join | `SELECT COUNT(*) FROM orders` |
+| q013 | count_by_country | wrong_join | `SELECT COUNT(*) FROM orders` |
+| q024 | avg_price_by_symbol | wrong_aggregation | `SELECT AVG(quantity) FROM orders WHERE symbol = 'AAPL'` |
+| q025 | avg_price_by_symbol | wrong_aggregation | `SELECT AVG(quantity) FROM orders WHERE symbol = 'MSFT'` |
+| q026 | avg_price_by_symbol | wrong_aggregation | `SELECT AVG(quantity) FROM orders WHERE symbol = 'NVDA'` |
+| q027 | avg_price_by_symbol | wrong_aggregation | `SELECT AVG(quantity) FROM orders WHERE symbol = 'TSLA'` |
+| q028 | avg_price_by_symbol | wrong_aggregation | `SELECT AVG(quantity) FROM orders WHERE symbol = 'AMZN'` |
+| q029 | sum_quantity_by_side_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'` |
+| q030 | sum_quantity_by_side_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'` |
+| q031 | sum_quantity_by_side_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'` |
+| q032 | sum_quantity_by_side_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'` |
+| q033 | sum_quantity_by_side_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'` |
+| q034 | sum_quantity_by_side_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'TSLA'` |
+| q043 | sum_value_by_side | wrong_filter | `SELECT SUM(quantity * price) FROM orders` |
+| q044 | sum_value_by_side | wrong_filter | `SELECT SUM(quantity * price) FROM orders` |
+| q049 | avg_quantity_by_side | wrong_filter | `SELECT AVG(quantity) FROM orders` |
+| q050 | avg_quantity_by_side | wrong_filter | `SELECT AVG(quantity) FROM orders` |
+| q051 | sum_value_by_country | wrong_join | `SELECT SUM(quantity * price) FROM orders` |
+| q052 | sum_value_by_country | wrong_join | `SELECT SUM(quantity * price) FROM orders` |
+| q053 | sum_quantity_filled_by_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'AAPL'` |
+| q054 | sum_quantity_filled_by_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'MSFT'` |
+| q055 | sum_quantity_filled_by_symbol | wrong_filter | `SELECT SUM(quantity) FROM orders WHERE symbol = 'NVDA'` |
+| q056 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q057 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q058 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q059 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q060 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q061 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q062 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q063 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders` |
+| q064 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders WHERE symbol = 'AAPL'` |
+| q065 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders WHERE symbol = 'NVDA'` |
 
 Reading: system_a's failures are not random. They cluster exactly on questions with a side, status, country, or date-range filter, and on average-price questions — the documented weaknesses in `systems.py`. That clustering, not the headline number, is what tells engineering what to fix, and system_b is precisely that fix.
 

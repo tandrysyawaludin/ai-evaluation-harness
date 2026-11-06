@@ -5,7 +5,9 @@ import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from evalharness import stats
-from evalharness.metrics import exact_match, normalise_sql
+from evalharness.db import build_db
+from evalharness.metrics import categorise_error, exact_match, normalise_sql
+from evalharness.systems import system_a, system_b
 
 
 class TestStats(unittest.TestCase):
@@ -67,6 +69,111 @@ class TestMetrics(unittest.TestCase):
         self.assertTrue(exact_match("SELECT COUNT(*) FROM orders",
                                     "select  count(*)  from orders;"))
         self.assertFalse(exact_match("SELECT a FROM t", "SELECT b FROM t"))
+
+
+class TestErrorTaxonomy(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.conn = build_db()
+
+    def test_dropped_filter_is_wrong_filter(self):
+        self.assertEqual(
+            categorise_error(
+                self.conn,
+                "SELECT COUNT(*) FROM orders",
+                "SELECT COUNT(*) FROM orders WHERE side = 'BUY'"),
+            "wrong_filter")
+
+    def test_dropped_date_filter_is_wrong_filter(self):
+        self.assertEqual(
+            categorise_error(
+                self.conn,
+                "SELECT COUNT(*) FROM orders WHERE symbol = 'AAPL'",
+                "SELECT COUNT(*) FROM orders WHERE order_date BETWEEN "
+                "'2025-04-01' AND '2025-04-30' AND symbol = 'AAPL'"),
+            "wrong_filter")
+
+    def test_wrong_aggregate_column_is_wrong_aggregation(self):
+        self.assertEqual(
+            categorise_error(
+                self.conn,
+                "SELECT AVG(quantity) FROM orders WHERE symbol = 'AAPL'",
+                "SELECT AVG(price) FROM orders WHERE symbol = 'AAPL'"),
+            "wrong_aggregation")
+
+    def test_missing_join_is_wrong_join(self):
+        self.assertEqual(
+            categorise_error(
+                self.conn,
+                "SELECT COUNT(*) FROM orders",
+                "SELECT COUNT(*) FROM orders o JOIN accounts a "
+                "ON o.account_id = a.account_id JOIN clients cl "
+                "ON a.client_id = cl.client_id "
+                "WHERE cl.country = 'Japan'"),
+            "wrong_join")
+
+    def test_join_beats_filter_when_both_differ(self):
+        # The country query is missing both the join and its filter; the
+        # join is the root cause, so it wins.
+        self.assertEqual(
+            categorise_error(
+                self.conn,
+                "SELECT SUM(quantity * price) FROM orders",
+                "SELECT SUM(o.quantity * o.price) FROM orders o "
+                "JOIN accounts a ON o.account_id = a.account_id "
+                "JOIN clients cl ON a.client_id = cl.client_id "
+                "WHERE cl.country = 'Japan'"),
+            "wrong_join")
+
+    def test_same_filter_in_different_order_is_not_an_error(self):
+        self.assertIsNone(categorise_error(
+            self.conn,
+            "SELECT SUM(quantity) FROM orders "
+            "WHERE symbol = 'AAPL' AND side = 'BUY'",
+            "SELECT SUM(quantity) FROM orders "
+            "WHERE side = 'BUY' AND symbol = 'AAPL'"))
+
+    def test_wrong_limit_stays_generic_wrong_result(self):
+        # Filter, join, and aggregation all match; only the LIMIT differs.
+        self.assertEqual(
+            categorise_error(
+                self.conn,
+                "SELECT symbol FROM orders GROUP BY symbol "
+                "ORDER BY SUM(quantity) DESC LIMIT 2",
+                "SELECT symbol FROM orders GROUP BY symbol "
+                "ORDER BY SUM(quantity) DESC LIMIT 1"),
+            "wrong_result")
+
+    def test_empty_result_and_execution_error_unchanged(self):
+        self.assertEqual(
+            categorise_error(
+                self.conn,
+                "SELECT symbol FROM orders WHERE symbol = 'ZZZ'",
+                "SELECT symbol FROM orders GROUP BY symbol "
+                "ORDER BY SUM(quantity) DESC LIMIT 1"),
+            "empty_result")
+        self.assertEqual(
+            categorise_error(
+                self.conn,
+                "SELECT * FROM nonexistent_table",
+                "SELECT COUNT(*) FROM orders"),
+            "execution_error")
+        self.assertEqual(
+            categorise_error(self.conn, None, "SELECT COUNT(*) FROM orders"),
+            "no_sql_generated")
+
+    def test_system_a_failures_all_get_a_specific_bucket(self):
+        # Every documented system_a weakness maps to a finer bucket, and
+        # none of its failures is left as generic wrong_result.
+        from evalharness.gold import generate_gold
+        from evalharness.metrics import evaluate_system
+        gold = generate_gold()
+        a = evaluate_system(self.conn, system_a, gold)
+        errors = {r["error"] for r in a["records"] if r["error"]}
+        self.assertEqual(errors,
+                         {"wrong_filter", "wrong_aggregation", "wrong_join"})
+        b = evaluate_system(self.conn, system_b, gold)
+        self.assertEqual(b["execution_accuracy"], 1.0)
 
 
 if __name__ == "__main__":

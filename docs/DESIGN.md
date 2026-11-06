@@ -34,8 +34,14 @@ Principles:
   be execution-correct and exact-match-wrong — that gap measures stylistic
   divergence, not error.
 - **Error categorisation.** Every failure is bucketed: `execution_error`
-  (SQL raised), `empty_result`, `wrong_result`, or `no_sql_generated`.
-  Error analysis drives iteration; a single accuracy number does not.
+  (SQL raised), `empty_result`, `no_sql_generated`, or — when the result
+  is wrong but non-empty — `wrong_join`, `wrong_aggregation`,
+  `wrong_filter`, or generic `wrong_result`. The finer buckets are
+  assigned by comparing candidate and gold SQL: joined tables, aggregate
+  calls plus GROUP BY, then WHERE conjuncts (order-insensitive), in that
+  priority order. A failure that matches on all three stays generic,
+  e.g. a wrong SELECT column, ORDER BY, or LIMIT. Error analysis drives
+  iteration; a single accuracy number does not.
 - **Latency.** Every question records the time spent inside the system
   function (generation time, not SQL execution time); the harness reports
   mean and p95 per system, in the console output, `results.json`, and the

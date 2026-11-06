@@ -11,7 +11,7 @@ commit with tests passing and the regression gate green.
 - [x] Per-system latency measurement (mean / p95) in harness output and report
 - [x] Sample-size planner CLI built on the existing estimator in stats.py
 - [x] Schema validation for gold.jsonl and human_labels.jsonl, with tests
-- [ ] Finer error taxonomy: separate wrong-filter, wrong-aggregation and
+- [x] Finer error taxonomy: separate wrong-filter, wrong-aggregation and
       wrong-join failures from generic wrong-result where determinable
 - [ ] `--compare` mode in run_eval that diffs two results.json files
 - [ ] Seed-sensitivity run: evaluate under a second database seed and
