@@ -6,12 +6,14 @@ computes confidence intervals and the paired McNemar test, calibrates the
 judge, and writes results/results.json + results/report.md.
 
 Usage:  PYTHONPATH=src python -m evalharness.run_eval --runs 3
+        PYTHONPATH=src python -m evalharness.run_eval --compare old.json new.json
 """
 import argparse
 import json
 import os
 from collections import Counter, defaultdict
 
+from .compare import compare_results, render_compare
 from .db import build_db
 from .judge import calibrate
 from .metrics import evaluate_system
@@ -249,7 +251,24 @@ def main():
     ap.add_argument("--runs", type=int, default=3)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out-dir", default=os.path.join(ROOT, "results"))
+    ap.add_argument("--compare", nargs=2, metavar=("OLD", "NEW"),
+                    help="diff two results.json files instead of running the eval")
+    ap.add_argument("--compare-out", default=None,
+                    help="also write the comparison report to this file")
     args = ap.parse_args()
+
+    if args.compare:
+        with open(args.compare[0]) as f:
+            old = json.load(f)
+        with open(args.compare[1]) as f:
+            new = json.load(f)
+        report = render_compare(compare_results(old, new))
+        print(report, end="")
+        if args.compare_out:
+            with open(args.compare_out, "w") as f:
+                f.write(report)
+            print(f"wrote {args.compare_out}")
+        return
 
     res = run(runs=args.runs, seed=args.seed)
     os.makedirs(args.out_dir, exist_ok=True)

@@ -13,7 +13,7 @@ commit with tests passing and the regression gate green.
 - [x] Schema validation for gold.jsonl and human_labels.jsonl, with tests
 - [x] Finer error taxonomy: separate wrong-filter, wrong-aggregation and
       wrong-join failures from generic wrong-result where determinable
-- [ ] `--compare` mode in run_eval that diffs two results.json files
+- [x] `--compare` mode in run_eval that diffs two results.json files
 - [ ] Seed-sensitivity run: evaluate under a second database seed and
       report how stable the headline metrics are
 - [ ] Failures export (CSV) for manual error review
