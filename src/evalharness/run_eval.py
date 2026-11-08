@@ -5,7 +5,14 @@ set (repeatedly, to measure pass-consistency under non-determinism),
 computes confidence intervals and the paired McNemar test, calibrates the
 judge, and writes results/results.json + results/report.md.
 
+By default the eval runs under two database seeds (42 and 1234) and
+reports how stable the headline metrics are across them — the same
+questions and systems, different database contents. Ground truth is the
+gold SQL executed on each seed's data, so the comparison is fair: only
+the data moves, never the questions.
+
 Usage:  PYTHONPATH=src python -m evalharness.run_eval --runs 3
+        PYTHONPATH=src python -m evalharness.run_eval --runs 3 --seeds 42 7
         PYTHONPATH=src python -m evalharness.run_eval --compare old.json new.json
 """
 import argparse
@@ -24,20 +31,66 @@ from .validate import validate_gold, validate_labels
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
+# Default seeds for the seed-sensitivity run: the long-standing primary
+# seed plus one second seed. Any headline metric that moves a lot between
+# them is seed noise, not a system property.
+DEFAULT_SEEDS = (42, 1234)
+
+# A headline metric is called stable when its largest swing across seeds
+# is at most this many points — the same 5pp the sample-size estimator
+# treats as the smallest improvement worth detecting.
+STABILITY_THRESHOLD = 0.05
+
 
 def load_jsonl(path):
     with open(path) as f:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def run(runs=3, seed=42):
-    gold = load_jsonl(os.path.join(ROOT, "data", "gold.jsonl"))
-    # Fail fast on a broken ground truth: a malformed gold row would
-    # otherwise silently skew every metric the harness reports.
-    gold_errors = validate_gold(gold)
-    if gold_errors:
-        raise ValueError("gold.jsonl failed schema validation:\n"
-                         + "\n".join(gold_errors))
+def build_seed_sensitivity(per_seed):
+    """Summarise headline-metric stability across per-seed results.
+
+    `per_seed` maps a DB seed to that seed's full result dict (as returned
+    by `_run_single_seed`). Returns per-seed headline numbers, the largest
+    swing (max − min) of each headline metric across seeds, and whether
+    every swing is within STABILITY_THRESHOLD.
+    """
+    per_seed_summary = {}
+    for seed, res in per_seed.items():
+        a, b = res["systems"]["system_a"], res["systems"]["system_b"]
+        per_seed_summary[str(seed)] = {
+            "system_a_accuracy": a["execution_accuracy"],
+            "system_b_accuracy": b["execution_accuracy"],
+            "accuracy_difference_b_minus_a": (
+                res["comparison"]["accuracy_difference_b_minus_a"]),
+            "system_a_correct": a["correct"],
+            "system_b_correct": b["correct"],
+            "n": a["n"],
+            "mcnemar_p_value": res["comparison"]["mcnemar"]["p_value"],
+        }
+
+    def spread(key):
+        vals = [s[key] for s in per_seed_summary.values()]
+        return max(vals) - min(vals)
+
+    spreads = {
+        "system_a_accuracy": spread("system_a_accuracy"),
+        "system_b_accuracy": spread("system_b_accuracy"),
+        "accuracy_difference_b_minus_a": spread("accuracy_difference_b_minus_a"),
+    }
+    return {
+        "seeds": sorted(per_seed),
+        "per_seed": per_seed_summary,
+        "spread": spreads,
+        "stability_threshold": STABILITY_THRESHOLD,
+        "stable": all(v <= STABILITY_THRESHOLD for v in spreads.values()),
+    }
+
+
+def _run_single_seed(runs, seed, gold, calibrate_judge=True):
+    """Full evaluation under one DB seed. Judge calibration is
+    seed-independent (it grades human labels, not DB rows), so only the
+    primary seed computes it; extra seeds get judge_calibration=None."""
     conn = build_db(seed=seed)
 
     per_system = {}
@@ -110,18 +163,19 @@ def run(runs=3, seed=42):
     errors_a = [r for r in per_system["system_a"]["records"] if r["error"]]
 
     judge_result = None
-    labels_path = os.path.join(ROOT, "data", "human_labels.jsonl")
-    if os.path.exists(labels_path):
-        labels = load_jsonl(labels_path)
-        label_errors = validate_labels(labels)
-        if label_errors:
-            raise ValueError("human_labels.jsonl failed schema validation:\n"
-                             + "\n".join(label_errors))
-        judge_result = calibrate(labels)
-        judge_result["disagreements"] = [
-            {k: d[k] for k in ("id", "gold_answer", "candidate_answer",
-                               "human_label", "judge_label")}
-            for d in judge_result["disagreements"]]
+    if calibrate_judge:
+        labels_path = os.path.join(ROOT, "data", "human_labels.jsonl")
+        if os.path.exists(labels_path):
+            labels = load_jsonl(labels_path)
+            label_errors = validate_labels(labels)
+            if label_errors:
+                raise ValueError("human_labels.jsonl failed schema validation:\n"
+                                 + "\n".join(label_errors))
+            judge_result = calibrate(labels)
+            judge_result["disagreements"] = [
+                {k: d[k] for k in ("id", "gold_answer", "candidate_answer",
+                                   "human_label", "judge_label")}
+                for d in judge_result["disagreements"]]
 
     try:
         n_needed = sample_size_for_difference(
@@ -147,6 +201,40 @@ def run(runs=3, seed=42):
         "system_a_errors": errors_a,
         "judge_calibration": judge_result,
     }
+
+
+def run(runs=3, seed=42, seeds=None):
+    """Evaluate under one or more DB seeds.
+
+    `seeds` wins over `seed` when given; otherwise `seed` alone is used,
+    so `run(runs=1)` keeps its old single-seed behaviour. The first seed
+    is the primary one: its full results are the top-level `systems`
+    block, so the regression gate and `--compare` keep working unchanged.
+    With more than one seed the result also carries `db_seeds` and a
+    `seed_sensitivity` summary of headline-metric stability.
+    """
+    if seeds is None:
+        seeds = (seed,)
+    seeds = tuple(seeds)
+    if not seeds:
+        raise ValueError("at least one DB seed is required")
+    gold = load_jsonl(os.path.join(ROOT, "data", "gold.jsonl"))
+    # Fail fast on a broken ground truth: a malformed gold row would
+    # otherwise silently skew every metric the harness reports.
+    gold_errors = validate_gold(gold)
+    if gold_errors:
+        raise ValueError("gold.jsonl failed schema validation:\n"
+                         + "\n".join(gold_errors))
+
+    per_seed = {}
+    for i, s in enumerate(seeds):
+        per_seed[s] = _run_single_seed(runs, s, gold, calibrate_judge=(i == 0))
+
+    primary = per_seed[seeds[0]]
+    primary["db_seeds"] = list(seeds)
+    primary["seed_sensitivity"] = (
+        build_seed_sensitivity(per_seed) if len(seeds) > 1 else None)
+    return primary
 
 
 def render_report(res):
@@ -181,6 +269,39 @@ def render_report(res):
                  f"would need ~{cmp_['sample_size_to_detect_5pp_from_a']} gold questions per system "
                  f"(normal approximation) — a concrete argument for growing the gold set.")
     L.append("")
+    sens = res.get("seed_sensitivity")
+    if sens:
+        L.append("## Seed sensitivity\n")
+        L.append(f"Same systems, same {res['gold_size']} questions, re-evaluated on "
+                 f"{len(sens['seeds'])} database seeds "
+                 f"({', '.join(str(s) for s in sens['seeds'])}). The gold SQL is "
+                 f"re-executed on each seed's data, so the ground truth moves with "
+                 f"the data — what varies is only the database contents, never the "
+                 f"questions.\n")
+        L.append("| DB seed | system_a | system_b | B − A | McNemar p |")
+        L.append("|---|---|---|---|---|")
+        for seed in sens["seeds"]:
+            s = sens["per_seed"][str(seed)]
+            L.append(f"| {seed} | {s['system_a_accuracy']:.1%} "
+                     f"({s['system_a_correct']}/{s['n']}) | "
+                     f"{s['system_b_accuracy']:.1%} ({s['system_b_correct']}/{s['n']}) | "
+                     f"{s['accuracy_difference_b_minus_a']:+.1%} | "
+                     f"{s['mcnemar_p_value']:.4g} |")
+        sp = sens["spread"]
+        L.append("")
+        L.append(f"Largest swing across seeds: system_a {sp['system_a_accuracy']:.1%}, "
+                 f"system_b {sp['system_b_accuracy']:.1%}, "
+                 f"B − A difference {sp['accuracy_difference_b_minus_a']:.1%}.")
+        verdict = ("stable — every headline metric moves at most "
+                   f"{sens['stability_threshold']:.0%} across seeds, so the headline "
+                   f"numbers are a property of the systems, not of one database draw"
+                   if sens["stable"] else
+                   "seed-sensitive — at least one headline metric moves more than "
+                   f"{sens['stability_threshold']:.0%} across seeds, so a headline "
+                   f"difference that small could be database luck, not a system "
+                   f"improvement")
+        L.append(f"Verdict: the headline metrics are **{verdict}**.")
+        L.append("")
     L.append("## Latency (per-question generation time, first pass)\n")
     L.append("| System | Mean | p95 |")
     L.append("|---|---|---|")
@@ -249,7 +370,11 @@ def render_report(res):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=3)
-    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--seed", type=int, default=None,
+                    help="evaluate under a single DB seed (overrides the default two-seed run)")
+    ap.add_argument("--seeds", type=int, nargs="+", default=None,
+                    help="evaluate under each DB seed and report headline-metric stability "
+                         "(default: 42 1234)")
     ap.add_argument("--out-dir", default=os.path.join(ROOT, "results"))
     ap.add_argument("--compare", nargs=2, metavar=("OLD", "NEW"),
                     help="diff two results.json files instead of running the eval")
@@ -270,7 +395,13 @@ def main():
             print(f"wrote {args.compare_out}")
         return
 
-    res = run(runs=args.runs, seed=args.seed)
+    if args.seeds:
+        seeds = args.seeds
+    elif args.seed is not None:
+        seeds = [args.seed]
+    else:
+        seeds = list(DEFAULT_SEEDS)
+    res = run(runs=args.runs, seeds=seeds)
     os.makedirs(args.out_dir, exist_ok=True)
     with open(os.path.join(args.out_dir, "results.json"), "w") as f:
         json.dump(res, f, indent=2)
@@ -285,6 +416,18 @@ def main():
               f"latency mean {lat['mean_ms']:.2f} ms / p95 {lat['p95_ms']:.2f} ms")
     mc = res["comparison"]["mcnemar"]
     print(f"McNemar: b={mc['b']} c={mc['c']} p={mc['p_value']:.4g}")
+    sens = res.get("seed_sensitivity")
+    if sens:
+        for seed in sens["seeds"]:
+            s = sens["per_seed"][str(seed)]
+            print(f"seed {seed}: system_a {s['system_a_accuracy']:.1%} "
+                  f"system_b {s['system_b_accuracy']:.1%} "
+                  f"(B-A {s['accuracy_difference_b_minus_a']:+.1%})")
+        sp = sens["spread"]
+        print(f"seed sensitivity: max swing system_a {sp['system_a_accuracy']:.1%}, "
+              f"system_b {sp['system_b_accuracy']:.1%}, "
+              f"B-A {sp['accuracy_difference_b_minus_a']:.1%} — "
+              f"{'stable' if sens['stable'] else 'SEED-SENSITIVE'}")
     print(f"wrote {args.out_dir}/results.json and report.md")
 
 

@@ -16,11 +16,23 @@ Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 - Verdict: the difference is **statistically significant at the 5% level**.
 - To detect a further 5pp improvement over system_a with 80% power would need ~1562 gold questions per system (normal approximation) — a concrete argument for growing the gold set.
 
+## Seed sensitivity
+
+Same systems, same 65 questions, re-evaluated on 2 database seeds (42, 1234). The gold SQL is re-executed on each seed's data, so the ground truth moves with the data — what varies is only the database contents, never the questions.
+
+| DB seed | system_a | system_b | B − A | McNemar p |
+|---|---|---|---|---|
+| 42 | 44.6% (29/65) | 100.0% (65/65) | +55.4% | 5.433e-09 |
+| 1234 | 44.6% (29/65) | 100.0% (65/65) | +55.4% | 5.433e-09 |
+
+Largest swing across seeds: system_a 0.0%, system_b 0.0%, B − A difference 0.0%.
+Verdict: the headline metrics are **stable — every headline metric moves at most 5% across seeds, so the headline numbers are a property of the systems, not of one database draw**.
+
 ## Latency (per-question generation time, first pass)
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.03 ms | 0.02 ms |
+| system_a | 0.02 ms | 0.01 ms |
 | system_b | 0.01 ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.

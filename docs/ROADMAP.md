@@ -14,7 +14,7 @@ commit with tests passing and the regression gate green.
 - [x] Finer error taxonomy: separate wrong-filter, wrong-aggregation and
       wrong-join failures from generic wrong-result where determinable
 - [x] `--compare` mode in run_eval that diffs two results.json files
-- [ ] Seed-sensitivity run: evaluate under a second database seed and
+- [x] Seed-sensitivity run: evaluate under a second database seed and
       report how stable the headline metrics are
 - [ ] Failures export (CSV) for manual error review
 - [ ] Per-question win/loss table for the paired system comparison in the report
