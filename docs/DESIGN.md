@@ -41,7 +41,12 @@ Principles:
   calls plus GROUP BY, then WHERE conjuncts (order-insensitive), in that
   priority order. A failure that matches on all three stays generic,
   e.g. a wrong SELECT column, ORDER BY, or LIMIT. Error analysis drives
-  iteration; a single accuracy number does not.
+  iteration; a single accuracy number does not. Every failure is also
+  exported to `results/failures.csv` — one row per failed question per
+  system (question, category, difficulty, error, candidate SQL, gold
+  SQL, exact match, latency) — so a human can triage the errors in a
+  spreadsheet without re-running the eval or digging through
+  `results.json`.
 - **Latency.** Every question records the time spent inside the system
   function (generation time, not SQL execution time); the harness reports
   mean and p95 per system, in the console output, `results.json`, and the

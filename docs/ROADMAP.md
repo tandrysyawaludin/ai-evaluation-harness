@@ -16,7 +16,7 @@ commit with tests passing and the regression gate green.
 - [x] `--compare` mode in run_eval that diffs two results.json files
 - [x] Seed-sensitivity run: evaluate under a second database seed and
       report how stable the headline metrics are
-- [ ] Failures export (CSV) for manual error review
+- [x] Failures export (CSV) for manual error review
 - [ ] Per-question win/loss table for the paired system comparison in the report
 - [ ] Evaluation guidelines document: how to add questions, label answers,
       and review judge disagreements (extends docs/DESIGN.md)

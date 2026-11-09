@@ -49,7 +49,8 @@ enough to gate a release alone (see the report).
 
 Per-category breakdown, judge calibration, and error analysis are in
 [`results/report.md`](results/report.md), with the machine-readable
-version in `results/results.json`.
+version in `results/results.json` and the failure list for manual
+review in `results/failures.csv`.
 
 ## What this proves — mapped to the job requirements
 
@@ -77,7 +78,8 @@ src/evalharness/
   metrics.py       Execution accuracy, normalised exact match, error categorisation
   stats.py         Wilson CI, bootstrap CI, McNemar, sample-size estimator
   judge.py         Heuristic LLM-as-judge simulation + calibration vs human labels
-  run_eval.py      CLI harness: builds DB, runs systems, writes report + results.json
+  run_eval.py      CLI harness: builds DB, runs systems, writes report + results.json + failures.csv
+  failures.py      Failures export: one CSV row per failed question, for manual review
   regression_gate.py  CI gate vs results/baseline.json (fails on >2pp drop)
   validate.py      Schema validation for gold.jsonl / human_labels.jsonl
                    (field, id, difficulty/label, SQL shape, duplicates); run
@@ -85,7 +87,7 @@ src/evalharness/
   plan.py          Sample-size planner CLI: gold-set size needed to detect
                    an accuracy improvement (delta x power grid, --from-results)
 tests/             unittest suite for stats, metrics, systems, judge
-results/           results.json, report.md, baseline.json (generated, checked in)
+results/           results.json, report.md, failures.csv, baseline.json (generated, checked in)
 docs/DESIGN.md     Evaluation design, decisions, and limitations
 ```
 

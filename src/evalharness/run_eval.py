@@ -3,7 +3,8 @@
 Builds the seeded brokerage DB, runs both candidate systems over the gold
 set (repeatedly, to measure pass-consistency under non-determinism),
 computes confidence intervals and the paired McNemar test, calibrates the
-judge, and writes results/results.json + results/report.md.
+judge, and writes results/results.json + results/report.md +
+results/failures.csv (one row per failed question, for manual review).
 
 By default the eval runs under two database seeds (42 and 1234) and
 reports how stable the headline metrics are across them — the same
@@ -22,6 +23,7 @@ from collections import Counter, defaultdict
 
 from .compare import compare_results, render_compare
 from .db import build_db
+from .failures import write_failures_csv
 from .judge import calibrate
 from .metrics import evaluate_system
 from .stats import (bootstrap_ci, bootstrap_diff_ci, mcnemar,
@@ -237,7 +239,7 @@ def run(runs=3, seed=42, seeds=None):
     return primary
 
 
-def render_report(res):
+def render_report(res, failures_csv=None):
     a, b = res["systems"]["system_a"], res["systems"]["system_b"]
     cmp_ = res["comparison"]
     j = res["judge_calibration"]
@@ -345,6 +347,10 @@ def render_report(res):
                  "system_b is precisely that fix.")
     else:
         L.append("No errors.")
+    if failures_csv:
+        L.append("")
+        L.append(f"Full failure list for manual error review: `{failures_csv}` "
+                 f"(one row per failed question, both systems).")
     L.append("")
     if j:
         L.append("## Judge calibration (judge vs human labels)\n")
@@ -376,6 +382,9 @@ def main():
                     help="evaluate under each DB seed and report headline-metric stability "
                          "(default: 42 1234)")
     ap.add_argument("--out-dir", default=os.path.join(ROOT, "results"))
+    ap.add_argument("--failures-csv", default=None,
+                    help="where to write the failures CSV (default: "
+                         "<out-dir>/failures.csv)")
     ap.add_argument("--compare", nargs=2, metavar=("OLD", "NEW"),
                     help="diff two results.json files instead of running the eval")
     ap.add_argument("--compare-out", default=None,
@@ -403,10 +412,15 @@ def main():
         seeds = list(DEFAULT_SEEDS)
     res = run(runs=args.runs, seeds=seeds)
     os.makedirs(args.out_dir, exist_ok=True)
+    failures_path = args.failures_csv or os.path.join(args.out_dir, "failures.csv")
+    failures_rel = os.path.relpath(failures_path, ROOT)
     with open(os.path.join(args.out_dir, "results.json"), "w") as f:
         json.dump(res, f, indent=2)
     with open(os.path.join(args.out_dir, "report.md"), "w") as f:
-        f.write(render_report(res))
+        f.write(render_report(res, failures_csv=failures_rel))
+    gold = load_jsonl(os.path.join(ROOT, "data", "gold.jsonl"))
+    n_failures = write_failures_csv(res, failures_path, gold=gold)
+    print(f"wrote {failures_rel} ({n_failures} failures)")
     for name in ("system_a", "system_b"):
         s = res["systems"][name]
         lat = s["latency"]
@@ -428,7 +442,7 @@ def main():
               f"system_b {sp['system_b_accuracy']:.1%}, "
               f"B-A {sp['accuracy_difference_b_minus_a']:.1%} — "
               f"{'stable' if sens['stable'] else 'SEED-SENSITIVE'}")
-    print(f"wrote {args.out_dir}/results.json and report.md")
+    print(f"wrote {args.out_dir}/results.json, report.md and failures.csv")
 
 
 if __name__ == "__main__":

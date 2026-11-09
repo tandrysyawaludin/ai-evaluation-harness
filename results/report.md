@@ -115,6 +115,8 @@ system_a failed 36 of 65 questions. Error categories: {'wrong_filter': 25, 'wron
 
 Reading: system_a's failures are not random. They cluster exactly on questions with a side, status, country, or date-range filter, and on average-price questions — the documented weaknesses in `systems.py`. That clustering, not the headline number, is what tells engineering what to fix, and system_b is precisely that fix.
 
+Full failure list for manual error review: `results/failures.csv` (one row per failed question, both systems).
+
 ## Judge calibration (judge vs human labels)
 
 On 44 human-labelled answers, the heuristic judge agreed with humans 77.3% of the time: **Cohen's kappa = 0.545** (95% bootstrap CI [0.289, 0.773]) (moderate agreement), precision 0.773, recall 0.773, confusion {'tp': 17, 'fp': 5, 'fn': 5, 'tn': 17}.
