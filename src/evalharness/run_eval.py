@@ -89,6 +89,51 @@ def build_seed_sensitivity(per_seed):
     }
 
 
+def build_win_loss(records_a, records_b):
+    """Per-question win/loss table for the paired system comparison.
+
+    Each question is one of four outcomes: both systems correct, both
+    wrong, only A correct, or only B correct. The two discordant counts
+    are exactly McNemar's b (A wrong, B right) and c (A right, B wrong),
+    so this table is the auditable detail behind the test — it names the
+    questions, not just the counts. Rows are ordered with the discordant
+    questions first (B wins, then A wins), then both-wrong, then
+    both-correct, each group sorted by question id.
+    """
+    if len(records_a) != len(records_b):
+        raise ValueError(
+            "cannot build win/loss table: record counts differ "
+            f"({len(records_a)} vs {len(records_b)})")
+    outcome_order = {"b_only": 0, "a_only": 1, "both_wrong": 2, "both_correct": 3}
+    rows = []
+    for ra, rb in zip(records_a, records_b):
+        if ra["id"] != rb["id"]:
+            raise ValueError(
+                "cannot build win/loss table: record ids misaligned "
+                f"({ra['id']} vs {rb['id']})")
+        a_ok, b_ok = ra["execution_correct"], rb["execution_correct"]
+        if a_ok and b_ok:
+            outcome = "both_correct"
+        elif not a_ok and not b_ok:
+            outcome = "both_wrong"
+        elif b_ok:
+            outcome = "b_only"
+        else:
+            outcome = "a_only"
+        rows.append({
+            "id": ra["id"],
+            "category": ra["category"],
+            "difficulty": ra["difficulty"],
+            "system_a_correct": a_ok,
+            "system_b_correct": b_ok,
+            "outcome": outcome,
+        })
+    rows.sort(key=lambda r: (outcome_order[r["outcome"]], r["id"]))
+    counts = {k: sum(1 for r in rows if r["outcome"] == k)
+              for k in outcome_order}
+    return {"n": len(rows), "counts": counts, "rows": rows}
+
+
 def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     """Full evaluation under one DB seed. Judge calibration is
     seed-independent (it grades human labels, not DB rows), so only the
@@ -196,6 +241,9 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
                 - per_system["system_a"]["execution_accuracy"]),
             "difference_bootstrap_95ci": diff_ci,
             "mcnemar": mc,
+            "win_loss": build_win_loss(
+                per_system["system_a"]["records"],
+                per_system["system_b"]["records"]),
             "sample_size_to_detect_5pp_from_a": n_needed,
         },
         "per_category": categories,
@@ -271,6 +319,25 @@ def render_report(res, failures_csv=None):
                  f"would need ~{cmp_['sample_size_to_detect_5pp_from_a']} gold questions per system "
                  f"(normal approximation) — a concrete argument for growing the gold set.")
     L.append("")
+    wl = cmp_.get("win_loss")
+    if wl:
+        outcome_label = {"b_only": "B wins", "a_only": "A wins",
+                         "both_correct": "Both correct", "both_wrong": "Both wrong"}
+        c = wl["counts"]
+        L.append("## Per-question win/loss (paired comparison)\n")
+        L.append(f"Every question, one row: {c['both_correct']} both correct, "
+                 f"{c['both_wrong']} both wrong, {c['b_only']} B only "
+                 f"(McNemar b), {c['a_only']} A only (McNemar c). "
+                 f"Discordant questions come first — they are the whole "
+                 f"paired difference; the rest is agreement.\n")
+        L.append("| ID | Category | Difficulty | system_a | system_b | Outcome |")
+        L.append("|---|---|---|---|---|---|")
+        for r in wl["rows"]:
+            L.append(f"| {r['id']} | {r['category']} | {r['difficulty']} | "
+                     f"{'✓' if r['system_a_correct'] else '✗'} | "
+                     f"{'✓' if r['system_b_correct'] else '✗'} | "
+                     f"{outcome_label[r['outcome']]} |")
+        L.append("")
     sens = res.get("seed_sensitivity")
     if sens:
         L.append("## Seed sensitivity\n")

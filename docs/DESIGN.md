@@ -61,7 +61,10 @@ Principles:
 - **McNemar's test** for the A/B comparison, because the systems are
   evaluated on the *same* questions: the data are paired, and an unpaired
   test would throw that information away. We report the discordant counts
-  (b, c) alongside the p-value so the test is auditable.
+  (b, c) alongside the p-value so the test is auditable — and the report
+  carries the full per-question win/loss table (both correct, both wrong,
+  A only, B only, discordant questions first), so every discordant count
+  traces to named questions.
 - **Sample-size estimator** (normal approximation for two proportions) so
   "how many gold questions do we need to detect a 5-point improvement?"
   has a number, not a shrug.

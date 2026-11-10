@@ -16,6 +16,78 @@ Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 - Verdict: the difference is **statistically significant at the 5% level**.
 - To detect a further 5pp improvement over system_a with 80% power would need ~1562 gold questions per system (normal approximation) — a concrete argument for growing the gold set.
 
+## Per-question win/loss (paired comparison)
+
+Every question, one row: 29 both correct, 0 both wrong, 36 B only (McNemar b), 0 A only (McNemar c). Discordant questions come first — they are the whole paired difference; the rest is agreement.
+
+| ID | Category | Difficulty | system_a | system_b | Outcome |
+|---|---|---|---|---|---|
+| q005 | count_by_side | easy | ✗ | ✓ | B wins |
+| q006 | count_by_side | easy | ✗ | ✓ | B wins |
+| q010 | count_by_country | hard | ✗ | ✓ | B wins |
+| q011 | count_by_country | hard | ✗ | ✓ | B wins |
+| q012 | count_by_country | hard | ✗ | ✓ | B wins |
+| q013 | count_by_country | hard | ✗ | ✓ | B wins |
+| q024 | avg_price_by_symbol | easy | ✗ | ✓ | B wins |
+| q025 | avg_price_by_symbol | easy | ✗ | ✓ | B wins |
+| q026 | avg_price_by_symbol | easy | ✗ | ✓ | B wins |
+| q027 | avg_price_by_symbol | easy | ✗ | ✓ | B wins |
+| q028 | avg_price_by_symbol | easy | ✗ | ✓ | B wins |
+| q029 | sum_quantity_by_side_symbol | hard | ✗ | ✓ | B wins |
+| q030 | sum_quantity_by_side_symbol | hard | ✗ | ✓ | B wins |
+| q031 | sum_quantity_by_side_symbol | hard | ✗ | ✓ | B wins |
+| q032 | sum_quantity_by_side_symbol | hard | ✗ | ✓ | B wins |
+| q033 | sum_quantity_by_side_symbol | hard | ✗ | ✓ | B wins |
+| q034 | sum_quantity_by_side_symbol | hard | ✗ | ✓ | B wins |
+| q043 | sum_value_by_side | easy | ✗ | ✓ | B wins |
+| q044 | sum_value_by_side | easy | ✗ | ✓ | B wins |
+| q049 | avg_quantity_by_side | easy | ✗ | ✓ | B wins |
+| q050 | avg_quantity_by_side | easy | ✗ | ✓ | B wins |
+| q051 | sum_value_by_country | hard | ✗ | ✓ | B wins |
+| q052 | sum_value_by_country | hard | ✗ | ✓ | B wins |
+| q053 | sum_quantity_filled_by_symbol | hard | ✗ | ✓ | B wins |
+| q054 | sum_quantity_filled_by_symbol | hard | ✗ | ✓ | B wins |
+| q055 | sum_quantity_filled_by_symbol | hard | ✗ | ✓ | B wins |
+| q056 | count_by_date_range | easy | ✗ | ✓ | B wins |
+| q057 | count_by_date_range | easy | ✗ | ✓ | B wins |
+| q058 | count_by_date_range | easy | ✗ | ✓ | B wins |
+| q059 | count_by_date_range | easy | ✗ | ✓ | B wins |
+| q060 | count_by_date_range | medium | ✗ | ✓ | B wins |
+| q061 | count_by_date_range | medium | ✗ | ✓ | B wins |
+| q062 | count_by_date_range | medium | ✗ | ✓ | B wins |
+| q063 | count_by_date_range | medium | ✗ | ✓ | B wins |
+| q064 | count_by_date_range | hard | ✗ | ✓ | B wins |
+| q065 | count_by_date_range | hard | ✗ | ✓ | B wins |
+| q001 | count_total | easy | ✓ | ✓ | Both correct |
+| q002 | count_total | easy | ✓ | ✓ | Both correct |
+| q003 | count_total | easy | ✓ | ✓ | Both correct |
+| q004 | count_total | easy | ✓ | ✓ | Both correct |
+| q007 | count_by_status | easy | ✓ | ✓ | Both correct |
+| q008 | count_by_status | easy | ✓ | ✓ | Both correct |
+| q009 | count_by_status | easy | ✓ | ✓ | Both correct |
+| q014 | sum_quantity_by_symbol | easy | ✓ | ✓ | Both correct |
+| q015 | sum_quantity_by_symbol | easy | ✓ | ✓ | Both correct |
+| q016 | sum_quantity_by_symbol | easy | ✓ | ✓ | Both correct |
+| q017 | sum_quantity_by_symbol | easy | ✓ | ✓ | Both correct |
+| q018 | sum_quantity_by_symbol | easy | ✓ | ✓ | Both correct |
+| q019 | sum_value_by_symbol | hard | ✓ | ✓ | Both correct |
+| q020 | sum_value_by_symbol | hard | ✓ | ✓ | Both correct |
+| q021 | sum_value_by_symbol | hard | ✓ | ✓ | Both correct |
+| q022 | sum_value_by_symbol | hard | ✓ | ✓ | Both correct |
+| q023 | sum_value_by_symbol | hard | ✓ | ✓ | Both correct |
+| q035 | top_symbol_by_volume | hard | ✓ | ✓ | Both correct |
+| q036 | top_symbol_by_value | hard | ✓ | ✓ | Both correct |
+| q037 | top_account_by_orders | hard | ✓ | ✓ | Both correct |
+| q038 | count_by_account | easy | ✓ | ✓ | Both correct |
+| q039 | count_by_account | easy | ✓ | ✓ | Both correct |
+| q040 | count_by_account | easy | ✓ | ✓ | Both correct |
+| q041 | count_by_account | easy | ✓ | ✓ | Both correct |
+| q042 | count_by_account | easy | ✓ | ✓ | Both correct |
+| q045 | distinct_count | easy | ✓ | ✓ | Both correct |
+| q046 | distinct_count | easy | ✓ | ✓ | Both correct |
+| q047 | max_quantity | easy | ✓ | ✓ | Both correct |
+| q048 | avg_quantity | easy | ✓ | ✓ | Both correct |
+
 ## Seed sensitivity
 
 Same systems, same 65 questions, re-evaluated on 2 database seeds (42, 1234). The gold SQL is re-executed on each seed's data, so the ground truth moves with the data — what varies is only the database contents, never the questions.
@@ -33,7 +105,7 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 | System | Mean | p95 |
 |---|---|---|
 | system_a | 0.02 ms | 0.01 ms |
-| system_b | 0.01 ms | 0.01 ms |
+| system_b | 0.01 ms | 0.03 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
 
