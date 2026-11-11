@@ -18,7 +18,7 @@ commit with tests passing and the regression gate green.
       report how stable the headline metrics are
 - [x] Failures export (CSV) for manual error review
 - [x] Per-question win/loss table for the paired system comparison in the report
-- [ ] Evaluation guidelines document: how to add questions, label answers,
+- [x] Evaluation guidelines document: how to add questions, label answers,
       and review judge disagreements (extends docs/DESIGN.md)
 
 ## Done

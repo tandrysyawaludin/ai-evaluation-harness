@@ -89,6 +89,8 @@ src/evalharness/
 tests/             unittest suite for stats, metrics, systems, judge
 results/           results.json, report.md, failures.csv, baseline.json (generated, checked in)
 docs/DESIGN.md     Evaluation design, decisions, and limitations
+docs/GUIDELINES.md Guidelines for adding questions, labelling answers, and
+                   reviewing judge disagreements
 ```
 
 ## How to run

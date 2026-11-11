@@ -125,3 +125,11 @@ on every push, after the unit tests and a fresh evaluation.
   write statements), which are out of scope here.
 - The heuristic judge simulates an LLM judge's *failure modes*; it is not
   a substitute for calibrating a real LLM judge on real model outputs.
+
+## 8. Operating the ground truth
+
+The rules in sections 1–4 are design; the day-to-day procedure for
+changing the ground truth — adding gold questions, labelling answers,
+reviewing judge disagreements, and the checklist before merging such a
+change — lives in [`docs/GUIDELINES.md`](GUIDELINES.md). Read it before
+touching `data/gold.jsonl` or `data/human_labels.jsonl`.
