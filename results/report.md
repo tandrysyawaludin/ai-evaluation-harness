@@ -109,6 +109,13 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
 
+## Flaky questions (pass-consistency across repeated runs)
+
+Each system answered every question 3 times in the repeated runs (plus the recorded first pass). A question that is right on some runs and wrong on others is flaky: its contribution to the headline accuracy is luck, not capability. For a deterministic system this list is empty — which is itself the finding. A non-deterministic system (for example an LLM-backed one) will show its wobble here first, before it shows up as noise in the headline number.
+
+- system_a: **0 flaky questions** — every question was correct on every run or wrong on every run.
+- system_b: **0 flaky questions** — every question was correct on every run or wrong on every run.
+
 ## Per-category accuracy
 
 | Category | n | system_a | system_b |

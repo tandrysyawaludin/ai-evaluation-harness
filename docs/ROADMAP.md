@@ -20,6 +20,19 @@ commit with tests passing and the regression gate green.
 - [x] Per-question win/loss table for the paired system comparison in the report
 - [x] Evaluation guidelines document: how to add questions, label answers,
       and review judge disagreements (extends docs/DESIGN.md)
+- [x] Flaky-question report: per-question pass-consistency across the
+      repeated runs, listing questions correct on some runs but not all,
+      in results.json and report.md, with tests
+- [ ] Gold-set coverage matrix: category × difficulty counts in the report,
+      flagging empty or thin (< 3 questions) cells, with tests
+- [ ] Split-half reliability: split the gold set into two halves and report
+      per-system accuracy per half, so a headline number driven by one
+      half is visible, with tests
+- [ ] Judge disagreement pattern summary: classify judge-vs-human
+      disagreements by pattern (right number on the wrong symbol/side/
+      metric vs wording/rounding) and report the counts, with tests
+- [ ] Error-type × category cross-tab in the report: which error types
+      cluster in which categories, with tests
 
 ## Done
 

@@ -134,6 +134,39 @@ def build_win_loss(records_a, records_b):
     return {"n": len(rows), "counts": counts, "rows": rows}
 
 
+def build_flaky_questions(gold, per_question_correct, runs):
+    """Questions correct on some repeated runs but not all.
+
+    `per_question_correct[i]` counts how many of the `runs` repeated
+    evaluations got gold[i] right. A question with 0 < count < runs is
+    flaky: its contribution to the headline accuracy is luck, not
+    capability. For a deterministic system the list is empty, which is
+    itself the finding — the system is deterministic on this gold set.
+    Rows are ordered least-consistent first, so the questions closest
+    to a coin flip lead.
+    """
+    if runs < 1:
+        raise ValueError("runs must be at least 1")
+    if len(gold) != len(per_question_correct):
+        raise ValueError(
+            "cannot build flaky-question report: gold size and "
+            f"per-question counts differ ({len(gold)} vs "
+            f"{len(per_question_correct)})")
+    rows = []
+    for item, count in zip(gold, per_question_correct):
+        if 0 < count < runs:
+            rows.append({
+                "id": item["id"],
+                "category": item["category"],
+                "difficulty": item["difficulty"],
+                "correct_runs": count,
+                "runs": runs,
+                "fraction_correct": count / runs,
+            })
+    rows.sort(key=lambda r: (r["fraction_correct"], r["id"]))
+    return {"runs": runs, "flaky_count": len(rows), "questions": rows}
+
+
 def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     """Full evaluation under one DB seed. Judge calibration is
     seed-independent (it grades human labels, not DB rows), so only the
@@ -169,6 +202,8 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
             "pass_consistency_mean": sum(frac) / len(frac) if frac else 0.0,
             "questions_correct_on_every_run": (
                 sum(1 for c in per_question_correct if c == runs) / len(gold)),
+            "flaky_questions": build_flaky_questions(
+                gold, per_question_correct, runs),
             "error_counts": dict(Counter(
                 r["error"] for r in result["records"] if r["error"])),
             "records": result["records"],
@@ -385,6 +420,34 @@ def render_report(res, failures_csv=None):
              "behind it. A system that is 5 points more accurate but 100x slower "
              "is a different trade-off, and this table is where it becomes visible.")
     L.append("")
+    flaky_a = a.get("flaky_questions")
+    flaky_b = b.get("flaky_questions")
+    if flaky_a is not None and flaky_b is not None:
+        runs = flaky_a["runs"]
+        L.append("## Flaky questions (pass-consistency across repeated runs)\n")
+        L.append(f"Each system answered every question {runs} times in the "
+                 f"repeated runs (plus the recorded first pass). A question "
+                 f"that is right on some runs and wrong on others is flaky: "
+                 f"its contribution to the headline accuracy is luck, not "
+                 f"capability. For a deterministic system this list is empty "
+                 f"— which is itself the finding. A non-deterministic system "
+                 f"(for example an LLM-backed one) will show its wobble here "
+                 f"first, before it shows up as noise in the headline number.\n")
+        for name, flaky in (("system_a", flaky_a), ("system_b", flaky_b)):
+            if flaky["flaky_count"] == 0:
+                L.append(f"- {name}: **0 flaky questions** — every question "
+                         f"was correct on every run or wrong on every run.")
+            else:
+                L.append(f"- {name}: **{flaky['flaky_count']} flaky "
+                         f"question(s)** (least consistent first):\n")
+                L.append("| ID | Category | Difficulty | Correct runs |")
+                L.append("|---|---|---|---|")
+                for q in flaky["questions"]:
+                    L.append(f"| {q['id']} | {q['category']} | "
+                             f"{q['difficulty']} | {q['correct_runs']}/"
+                             f"{q['runs']} |")
+                L.append("")
+        L.append("")
     L.append("## Per-category accuracy\n")
     L.append("| Category | n | system_a | system_b |")
     L.append("|---|---|---|---|")
