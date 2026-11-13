@@ -23,7 +23,7 @@ commit with tests passing and the regression gate green.
 - [x] Flaky-question report: per-question pass-consistency across the
       repeated runs, listing questions correct on some runs but not all,
       in results.json and report.md, with tests
-- [ ] Gold-set coverage matrix: category × difficulty counts in the report,
+- [x] Gold-set coverage matrix: category × difficulty counts in the report,
       flagging empty or thin (< 3 questions) cells, with tests
 - [ ] Split-half reliability: split the gold set into two halves and report
       per-system accuracy per half, so a headline number driven by one

@@ -104,7 +104,7 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.02 ms | 0.01 ms |
+| system_a | 0.02 ms | 0.02 ms |
 | system_b | 0.01 ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
@@ -148,6 +148,37 @@ Each system answered every question 3 times in the repeated runs (plus the recor
 | easy | 36 | 58% | 100% |
 | medium | 4 | 0% | 100% |
 | hard | 25 | 32% | 100% |
+
+## Gold-set coverage matrix
+
+Every category × difficulty cell should hold enough questions for its per-category and per-difficulty numbers to mean something. A cell with fewer than 3 questions is **thin**; an empty cell means that difficulty is unmeasured for that category at all. Growing the gold set should start with the empty cells, then the thin ones.
+
+| Category | easy | medium | hard |
+|---|---|---|---|
+| avg_price_by_symbol | 5 | 0 ⚠ empty | 0 ⚠ empty |
+| avg_quantity | 1 ⚠ thin | 0 ⚠ empty | 0 ⚠ empty |
+| avg_quantity_by_side | 2 ⚠ thin | 0 ⚠ empty | 0 ⚠ empty |
+| count_by_account | 5 | 0 ⚠ empty | 0 ⚠ empty |
+| count_by_country | 0 ⚠ empty | 0 ⚠ empty | 4 |
+| count_by_date_range | 4 | 4 | 2 ⚠ thin |
+| count_by_side | 2 ⚠ thin | 0 ⚠ empty | 0 ⚠ empty |
+| count_by_status | 3 | 0 ⚠ empty | 0 ⚠ empty |
+| count_total | 4 | 0 ⚠ empty | 0 ⚠ empty |
+| distinct_count | 2 ⚠ thin | 0 ⚠ empty | 0 ⚠ empty |
+| max_quantity | 1 ⚠ thin | 0 ⚠ empty | 0 ⚠ empty |
+| sum_quantity_by_side_symbol | 0 ⚠ empty | 0 ⚠ empty | 6 |
+| sum_quantity_by_symbol | 5 | 0 ⚠ empty | 0 ⚠ empty |
+| sum_quantity_filled_by_symbol | 0 ⚠ empty | 0 ⚠ empty | 3 |
+| sum_value_by_country | 0 ⚠ empty | 0 ⚠ empty | 2 ⚠ thin |
+| sum_value_by_side | 2 ⚠ thin | 0 ⚠ empty | 0 ⚠ empty |
+| sum_value_by_symbol | 0 ⚠ empty | 0 ⚠ empty | 5 |
+| top_account_by_orders | 0 ⚠ empty | 0 ⚠ empty | 1 ⚠ thin |
+| top_symbol_by_value | 0 ⚠ empty | 0 ⚠ empty | 1 ⚠ thin |
+| top_symbol_by_volume | 0 ⚠ empty | 0 ⚠ empty | 1 ⚠ thin |
+
+Coverage: 11 of 60 cells have at least 3 questions, 11 thin, 38 empty.
+Empty cells: avg_price_by_symbol / medium, avg_price_by_symbol / hard, avg_quantity / medium, avg_quantity / hard, avg_quantity_by_side / medium, avg_quantity_by_side / hard, count_by_account / medium, count_by_account / hard, count_by_country / easy, count_by_country / medium, count_by_side / medium, count_by_side / hard, count_by_status / medium, count_by_status / hard, count_total / medium, count_total / hard, distinct_count / medium, distinct_count / hard, max_quantity / medium, max_quantity / hard, sum_quantity_by_side_symbol / easy, sum_quantity_by_side_symbol / medium, sum_quantity_by_symbol / medium, sum_quantity_by_symbol / hard, sum_quantity_filled_by_symbol / easy, sum_quantity_filled_by_symbol / medium, sum_value_by_country / easy, sum_value_by_country / medium, sum_value_by_side / medium, sum_value_by_side / hard, sum_value_by_symbol / easy, sum_value_by_symbol / medium, top_account_by_orders / easy, top_account_by_orders / medium, top_symbol_by_value / easy, top_symbol_by_value / medium, top_symbol_by_volume / easy, top_symbol_by_volume / medium.
+Thin cells: avg_quantity / easy (1), avg_quantity_by_side / easy (2), count_by_date_range / hard (2), count_by_side / easy (2), distinct_count / easy (2), max_quantity / easy (1), sum_value_by_country / hard (2), sum_value_by_side / easy (2), top_account_by_orders / hard (1), top_symbol_by_value / hard (1), top_symbol_by_volume / hard (1).
 
 ## Error analysis — system_a
 

@@ -167,6 +167,42 @@ def build_flaky_questions(gold, per_question_correct, runs):
     return {"runs": runs, "flaky_count": len(rows), "questions": rows}
 
 
+def build_coverage_matrix(gold, thin_threshold=3):
+    """Category × difficulty coverage of the gold set.
+
+    Every observed category is crossed with every observed difficulty,
+    so a category that never tests a difficulty shows up as an empty
+    cell rather than silently disappearing. A cell with fewer than
+    `thin_threshold` questions is thin: its per-category / per-difficulty
+    accuracy rests on too few questions to mean much, and growing the
+    gold set should start there. Difficulties order easy → medium →
+    hard; any unexpected value sorts after those, alphabetically.
+    """
+    difficulty_order = {"easy": 0, "medium": 1, "hard": 2}
+    categories = sorted({item["category"] for item in gold})
+    difficulties = sorted({item["difficulty"] for item in gold},
+                          key=lambda d: (difficulty_order.get(d, 99), d))
+    cells = {cat: {diff: 0 for diff in difficulties} for cat in categories}
+    for item in gold:
+        cells[item["category"]][item["difficulty"]] += 1
+    empty_cells = [{"category": cat, "difficulty": diff}
+                   for cat in categories for diff in difficulties
+                   if cells[cat][diff] == 0]
+    thin_cells = [{"category": cat, "difficulty": diff,
+                   "count": cells[cat][diff]}
+                  for cat in categories for diff in difficulties
+                  if 0 < cells[cat][diff] < thin_threshold]
+    return {
+        "thin_threshold": thin_threshold,
+        "categories": categories,
+        "difficulties": difficulties,
+        "cells": cells,
+        "total_cells": len(categories) * len(difficulties),
+        "empty_cells": empty_cells,
+        "thin_cells": thin_cells,
+    }
+
+
 def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     """Full evaluation under one DB seed. Judge calibration is
     seed-independent (it grades human labels, not DB rows), so only the
@@ -283,6 +319,7 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         },
         "per_category": categories,
         "per_difficulty": difficulties,
+        "coverage_matrix": build_coverage_matrix(gold),
         "system_a_errors": errors_a,
         "judge_calibration": judge_result,
     }
@@ -460,6 +497,42 @@ def render_report(res, failures_csv=None):
     for diff, v in res["per_difficulty"].items():
         L.append(f"| {diff} | {v['n']} | {v['system_a_accuracy']:.0%} | {v['system_b_accuracy']:.0%} |")
     L.append("")
+    matrix = res.get("coverage_matrix")
+    if matrix:
+        L.append("## Gold-set coverage matrix\n")
+        L.append(f"Every category × difficulty cell should hold enough "
+                 f"questions for its per-category and per-difficulty "
+                 f"numbers to mean something. A cell with fewer than "
+                 f"{matrix['thin_threshold']} questions is **thin**; an "
+                 f"empty cell means that difficulty is unmeasured for "
+                 f"that category at all. Growing the gold set should "
+                 f"start with the empty cells, then the thin ones.\n")
+        diffs = matrix["difficulties"]
+        L.append("| Category | " + " | ".join(diffs) + " |")
+        L.append("|---|" + "---|" * len(diffs))
+        for cat in matrix["categories"]:
+            row = matrix["cells"][cat]
+            cells = [f"{row[d]} ⚠ empty" if row[d] == 0
+                     else f"{row[d]} ⚠ thin" if row[d] < matrix["thin_threshold"]
+                     else str(row[d])
+                     for d in diffs]
+            L.append(f"| {cat} | " + " | ".join(cells) + " |")
+        L.append("")
+        n_empty = len(matrix["empty_cells"])
+        n_thin = len(matrix["thin_cells"])
+        L.append(f"Coverage: {matrix['total_cells'] - n_empty - n_thin} of "
+                 f"{matrix['total_cells']} cells have at least "
+                 f"{matrix['thin_threshold']} questions, "
+                 f"{n_thin} thin, {n_empty} empty.")
+        if n_empty:
+            L.append("Empty cells: " + ", ".join(
+                f"{c['category']} / {c['difficulty']}"
+                for c in matrix["empty_cells"]) + ".")
+        if n_thin:
+            L.append("Thin cells: " + ", ".join(
+                f"{c['category']} / {c['difficulty']} ({c['count']})"
+                for c in matrix["thin_cells"]) + ".")
+        L.append("")
     L.append("## Error analysis — system_a\n")
     if res["system_a_errors"]:
         counts = Counter(r["error"] for r in res["system_a_errors"])
