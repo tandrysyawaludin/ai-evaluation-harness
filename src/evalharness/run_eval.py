@@ -134,6 +134,67 @@ def build_win_loss(records_a, records_b):
     return {"n": len(rows), "counts": counts, "rows": rows}
 
 
+def build_split_half(gold, records_a, records_b):
+    """Split-half reliability: per-system accuracy on each half of the
+    gold set.
+
+    The halves are interleaved by position (even-indexed questions in
+    half 1, odd-indexed in half 2), not cut in the middle: gold.jsonl
+    is grouped by category, so a contiguous cut would make the halves
+    differ by category and conflate category difficulty with half
+    difference. Interleaving keeps both halves spanning the whole set,
+    so a gap between halves means the headline accuracy leans on one
+    half of the questions, not on one kind of question.
+
+    Returns per-half n and per-system accuracy, the B − A gap per half,
+    and the largest half-to-half accuracy gap per system. A system is
+    called balanced when its two halves agree within 5pp — the same
+    smallest-difference threshold the sample-size estimator uses.
+    """
+    if len(records_a) != len(records_b) or len(records_a) != len(gold):
+        raise ValueError(
+            "cannot build split-half reliability: gold and record "
+            f"counts differ ({len(gold)} gold, {len(records_a)} system_a, "
+            f"{len(records_b)} system_b)")
+    for item, ra, rb in zip(gold, records_a, records_b):
+        if ra["id"] != item["id"] or rb["id"] != item["id"]:
+            raise ValueError(
+                "cannot build split-half reliability: record ids "
+                f"misaligned with gold ({item['id']} vs {ra['id']} / "
+                f"{rb['id']})")
+    halves = {}
+    for half, indices in (("half_1", range(0, len(gold), 2)),
+                          ("half_2", range(1, len(gold), 2))):
+        indices = list(indices)
+        n = len(indices)
+        a_correct = sum(1 for i in indices if records_a[i]["execution_correct"])
+        b_correct = sum(1 for i in indices if records_b[i]["execution_correct"])
+        halves[half] = {
+            "n": n,
+            "system_a_correct": a_correct,
+            "system_b_correct": b_correct,
+            "system_a_accuracy": a_correct / n if n else 0.0,
+            "system_b_accuracy": b_correct / n if n else 0.0,
+            "accuracy_difference_b_minus_a": (
+                (b_correct - a_correct) / n if n else 0.0),
+        }
+    gaps = {
+        "system_a": abs(halves["half_1"]["system_a_accuracy"]
+                        - halves["half_2"]["system_a_accuracy"]),
+        "system_b": abs(halves["half_1"]["system_b_accuracy"]
+                        - halves["half_2"]["system_b_accuracy"]),
+        "accuracy_difference_b_minus_a": abs(
+            halves["half_1"]["accuracy_difference_b_minus_a"]
+            - halves["half_2"]["accuracy_difference_b_minus_a"]),
+    }
+    return {
+        "halves": halves,
+        "gap": gaps,
+        "balance_threshold": 0.05,
+        "balanced": all(v <= 0.05 for v in gaps.values()),
+    }
+
+
 def build_flaky_questions(gold, per_question_correct, runs):
     """Questions correct on some repeated runs but not all.
 
@@ -320,6 +381,9 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         "per_category": categories,
         "per_difficulty": difficulties,
         "coverage_matrix": build_coverage_matrix(gold),
+        "split_half": build_split_half(
+            gold, per_system["system_a"]["records"],
+            per_system["system_b"]["records"]),
         "system_a_errors": errors_a,
         "judge_calibration": judge_result,
     }
@@ -532,6 +596,41 @@ def render_report(res, failures_csv=None):
             L.append("Thin cells: " + ", ".join(
                 f"{c['category']} / {c['difficulty']} ({c['count']})"
                 for c in matrix["thin_cells"]) + ".")
+        L.append("")
+    split = res.get("split_half")
+    if split:
+        h1, h2 = split["halves"]["half_1"], split["halves"]["half_2"]
+        g = split["gap"]
+        L.append("## Split-half reliability\n")
+        L.append("The gold set is split into two interleaved halves "
+                 "(even- vs odd-positioned questions, so both halves "
+                 "span every category). If a headline accuracy is real, "
+                 "both halves should tell roughly the same story; if it "
+                 "is driven by one half of the questions, the halves "
+                 "diverge — and so does the B − A improvement.\n")
+        L.append("| Half | n | system_a | system_b | B − A |")
+        L.append("|---|---|---|---|---|")
+        for label, h in (("Half 1", h1), ("Half 2", h2)):
+            L.append(f"| {label} | {h['n']} | "
+                     f"{h['system_a_accuracy']:.1%} "
+                     f"({h['system_a_correct']}/{h['n']}) | "
+                     f"{h['system_b_accuracy']:.1%} "
+                     f"({h['system_b_correct']}/{h['n']}) | "
+                     f"{h['accuracy_difference_b_minus_a']:+.1%} |")
+        L.append("")
+        L.append(f"Half-to-half gap: system_a {g['system_a']:.1%}, "
+                 f"system_b {g['system_b']:.1%}, "
+                 f"B − A difference "
+                 f"{g['accuracy_difference_b_minus_a']:.1%}.")
+        verdict = ("balanced — every gap is within "
+                   f"{split['balance_threshold']:.0%}, so the headline "
+                   f"numbers are not carried by one half of the gold set"
+                   if split["balanced"] else
+                   "unbalanced — at least one gap exceeds "
+                   f"{split['balance_threshold']:.0%}, so a headline "
+                   f"number that large could be an artefact of which "
+                   f"half of the questions happened to be asked")
+        L.append(f"Verdict: the split-half reliability is **{verdict}**.")
         L.append("")
     L.append("## Error analysis — system_a\n")
     if res["system_a_errors"]:

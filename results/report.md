@@ -180,6 +180,18 @@ Coverage: 11 of 60 cells have at least 3 questions, 11 thin, 38 empty.
 Empty cells: avg_price_by_symbol / medium, avg_price_by_symbol / hard, avg_quantity / medium, avg_quantity / hard, avg_quantity_by_side / medium, avg_quantity_by_side / hard, count_by_account / medium, count_by_account / hard, count_by_country / easy, count_by_country / medium, count_by_side / medium, count_by_side / hard, count_by_status / medium, count_by_status / hard, count_total / medium, count_total / hard, distinct_count / medium, distinct_count / hard, max_quantity / medium, max_quantity / hard, sum_quantity_by_side_symbol / easy, sum_quantity_by_side_symbol / medium, sum_quantity_by_symbol / medium, sum_quantity_by_symbol / hard, sum_quantity_filled_by_symbol / easy, sum_quantity_filled_by_symbol / medium, sum_value_by_country / easy, sum_value_by_country / medium, sum_value_by_side / medium, sum_value_by_side / hard, sum_value_by_symbol / easy, sum_value_by_symbol / medium, top_account_by_orders / easy, top_account_by_orders / medium, top_symbol_by_value / easy, top_symbol_by_value / medium, top_symbol_by_volume / easy, top_symbol_by_volume / medium.
 Thin cells: avg_quantity / easy (1), avg_quantity_by_side / easy (2), count_by_date_range / hard (2), count_by_side / easy (2), distinct_count / easy (2), max_quantity / easy (1), sum_value_by_country / hard (2), sum_value_by_side / easy (2), top_account_by_orders / hard (1), top_symbol_by_value / hard (1), top_symbol_by_volume / hard (1).
 
+## Split-half reliability
+
+The gold set is split into two interleaved halves (even- vs odd-positioned questions, so both halves span every category). If a headline accuracy is real, both halves should tell roughly the same story; if it is driven by one half of the questions, the halves diverge — and so does the B − A improvement.
+
+| Half | n | system_a | system_b | B − A |
+|---|---|---|---|---|
+| Half 1 | 33 | 45.5% (15/33) | 100.0% (33/33) | +54.5% |
+| Half 2 | 32 | 43.8% (14/32) | 100.0% (32/32) | +56.2% |
+
+Half-to-half gap: system_a 1.7%, system_b 0.0%, B − A difference 1.7%.
+Verdict: the split-half reliability is **balanced — every gap is within 5%, so the headline numbers are not carried by one half of the gold set**.
+
 ## Error analysis — system_a
 
 system_a failed 36 of 65 questions. Error categories: {'wrong_filter': 25, 'wrong_join': 6, 'wrong_aggregation': 5}.

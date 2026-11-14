@@ -25,7 +25,7 @@ commit with tests passing and the regression gate green.
       in results.json and report.md, with tests
 - [x] Gold-set coverage matrix: category × difficulty counts in the report,
       flagging empty or thin (< 3 questions) cells, with tests
-- [ ] Split-half reliability: split the gold set into two halves and report
+- [x] Split-half reliability: split the gold set into two halves and report
       per-system accuracy per half, so a headline number driven by one
       half is visible, with tests
 - [ ] Judge disagreement pattern summary: classify judge-vs-human

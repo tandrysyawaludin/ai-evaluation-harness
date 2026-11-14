@@ -17,8 +17,8 @@
       ],
       "exact_match_rate": 0.4461538461538462,
       "latency": {
-        "mean_ms": 0.023327461536400033,
-        "p95_ms": 0.017145000015261758
+        "mean_ms": 0.0238389230739463,
+        "p95_ms": 0.021012000047448964
       },
       "pass_consistency_mean": 0.4461538461538462,
       "questions_correct_on_every_run": 0.4461538461538462,
@@ -42,7 +42,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.8966560000089885
+          "latency_ms": 0.9161469999980909
         },
         {
           "id": "q002",
@@ -53,7 +53,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.017145000015261758
+          "latency_ms": 0.01797699997041491
         },
         {
           "id": "q003",
@@ -64,7 +64,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.013650000028064824
+          "latency_ms": 0.013340000009520736
         },
         {
           "id": "q004",
@@ -75,7 +75,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.03522299994074274
+          "latency_ms": 0.01371100006508641
         },
         {
           "id": "q005",
@@ -86,7 +86,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.012989999959245324
+          "latency_ms": 0.013651000017489423
         },
         {
           "id": "q006",
@@ -97,7 +97,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.01544300005207333
+          "latency_ms": 0.01501199994891067
         },
         {
           "id": "q007",
@@ -108,7 +108,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.013099999932819628
+          "latency_ms": 0.013751000096817734
         },
         {
           "id": "q008",
@@ -119,7 +119,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010416000009172421
+          "latency_ms": 0.011227000072722149
         },
         {
           "id": "q009",
@@ -130,7 +130,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.02235399995242915
+          "latency_ms": 0.009744999942995491
         },
         {
           "id": "q010",
@@ -141,7 +141,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_join",
-          "latency_ms": 0.006448999897656904
+          "latency_ms": 0.006579999990208307
         },
         {
           "id": "q011",
@@ -152,7 +152,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_join",
-          "latency_ms": 0.009503999990556622
+          "latency_ms": 0.007411000069623697
         },
         {
           "id": "q012",
@@ -163,7 +163,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_join",
-          "latency_ms": 0.0072910000881165615
+          "latency_ms": 0.006840999958512839
         },
         {
           "id": "q013",
@@ -174,7 +174,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_join",
-          "latency_ms": 0.006188999918776972
+          "latency_ms": 0.005879000013919722
         },
         {
           "id": "q014",
@@ -185,7 +185,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.01420199998847238
+          "latency_ms": 0.04795199993168353
         },
         {
           "id": "q015",
@@ -196,7 +196,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010125000017069397
+          "latency_ms": 0.011065999956372252
         },
         {
           "id": "q016",
@@ -207,7 +207,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009605000059309532
+          "latency_ms": 0.009413999919161142
         },
         {
           "id": "q017",
@@ -218,7 +218,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009363999993183825
+          "latency_ms": 0.009173999956146872
         },
         {
           "id": "q018",
@@ -229,7 +229,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008883999953468447
+          "latency_ms": 0.009093000016946462
         },
         {
           "id": "q019",
@@ -240,7 +240,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.01535299998067785
+          "latency_ms": 0.01063599995632103
         },
         {
           "id": "q020",
@@ -251,7 +251,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009534000014355115
+          "latency_ms": 0.00974400006725773
         },
         {
           "id": "q021",
@@ -262,7 +262,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009123999916482717
+          "latency_ms": 0.009164000061900879
         },
         {
           "id": "q022",
@@ -273,7 +273,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00866300001689524
+          "latency_ms": 0.00908399999843823
         },
         {
           "id": "q023",
@@ -284,7 +284,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008541999932276667
+          "latency_ms": 0.00900300005923782
         },
         {
           "id": "q024",
@@ -295,7 +295,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_aggregation",
-          "latency_ms": 0.009794999982659647
+          "latency_ms": 0.010255000006509363
         },
         {
           "id": "q025",
@@ -306,7 +306,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_aggregation",
-          "latency_ms": 0.009523999892735446
+          "latency_ms": 0.009495000085735228
         },
         {
           "id": "q026",
@@ -317,7 +317,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_aggregation",
-          "latency_ms": 0.009623999972063757
+          "latency_ms": 0.009975000011763768
         },
         {
           "id": "q027",
@@ -328,7 +328,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_aggregation",
-          "latency_ms": 0.008804000003692636
+          "latency_ms": 0.009173999956146872
         },
         {
           "id": "q028",
@@ -339,7 +339,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_aggregation",
-          "latency_ms": 0.008854000043356791
+          "latency_ms": 0.022013000034348806
         },
         {
           "id": "q029",
@@ -350,7 +350,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.009924999972099613
+          "latency_ms": 0.010725999914029671
         },
         {
           "id": "q030",
@@ -361,7 +361,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.009443999942959636
+          "latency_ms": 0.010084999985338072
         },
         {
           "id": "q031",
@@ -383,7 +383,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.00991500007785362
+          "latency_ms": 0.010354999972150836
         },
         {
           "id": "q033",
@@ -394,7 +394,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.015612999959557783
+          "latency_ms": 0.00965499998528685
         },
         {
           "id": "q034",
@@ -405,7 +405,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.011826999980257824
+          "latency_ms": 0.009262999924430915
         },
         {
           "id": "q035",
@@ -416,7 +416,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0010420000080557656
+          "latency_ms": 0.0008709999974598759
         },
         {
           "id": "q036",
@@ -427,7 +427,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0015629999552402296
+          "latency_ms": 0.0012819999710700358
         },
         {
           "id": "q037",
@@ -438,7 +438,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0009310000450568623
+          "latency_ms": 0.0009010000212583691
         },
         {
           "id": "q038",
@@ -449,7 +449,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.014272000044002198
+          "latency_ms": 0.00884400003542396
         },
         {
           "id": "q039",
@@ -460,7 +460,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008282999942821334
+          "latency_ms": 0.006830999950580008
         },
         {
           "id": "q040",
@@ -471,7 +471,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006039000027158181
+          "latency_ms": 0.005688999976882769
         },
         {
           "id": "q041",
@@ -482,7 +482,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.004977000003236753
+          "latency_ms": 0.005547999990085373
         },
         {
           "id": "q042",
@@ -493,7 +493,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005166999926586868
+          "latency_ms": 0.005678999968949938
         },
         {
           "id": "q043",
@@ -504,7 +504,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.013800000033370452
+          "latency_ms": 0.013070000022707973
         },
         {
           "id": "q044",
@@ -515,7 +515,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.01262900002529932
+          "latency_ms": 0.011607000033109216
         },
         {
           "id": "q045",
@@ -526,7 +526,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006760000019312429
+          "latency_ms": 0.006389999953171355
         },
         {
           "id": "q046",
@@ -537,7 +537,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00585800000862946
+          "latency_ms": 0.005809000072076742
         },
         {
           "id": "q047",
@@ -548,7 +548,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006699999971715442
+          "latency_ms": 0.006630000029872463
         },
         {
           "id": "q048",
@@ -559,7 +559,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006669999947916949
+          "latency_ms": 0.00667999995584978
         },
         {
           "id": "q049",
@@ -570,7 +570,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.009924999972099613
+          "latency_ms": 0.009943999998540676
         },
         {
           "id": "q050",
@@ -581,7 +581,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.009454000064579304
+          "latency_ms": 0.01013499991131539
         },
         {
           "id": "q051",
@@ -592,7 +592,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_join",
-          "latency_ms": 0.0065100000483653275
+          "latency_ms": 0.006720000101267942
         },
         {
           "id": "q052",
@@ -603,7 +603,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_join",
-          "latency_ms": 0.006159000008665316
+          "latency_ms": 0.006418999987545249
         },
         {
           "id": "q053",
@@ -614,7 +614,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.012578999985635164
+          "latency_ms": 0.012459000004128029
         },
         {
           "id": "q054",
@@ -625,7 +625,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.010556000006545219
+          "latency_ms": 0.010915999951066624
         },
         {
           "id": "q055",
@@ -636,7 +636,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.010145000032935059
+          "latency_ms": 0.01040600000123959
         },
         {
           "id": "q056",
@@ -647,7 +647,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.007662000029995397
+          "latency_ms": 0.021012000047448964
         },
         {
           "id": "q057",
@@ -658,7 +658,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.007271000072250899
+          "latency_ms": 0.00768100005643646
         },
         {
           "id": "q058",
@@ -669,7 +669,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.0065100000483653275
+          "latency_ms": 0.006789999929424084
         },
         {
           "id": "q059",
@@ -680,7 +680,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.006219000056262303
+          "latency_ms": 0.006600000006073969
         },
         {
           "id": "q060",
@@ -691,7 +691,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.009503999990556622
+          "latency_ms": 0.010164999935113883
         },
         {
           "id": "q061",
@@ -702,7 +702,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.008151999963956769
+          "latency_ms": 0.008373000014216814
         },
         {
           "id": "q062",
@@ -713,7 +713,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.007481000011466676
+          "latency_ms": 0.008232999903157179
         },
         {
           "id": "q063",
@@ -724,7 +724,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.007310999990295386
+          "latency_ms": 0.007832000051166688
         },
         {
           "id": "q064",
@@ -735,7 +735,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.0060890000668223365
+          "latency_ms": 0.006409999969037017
         },
         {
           "id": "q065",
@@ -746,7 +746,7 @@
           "execution_correct": false,
           "exact_match": false,
           "error": "wrong_filter",
-          "latency_ms": 0.00769200005379389
+          "latency_ms": 0.00776199999563687
         }
       ]
     },
@@ -764,8 +764,8 @@
       ],
       "exact_match_rate": 0.9230769230769231,
       "latency": {
-        "mean_ms": 0.008394584614716923,
-        "p95_ms": 0.012718999983007961
+        "mean_ms": 0.008651261543071507,
+        "p95_ms": 0.01287899999624642
       },
       "pass_consistency_mean": 1.0,
       "questions_correct_on_every_run": 1.0,
@@ -785,7 +785,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.02148300006865611
+          "latency_ms": 0.02955499996915023
         },
         {
           "id": "q002",
@@ -796,7 +796,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.012718999983007961
+          "latency_ms": 0.014061999991099583
         },
         {
           "id": "q003",
@@ -807,7 +807,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011587000017243554
+          "latency_ms": 0.01229899999088957
         },
         {
           "id": "q004",
@@ -818,7 +818,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011958000072809227
+          "latency_ms": 0.012557999980344903
         },
         {
           "id": "q005",
@@ -829,7 +829,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.012759000014739286
+          "latency_ms": 0.014150999959383626
         },
         {
           "id": "q006",
@@ -840,7 +840,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010955999982797948
+          "latency_ms": 0.011836999988190655
         },
         {
           "id": "q007",
@@ -851,7 +851,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010436000025038084
+          "latency_ms": 0.01047599994308257
         },
         {
           "id": "q008",
@@ -862,7 +862,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009664000003795081
+          "latency_ms": 0.010055000075226417
         },
         {
           "id": "q009",
@@ -873,7 +873,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009022999961416645
+          "latency_ms": 0.00891399997726694
         },
         {
           "id": "q010",
@@ -884,7 +884,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006869999992886733
+          "latency_ms": 0.0072509999426983995
         },
         {
           "id": "q011",
@@ -895,7 +895,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006480000024566834
+          "latency_ms": 0.0075619999506670865
         },
         {
           "id": "q012",
@@ -906,7 +906,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005738000027122325
+          "latency_ms": 0.006559999974342645
         },
         {
           "id": "q013",
@@ -917,7 +917,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005257999987406947
+          "latency_ms": 0.005278000003272609
         },
         {
           "id": "q014",
@@ -928,7 +928,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.01162699993528804
+          "latency_ms": 0.01287899999624642
         },
         {
           "id": "q015",
@@ -939,7 +939,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009093000016946462
+          "latency_ms": 0.009363999993183825
         },
         {
           "id": "q016",
@@ -950,7 +950,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008552999929634097
+          "latency_ms": 0.008492999995723949
         },
         {
           "id": "q017",
@@ -961,7 +961,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008512999897902773
+          "latency_ms": 0.008441999966635194
         },
         {
           "id": "q018",
@@ -972,7 +972,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008382999908462807
+          "latency_ms": 0.008903000093596347
         },
         {
           "id": "q019",
@@ -983,7 +983,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00949499997204839
+          "latency_ms": 0.009905000069920789
         },
         {
           "id": "q020",
@@ -994,7 +994,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008683000032760901
+          "latency_ms": 0.00866300001689524
         },
         {
           "id": "q021",
@@ -1005,7 +1005,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008383000022149645
+          "latency_ms": 0.008553000043320935
         },
         {
           "id": "q022",
@@ -1016,7 +1016,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009023000075103482
+          "latency_ms": 0.008172000093509268
         },
         {
           "id": "q023",
@@ -1027,7 +1027,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008072000014180958
+          "latency_ms": 0.008301999969262397
         },
         {
           "id": "q024",
@@ -1038,7 +1038,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009314000067206507
+          "latency_ms": 0.00924400001167669
         },
         {
           "id": "q025",
@@ -1049,7 +1049,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008432999948126962
+          "latency_ms": 0.008512000022165012
         },
         {
           "id": "q026",
@@ -1060,7 +1060,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008461999982500856
+          "latency_ms": 0.008893000085663516
         },
         {
           "id": "q027",
@@ -1071,7 +1071,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.007851999953345512
+          "latency_ms": 0.008223000008911185
         },
         {
           "id": "q028",
@@ -1082,7 +1082,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.007850999963920913
+          "latency_ms": 0.007982000056472316
         },
         {
           "id": "q029",
@@ -1093,7 +1093,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009644999977354018
+          "latency_ms": 0.009923999982675014
         },
         {
           "id": "q030",
@@ -1104,7 +1104,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008312000090882066
+          "latency_ms": 0.008281999953396735
         },
         {
           "id": "q031",
@@ -1115,7 +1115,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008153000067068206
+          "latency_ms": 0.008112000045912282
         },
         {
           "id": "q032",
@@ -1126,7 +1126,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.017877000004773436
+          "latency_ms": 0.008864000051289622
         },
         {
           "id": "q033",
@@ -1137,7 +1137,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008113000035336881
+          "latency_ms": 0.008322000098814897
         },
         {
           "id": "q034",
@@ -1148,7 +1148,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008312999966619827
+          "latency_ms": 0.00826200005121791
         },
         {
           "id": "q035",
@@ -1159,7 +1159,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0006909999683557544
+          "latency_ms": 0.0007219999815788469
         },
         {
           "id": "q036",
@@ -1170,7 +1170,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0008409999736613827
+          "latency_ms": 0.0009610000688553555
         },
         {
           "id": "q037",
@@ -1181,7 +1181,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.000891000013325538
+          "latency_ms": 0.0009819999604587792
         },
         {
           "id": "q038",
@@ -1192,7 +1192,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006810000058976584
+          "latency_ms": 0.007270999958564062
         },
         {
           "id": "q039",
@@ -1203,7 +1203,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005367999960981251
+          "latency_ms": 0.005498999939845817
         },
         {
           "id": "q040",
@@ -1214,7 +1214,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005008000016459846
+          "latency_ms": 0.005036999937146902
         },
         {
           "id": "q041",
@@ -1225,7 +1225,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.004888000034952711
+          "latency_ms": 0.004998000008527015
         },
         {
           "id": "q042",
@@ -1236,7 +1236,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.004807999971490062
+          "latency_ms": 0.005178000037631136
         },
         {
           "id": "q043",
@@ -1247,7 +1247,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.01147700004366925
+          "latency_ms": 0.01195799995912239
         },
         {
           "id": "q044",
@@ -1258,7 +1258,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.01046499994572514
+          "latency_ms": 0.010836000001290813
         },
         {
           "id": "q045",
@@ -1269,7 +1269,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.0058389999821883976
+          "latency_ms": 0.005788999942524242
         },
         {
           "id": "q046",
@@ -1280,7 +1280,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.005267000005915179
+          "latency_ms": 0.005679000082636776
         },
         {
           "id": "q047",
@@ -1291,7 +1291,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00602900001922535
+          "latency_ms": 0.006239000072127965
         },
         {
           "id": "q048",
@@ -1302,7 +1302,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006550000080096652
+          "latency_ms": 0.006760000019312429
         },
         {
           "id": "q049",
@@ -1313,7 +1313,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.00915399994028121
+          "latency_ms": 0.009394000016982318
         },
         {
           "id": "q050",
@@ -1324,7 +1324,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009143999932348379
+          "latency_ms": 0.0090730000010808
         },
         {
           "id": "q051",
@@ -1335,7 +1335,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006078999945202668
+          "latency_ms": 0.006669999947916949
         },
         {
           "id": "q052",
@@ -1346,7 +1346,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.006288999998105282
+          "latency_ms": 0.0062990000060381135
         },
         {
           "id": "q053",
@@ -1357,7 +1357,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.011297000014565128
+          "latency_ms": 0.01155699999344506
         },
         {
           "id": "q054",
@@ -1368,7 +1368,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009705000024951005
+          "latency_ms": 0.009924999972099613
         },
         {
           "id": "q055",
@@ -1379,7 +1379,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009394000016982318
+          "latency_ms": 0.009293999937654007
         },
         {
           "id": "q056",
@@ -1390,7 +1390,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.009333999969385331
+          "latency_ms": 0.010194999958912376
         },
         {
           "id": "q057",
@@ -1401,7 +1401,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.008261999937531073
+          "latency_ms": 0.008933000003708003
         },
         {
           "id": "q058",
@@ -1412,7 +1412,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.007320999998228217
+          "latency_ms": 0.007440999979735352
         },
         {
           "id": "q059",
@@ -1423,7 +1423,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.006960000064282212
+          "latency_ms": 0.00683999996908824
         },
         {
           "id": "q060",
@@ -1434,7 +1434,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.010225000096397707
+          "latency_ms": 0.010366000083195104
         },
         {
           "id": "q061",
@@ -1445,7 +1445,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.008342000000993721
+          "latency_ms": 0.008112000045912282
         },
         {
           "id": "q062",
@@ -1456,7 +1456,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.009405000014339748
+          "latency_ms": 0.009564000038153608
         },
         {
           "id": "q063",
@@ -1467,7 +1467,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.007981999942785478
+          "latency_ms": 0.008693000040693732
         },
         {
           "id": "q064",
@@ -1478,7 +1478,7 @@
           "execution_correct": true,
           "exact_match": false,
           "error": null,
-          "latency_ms": 0.0069399999347297125
+          "latency_ms": 0.0070309999955497915
         },
         {
           "id": "q065",
@@ -1489,7 +1489,7 @@
           "execution_correct": true,
           "exact_match": true,
           "error": null,
-          "latency_ms": 0.007802000027368194
+          "latency_ms": 0.008181999987755262
         }
       ]
     }
@@ -2502,6 +2502,33 @@
       }
     ]
   },
+  "split_half": {
+    "halves": {
+      "half_1": {
+        "n": 33,
+        "system_a_correct": 15,
+        "system_b_correct": 33,
+        "system_a_accuracy": 0.45454545454545453,
+        "system_b_accuracy": 1.0,
+        "accuracy_difference_b_minus_a": 0.5454545454545454
+      },
+      "half_2": {
+        "n": 32,
+        "system_a_correct": 14,
+        "system_b_correct": 32,
+        "system_a_accuracy": 0.4375,
+        "system_b_accuracy": 1.0,
+        "accuracy_difference_b_minus_a": 0.5625
+      }
+    },
+    "gap": {
+      "system_a": 0.01704545454545453,
+      "system_b": 0.0,
+      "accuracy_difference_b_minus_a": 0.017045454545454586
+    },
+    "balance_threshold": 0.05,
+    "balanced": true
+  },
   "system_a_errors": [
     {
       "id": "q005",
@@ -2512,7 +2539,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.012989999959245324
+      "latency_ms": 0.013651000017489423
     },
     {
       "id": "q006",
@@ -2523,7 +2550,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.01544300005207333
+      "latency_ms": 0.01501199994891067
     },
     {
       "id": "q010",
@@ -2534,7 +2561,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_join",
-      "latency_ms": 0.006448999897656904
+      "latency_ms": 0.006579999990208307
     },
     {
       "id": "q011",
@@ -2545,7 +2572,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_join",
-      "latency_ms": 0.009503999990556622
+      "latency_ms": 0.007411000069623697
     },
     {
       "id": "q012",
@@ -2556,7 +2583,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_join",
-      "latency_ms": 0.0072910000881165615
+      "latency_ms": 0.006840999958512839
     },
     {
       "id": "q013",
@@ -2567,7 +2594,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_join",
-      "latency_ms": 0.006188999918776972
+      "latency_ms": 0.005879000013919722
     },
     {
       "id": "q024",
@@ -2578,7 +2605,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_aggregation",
-      "latency_ms": 0.009794999982659647
+      "latency_ms": 0.010255000006509363
     },
     {
       "id": "q025",
@@ -2589,7 +2616,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_aggregation",
-      "latency_ms": 0.009523999892735446
+      "latency_ms": 0.009495000085735228
     },
     {
       "id": "q026",
@@ -2600,7 +2627,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_aggregation",
-      "latency_ms": 0.009623999972063757
+      "latency_ms": 0.009975000011763768
     },
     {
       "id": "q027",
@@ -2611,7 +2638,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_aggregation",
-      "latency_ms": 0.008804000003692636
+      "latency_ms": 0.009173999956146872
     },
     {
       "id": "q028",
@@ -2622,7 +2649,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_aggregation",
-      "latency_ms": 0.008854000043356791
+      "latency_ms": 0.022013000034348806
     },
     {
       "id": "q029",
@@ -2633,7 +2660,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.009924999972099613
+      "latency_ms": 0.010725999914029671
     },
     {
       "id": "q030",
@@ -2644,7 +2671,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.009443999942959636
+      "latency_ms": 0.010084999985338072
     },
     {
       "id": "q031",
@@ -2666,7 +2693,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.00991500007785362
+      "latency_ms": 0.010354999972150836
     },
     {
       "id": "q033",
@@ -2677,7 +2704,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.015612999959557783
+      "latency_ms": 0.00965499998528685
     },
     {
       "id": "q034",
@@ -2688,7 +2715,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.011826999980257824
+      "latency_ms": 0.009262999924430915
     },
     {
       "id": "q043",
@@ -2699,7 +2726,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.013800000033370452
+      "latency_ms": 0.013070000022707973
     },
     {
       "id": "q044",
@@ -2710,7 +2737,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.01262900002529932
+      "latency_ms": 0.011607000033109216
     },
     {
       "id": "q049",
@@ -2721,7 +2748,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.009924999972099613
+      "latency_ms": 0.009943999998540676
     },
     {
       "id": "q050",
@@ -2732,7 +2759,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.009454000064579304
+      "latency_ms": 0.01013499991131539
     },
     {
       "id": "q051",
@@ -2743,7 +2770,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_join",
-      "latency_ms": 0.0065100000483653275
+      "latency_ms": 0.006720000101267942
     },
     {
       "id": "q052",
@@ -2754,7 +2781,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_join",
-      "latency_ms": 0.006159000008665316
+      "latency_ms": 0.006418999987545249
     },
     {
       "id": "q053",
@@ -2765,7 +2792,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.012578999985635164
+      "latency_ms": 0.012459000004128029
     },
     {
       "id": "q054",
@@ -2776,7 +2803,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.010556000006545219
+      "latency_ms": 0.010915999951066624
     },
     {
       "id": "q055",
@@ -2787,7 +2814,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.010145000032935059
+      "latency_ms": 0.01040600000123959
     },
     {
       "id": "q056",
@@ -2798,7 +2825,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.007662000029995397
+      "latency_ms": 0.021012000047448964
     },
     {
       "id": "q057",
@@ -2809,7 +2836,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.007271000072250899
+      "latency_ms": 0.00768100005643646
     },
     {
       "id": "q058",
@@ -2820,7 +2847,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.0065100000483653275
+      "latency_ms": 0.006789999929424084
     },
     {
       "id": "q059",
@@ -2831,7 +2858,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.006219000056262303
+      "latency_ms": 0.006600000006073969
     },
     {
       "id": "q060",
@@ -2842,7 +2869,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.009503999990556622
+      "latency_ms": 0.010164999935113883
     },
     {
       "id": "q061",
@@ -2853,7 +2880,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.008151999963956769
+      "latency_ms": 0.008373000014216814
     },
     {
       "id": "q062",
@@ -2864,7 +2891,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.007481000011466676
+      "latency_ms": 0.008232999903157179
     },
     {
       "id": "q063",
@@ -2875,7 +2902,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.007310999990295386
+      "latency_ms": 0.007832000051166688
     },
     {
       "id": "q064",
@@ -2886,7 +2913,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.0060890000668223365
+      "latency_ms": 0.006409999969037017
     },
     {
       "id": "q065",
@@ -2897,7 +2924,7 @@
       "execution_correct": false,
       "exact_match": false,
       "error": "wrong_filter",
-      "latency_ms": 0.00769200005379389
+      "latency_ms": 0.00776199999563687
     }
   ],
   "judge_calibration": {
