@@ -18,6 +18,7 @@ import json
 import os
 import random
 import re
+from collections import Counter
 
 
 def _numbers(text):
@@ -41,6 +42,159 @@ def judge(gold_answer, candidate_answer):
     if not gold_nums or not cand_nums:
         return "incorrect"
     return "correct" if gold_nums[-1] in cand_nums else "incorrect"
+
+
+# Disagreement patterns: the recurring shapes a judge-vs-human
+# disagreement takes. False positives are the judge matching the right
+# number to the wrong thing; false negatives are a right answer the
+# judge's verbatim number matching cannot see. `other` is the honest
+# fallback — a disagreement that fits none of the named shapes still
+# counts, so the pattern counts always add up to the disagreement total.
+DISAGREEMENT_PATTERNS = {
+    "wrong_symbol": "false positive — right number, wrong symbol",
+    "wrong_side": "false positive — right number, wrong side (BUY/SELL)",
+    "wrong_metric": "false positive — right number, wrong metric "
+                    "(price vs quantity vs value)",
+    "wrong_scope": "false positive — right number, wrong scope "
+                   "(country, account, or other identifier)",
+    "wording": "false negative — correct answer written in words, "
+               "no digits for the judge to match",
+    "rounding": "false negative — correct number sensibly rounded "
+                "(e.g. 1.23 million for 1,234,500)",
+    "other": "disagreement fitting none of the named patterns",
+}
+
+_SIDES = ("BUY", "SELL")
+_METRIC_WORDS = {"price", "quantity", "value", "orders", "accounts",
+                 "clients", "symbols", "shares", "trades"}
+_COUNTRIES = {"japan", "canada", "usa", "united states", "uk", "germany",
+              "france", "china", "india", "australia", "singapore",
+              "korea", "brazil", "mexico", "netherlands"}
+_NUMBER_WORDS = {"one", "two", "three", "four", "five", "six", "seven",
+                 "eight", "nine", "ten", "eleven", "twelve", "thirteen",
+                 "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
+                 "nineteen", "twenty", "thirty", "forty", "fifty", "sixty",
+                 "seventy", "eighty", "ninety"}
+# Scale words are not counting words on their own: "1.1 million" is a
+# rescaled digit, not a spelled-out number. They only signal wording
+# when the candidate has no digits at all ("a million orders").
+_SCALE_WORDS = {"hundred", "thousand", "million", "billion"}
+
+
+def _symbols(text):
+    """Ticker symbols mentioned: any all-caps token of ticker length
+    that is not a trade side."""
+    return {t for t in re.findall(r"[A-Z]{2,5}", text or "")
+            if t not in _SIDES}
+
+
+def _words(text):
+    return re.findall(r"[A-Za-z]+|[\d,]+(?:\.\d+)?", text or "")
+
+
+def _nearest_side(text, number):
+    """The BUY/SELL word closest to the headline number in the text.
+
+    The side that matters is the one attached to the number the judge
+    matched, not just any side mentioned anywhere in the answer:
+    "185 SELL orders and 90 BUY orders" is a wrong-side answer even
+    though BUY appears in it. Returns None when no side is mentioned.
+    """
+    tokens = _words(text)
+    try:
+        idx = next(i for i, t in enumerate(tokens)
+                   if _numbers(t) and _numbers(t)[0] == number)
+    except StopIteration:
+        return None
+    sides = [(i, t) for i, t in enumerate(tokens) if t in _SIDES]
+    if not sides:
+        return None
+    return min(sides, key=lambda p: abs(p[0] - idx))[1]
+
+
+def _metric_words(text):
+    return {w.lower() for w in _words(text)} & _METRIC_WORDS
+
+
+def _account_id(text):
+    m = re.search(r"\baccount\s+(\d+)", text or "", re.IGNORECASE)
+    return m.group(1) if m else None
+
+
+def _countries(text):
+    return {w.lower() for w in _words(text)} & _COUNTRIES
+
+
+def _number_words(text):
+    return {w.lower() for w in _words(text)} & _NUMBER_WORDS
+
+
+def _scale_words(text):
+    return {w.lower() for w in _words(text)} & _SCALE_WORDS
+
+
+def _is_rounded_form(candidate_number, gold_number):
+    """True when the candidate number is the gold number rounded, or
+    rounded and rescaled (thousands / millions / billions): 1.23 for
+    1,234,500, 54 for 54.2. A 1% relative tolerance is the "sensibly
+    rounded" bound — wider than that and it is a different number."""
+    if gold_number == 0:
+        return candidate_number == 0
+    for scale in (1, 1e3, 1e6, 1e9):
+        if abs(candidate_number * scale - gold_number) <= 0.01 * abs(gold_number):
+            return True
+    return False
+
+
+def classify_disagreement(gold_answer, candidate_answer,
+                          human_label, judge_label):
+    """Classify one judge-vs-human disagreement by pattern.
+
+    Returns None when the judge and the human agree — there is no
+    disagreement to classify. Direction comes from the labels:
+    judge "correct" vs human "incorrect" is a false positive (the
+    right number attached to the wrong symbol / side / metric /
+    scope); judge "incorrect" vs human "correct" is a false
+    negative (wording or rounding). Anything that fits neither shape
+    is "other", never silently dropped.
+    """
+    if human_label == judge_label:
+        return None
+    gold_nums = _numbers(gold_answer)
+    cand_nums = _numbers(candidate_answer)
+    headline = gold_nums[-1] if gold_nums else None
+    if judge_label == "correct":
+        # False positive: the gold headline number is in the candidate,
+        # so what the number refers to must be what differs.
+        if _symbols(gold_answer) != _symbols(candidate_answer):
+            return "wrong_symbol"
+        if headline is not None and (
+                _nearest_side(gold_answer, headline)
+                != _nearest_side(candidate_answer, headline)):
+            return "wrong_side"
+        if _metric_words(gold_answer) != _metric_words(candidate_answer):
+            return "wrong_metric"
+        gold_acct, cand_acct = _account_id(gold_answer), _account_id(candidate_answer)
+        if gold_acct and cand_acct and gold_acct != cand_acct:
+            return "wrong_scope"
+        if _countries(gold_answer) != _countries(candidate_answer):
+            return "wrong_scope"
+        return "other"
+    # False negative: the gold number is not verbatim in the candidate,
+    # yet the human says the answer is right. Rounding is checked
+    # before wording: "about 1.23 million" contains the word "million"
+    # but is a rounded number, not a number written out in words.
+    # Wording also covers answers where the headline number is in
+    # words while other figures stay digits ("Account 5 placed
+    # twenty orders") — the judge's digits say nothing about the
+    # headline figure there.
+    if headline is not None and any(
+            _is_rounded_form(n, headline) for n in cand_nums):
+        return "rounding"
+    if _number_words(candidate_answer) or (
+            not cand_nums and _scale_words(candidate_answer)):
+        return "wording"
+    return "other"
 
 
 def cohens_kappa(pairs):
@@ -104,6 +258,12 @@ def calibrate(labels):
         rows.append({**item, "judge_label": verdict, "agree": agree})
     precision = tp / (tp + fp) if (tp + fp) else 0.0
     recall = tp / (tp + fn) if (tp + fn) else 0.0
+    disagreements = [r for r in rows if not r["agree"]]
+    for d in disagreements:
+        d["pattern"] = classify_disagreement(
+            d["gold_answer"], d["candidate_answer"],
+            d["human_label"], d["judge_label"])
+    pattern_counts = dict(Counter(d["pattern"] for d in disagreements))
     return {
         "n": len(labels),
         "agreement": sum(1 for h, j in pairs if h == j) / len(pairs) if pairs else 0.0,
@@ -112,7 +272,11 @@ def calibrate(labels):
         "precision_correct": precision,
         "recall_correct": recall,
         "confusion": {"tp": tp, "fp": fp, "fn": fn, "tn": tn},
-        "disagreements": [r for r in rows if not r["agree"]],
+        "disagreements": disagreements,
+        "disagreement_patterns": {
+            "total": len(disagreements),
+            "counts": pattern_counts,
+        },
     }
 
 

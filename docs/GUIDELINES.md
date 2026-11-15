@@ -153,6 +153,14 @@ and `results/report.md`:
 - The **disagreements list**: every labelled answer where the judge and
   the human differ, with the gold answer, the candidate answer, and
   both verdicts.
+- The **disagreement pattern summary** (`disagreement_patterns` in
+  `results.json`, "Disagreement patterns" in `report.md`): each
+  disagreement classified as wrong symbol / side / metric / scope
+  (false positives — the right number attached to the wrong thing),
+  wording / rounding (false negatives — a right answer the judge's
+  verbatim number matching cannot see), or `other`. Read the counts
+  before reading the individual cases: they say which judge blind
+  spot is biggest, and therefore which fix is worth doing first.
 
 Current state, for reference: on 44 labels the heuristic judge agrees
 with humans 77.3% of the time, kappa = 0.545 (95% CI [0.289, 0.773]),

@@ -28,7 +28,7 @@ commit with tests passing and the regression gate green.
 - [x] Split-half reliability: split the gold set into two halves and report
       per-system accuracy per half, so a headline number driven by one
       half is visible, with tests
-- [ ] Judge disagreement pattern summary: classify judge-vs-human
+- [x] Judge disagreement pattern summary: classify judge-vs-human
       disagreements by pattern (right number on the wrong symbol/side/
       metric vs wording/rounding) and report the counts, with tests
 - [ ] Error-type × category cross-tab in the report: which error types

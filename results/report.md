@@ -104,7 +104,7 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.02 ms | 0.02 ms |
+| system_a | 0.02 ms | 0.01 ms |
 | system_b | 0.01 ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
@@ -244,3 +244,20 @@ Full failure list for manual error review: `results/failures.csv` (one row per f
 On 44 human-labelled answers, the heuristic judge agreed with humans 77.3% of the time: **Cohen's kappa = 0.545** (95% bootstrap CI [0.289, 0.773]) (moderate agreement), precision 0.773, recall 0.773, confusion {'tp': 17, 'fp': 5, 'fn': 5, 'tn': 17}.
 
 Conclusion: at kappa ≈ 0.55 this judge is useful as a cheap first pass but **must not gate a release alone** — it is fooled by the right number attached to the wrong symbol/side/metric, and it rejects correct answers written in words or sensibly rounded. Execution accuracy against ground truth remains the headline metric; the judge is a supplement with known, measured limits.
+
+### Disagreement patterns
+
+The judge disagreed with humans on 10 labelled answers. Classified by pattern — the false positives are the judge matching the right number to the wrong thing, the false negatives are right answers its verbatim number matching cannot see:
+
+| Pattern | Shape | Count |
+|---|---|---|
+| wording | false negative — correct answer written in words, no digits for the judge to match | 4 |
+| wrong_scope | false positive — right number, wrong scope (country, account, or other identifier) | 2 |
+| rounding | false negative — correct number sensibly rounded (e.g. 1.23 million for 1,234,500) | 1 |
+| wrong_metric | false positive — right number, wrong metric (price vs quantity vs value) | 1 |
+| wrong_side | false positive — right number, wrong side (BUY/SELL) | 1 |
+| wrong_symbol | false positive — right number, wrong symbol | 1 |
+
+Per disagreement: h35 (wrong_symbol), h36 (wrong_side), h37 (wrong_scope), h38 (wrong_scope), h39 (wrong_metric), h40 (wording), h41 (rounding), h42 (wording), h43 (wording), h44 (wording).
+
+Reading: the pattern counts say where the judge's matching is blind. Wrong-symbol / wrong-side / wrong-metric false positives all come from matching a bare number with no check on what the number refers to — fixing the judge means checking the referent, not the number. Wording and rounding false negatives are the same lesson from the other side: a correct answer need not repeat the gold digits verbatim.

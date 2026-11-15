@@ -24,7 +24,7 @@ from collections import Counter, defaultdict
 from .compare import compare_results, render_compare
 from .db import build_db
 from .failures import write_failures_csv
-from .judge import calibrate
+from .judge import DISAGREEMENT_PATTERNS, calibrate
 from .metrics import evaluate_system
 from .stats import (bootstrap_ci, bootstrap_diff_ci, mcnemar,
                     sample_size_for_difference, wilson_interval)
@@ -353,7 +353,7 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
             judge_result = calibrate(labels)
             judge_result["disagreements"] = [
                 {k: d[k] for k in ("id", "gold_answer", "candidate_answer",
-                                   "human_label", "judge_label")}
+                                   "human_label", "judge_label", "pattern")}
                 for d in judge_result["disagreements"]]
 
     try:
@@ -671,6 +671,35 @@ def render_report(res, failures_csv=None):
                  "written in words or sensibly rounded. Execution accuracy against ground "
                  "truth remains the headline metric; the judge is a supplement with known, "
                  "measured limits.")
+        patterns = j.get("disagreement_patterns")
+        if patterns and patterns["total"]:
+            counts = patterns["counts"]
+            L.append("")
+            L.append("### Disagreement patterns\n")
+            L.append(f"The judge disagreed with humans on {patterns['total']} "
+                     f"labelled answers. Classified by pattern — the false "
+                     f"positives are the judge matching the right number to "
+                     f"the wrong thing, the false negatives are right "
+                     f"answers its verbatim number matching cannot see:\n")
+            L.append("| Pattern | Shape | Count |")
+            L.append("|---|---|---|")
+            for pat, n in sorted(counts.items(),
+                                 key=lambda kv: (-kv[1], kv[0])):
+                L.append(f"| {pat} | {DISAGREEMENT_PATTERNS[pat]} | {n} |")
+            L.append("")
+            L.append("Per disagreement: " + ", ".join(
+                f"{d['id']} ({d['pattern']})"
+                for d in j["disagreements"]) + ".")
+            L.append("")
+            L.append("Reading: the pattern counts say where the judge's "
+                     "matching is blind. Wrong-symbol / wrong-side / "
+                     "wrong-metric false positives all come from matching "
+                     "a bare number with no check on what the number "
+                     "refers to — fixing the judge means checking the "
+                     "referent, not the number. Wording and rounding "
+                     "false negatives are the same lesson from the other "
+                     "side: a correct answer need not repeat the gold "
+                     "digits verbatim.")
     L.append("")
     return "\n".join(L)
 
