@@ -41,7 +41,11 @@ Principles:
   calls plus GROUP BY, then WHERE conjuncts (order-insensitive), in that
   priority order. A failure that matches on all three stays generic,
   e.g. a wrong SELECT column, ORDER BY, or LIMIT. Error analysis drives
-  iteration; a single accuracy number does not. Every failure is also
+  iteration; a single accuracy number does not. The report also carries
+  an error-type × category cross-tab per system, so a failure mode that
+  clusters in one kind of question (e.g. `wrong_filter` on date-range
+  questions) is visible at a glance, with the dominant error per
+  category bolded. Every failure is also
   exported to `results/failures.csv` — one row per failed question per
   system (question, category, difficulty, error, candidate SQL, gold
   SQL, exact match, latency) — so a human can triage the errors in a

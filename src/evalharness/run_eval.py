@@ -228,6 +228,81 @@ def build_flaky_questions(gold, per_question_correct, runs):
     return {"runs": runs, "flaky_count": len(rows), "questions": rows}
 
 
+# The fixed error taxonomy from metrics.categorise_error, in the order
+# its docstring lists them: a missing answer, a crash, an empty answer,
+# then the wrong-result split (join / aggregation / filter / generic).
+ERROR_TYPES = ("no_sql_generated", "execution_error", "empty_result",
+               "wrong_join", "wrong_aggregation", "wrong_filter",
+               "wrong_result")
+
+
+def _cross_tab_for_records(records):
+    """One system's error-type × category cross-tab.
+
+    `cells[category][error]` counts that system's failures of that
+    error type in that category; every category × error cell exists,
+    even when zero, so a column that is all zeros says that error
+    never happens anywhere. `dominant_error[category]` is the error
+    type with the most failures in that category — the failure mode to
+    fix first for that kind of question — or None when the category
+    has no failures; ties break in ERROR_TYPES order, so the result
+    is deterministic.
+    """
+    categories = sorted({r["category"] for r in records})
+    cells = {cat: {err: 0 for err in ERROR_TYPES} for cat in categories}
+    for r in records:
+        if r["error"]:
+            cells[r["category"]][r["error"]] += 1
+    category_totals = {cat: sum(cells[cat].values()) for cat in categories}
+    error_totals = {err: sum(cells[cat][err] for cat in categories)
+                    for err in ERROR_TYPES}
+    dominant = {}
+    for cat in categories:
+        if category_totals[cat] == 0:
+            dominant[cat] = None
+        else:
+            dominant[cat] = max(ERROR_TYPES,
+                                key=lambda e: cells[cat][e])
+    return {
+        "cells": cells,
+        "category_totals": category_totals,
+        "error_totals": error_totals,
+        "total_errors": sum(category_totals.values()),
+        "dominant_error": dominant,
+    }
+
+
+def build_error_cross_tab(records_a, records_b):
+    """Error-type × category cross-tab for both systems.
+
+    The per-category / per-difficulty tables say *where* a system is
+    weak; this says *how* it is weak there — whether a category's
+    failures are mostly wrong filters, wrong joins, wrong aggregations,
+    or something else. A failure mode that clusters in one kind of
+    question points at one fix; the same error spread evenly across
+    categories points at a general weakness instead.
+    """
+    if len(records_a) != len(records_b):
+        raise ValueError(
+            "cannot build error cross-tab: record counts differ "
+            f"({len(records_a)} vs {len(records_b)})")
+    for ra, rb in zip(records_a, records_b):
+        if ra["id"] != rb["id"]:
+            raise ValueError(
+                "cannot build error cross-tab: record ids misaligned "
+                f"({ra['id']} vs {rb['id']})")
+    categories = sorted({r["category"] for r in records_a}
+                        | {r["category"] for r in records_b})
+    return {
+        "categories": categories,
+        "error_types": list(ERROR_TYPES),
+        "systems": {
+            "system_a": _cross_tab_for_records(records_a),
+            "system_b": _cross_tab_for_records(records_b),
+        },
+    }
+
+
 def build_coverage_matrix(gold, thin_threshold=3):
     """Category × difficulty coverage of the gold set.
 
@@ -383,6 +458,9 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         "coverage_matrix": build_coverage_matrix(gold),
         "split_half": build_split_half(
             gold, per_system["system_a"]["records"],
+            per_system["system_b"]["records"]),
+        "error_cross_tab": build_error_cross_tab(
+            per_system["system_a"]["records"],
             per_system["system_b"]["records"]),
         "system_a_errors": errors_a,
         "judge_calibration": judge_result,
@@ -649,6 +727,50 @@ def render_report(res, failures_csv=None):
                  "system_b is precisely that fix.")
     else:
         L.append("No errors.")
+    cross = res.get("error_cross_tab")
+    if cross:
+        L.append("")
+        L.append("## Error-type × category cross-tab\n")
+        L.append("Which error types cluster in which categories: one row per "
+                 "category, one column per error type, a cell counts that "
+                 "system's failures of that type in that category. The bold "
+                 "count in a row is that category's dominant error — the "
+                 "failure mode to fix first for that kind of question. A "
+                 "column that is all zeros is itself a finding: that error "
+                 "never happens anywhere.\n")
+        for name in ("system_a", "system_b"):
+            tab = cross["systems"][name]
+            if tab["total_errors"] == 0:
+                L.append(f"- {name}: **0 failures** — nothing to cross-tabulate.")
+                continue
+            L.append(f"### {name} ({tab['total_errors']} failures)\n")
+            L.append("| Category | " + " | ".join(cross["error_types"])
+                     + " | Total |")
+            L.append("|---|" + "---|" * (len(cross["error_types"]) + 1))
+            for cat in cross["categories"]:
+                cells = []
+                for err in cross["error_types"]:
+                    n = tab["cells"][cat][err]
+                    cell = (f"**{n}**"
+                            if n and tab["dominant_error"][cat] == err
+                            else str(n))
+                    cells.append(cell)
+                L.append(f"| {cat} | " + " | ".join(cells)
+                         + f" | {tab['category_totals'][cat]} |")
+            L.append("")
+            dom = defaultdict(list)
+            for cat in cross["categories"]:
+                if tab["dominant_error"][cat]:
+                    dom[tab["dominant_error"][cat]].append(cat)
+            parts = []
+            for err in cross["error_types"]:
+                if err in dom:
+                    cats = dom[err]
+                    parts.append(f"{err} dominates {len(cats)} "
+                                 f"{'category' if len(cats) == 1 else 'categories'} "
+                                 f"({', '.join(cats)})")
+            L.append("Dominant error per category: " + "; ".join(parts) + ".")
+            L.append("")
     if failures_csv:
         L.append("")
         L.append(f"Full failure list for manual error review: `{failures_csv}` "

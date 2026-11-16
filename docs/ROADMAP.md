@@ -31,7 +31,7 @@ commit with tests passing and the regression gate green.
 - [x] Judge disagreement pattern summary: classify judge-vs-human
       disagreements by pattern (right number on the wrong symbol/side/
       metric vs wording/rounding) and report the counts, with tests
-- [ ] Error-type × category cross-tab in the report: which error types
+- [x] Error-type × category cross-tab in the report: which error types
       cluster in which categories, with tests
 
 ## Done

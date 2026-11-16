@@ -104,7 +104,7 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.02 ms | 0.01 ms |
+| system_a | 0.03 ms | 0.02 ms |
 | system_b | 0.01 ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
@@ -236,6 +236,39 @@ system_a failed 36 of 65 questions. Error categories: {'wrong_filter': 25, 'wron
 | q065 | count_by_date_range | wrong_filter | `SELECT COUNT(*) FROM orders WHERE symbol = 'NVDA'` |
 
 Reading: system_a's failures are not random. They cluster exactly on questions with a side, status, country, or date-range filter, and on average-price questions — the documented weaknesses in `systems.py`. That clustering, not the headline number, is what tells engineering what to fix, and system_b is precisely that fix.
+
+## Error-type × category cross-tab
+
+Which error types cluster in which categories: one row per category, one column per error type, a cell counts that system's failures of that type in that category. The bold count in a row is that category's dominant error — the failure mode to fix first for that kind of question. A column that is all zeros is itself a finding: that error never happens anywhere.
+
+### system_a (36 failures)
+
+| Category | no_sql_generated | execution_error | empty_result | wrong_join | wrong_aggregation | wrong_filter | wrong_result | Total |
+|---|---|---|---|---|---|---|---|---|
+| avg_price_by_symbol | 0 | 0 | 0 | 0 | **5** | 0 | 0 | 5 |
+| avg_quantity | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| avg_quantity_by_side | 0 | 0 | 0 | 0 | 0 | **2** | 0 | 2 |
+| count_by_account | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| count_by_country | 0 | 0 | 0 | **4** | 0 | 0 | 0 | 4 |
+| count_by_date_range | 0 | 0 | 0 | 0 | 0 | **10** | 0 | 10 |
+| count_by_side | 0 | 0 | 0 | 0 | 0 | **2** | 0 | 2 |
+| count_by_status | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| count_total | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| distinct_count | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| max_quantity | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| sum_quantity_by_side_symbol | 0 | 0 | 0 | 0 | 0 | **6** | 0 | 6 |
+| sum_quantity_by_symbol | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| sum_quantity_filled_by_symbol | 0 | 0 | 0 | 0 | 0 | **3** | 0 | 3 |
+| sum_value_by_country | 0 | 0 | 0 | **2** | 0 | 0 | 0 | 2 |
+| sum_value_by_side | 0 | 0 | 0 | 0 | 0 | **2** | 0 | 2 |
+| sum_value_by_symbol | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| top_account_by_orders | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| top_symbol_by_value | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| top_symbol_by_volume | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+Dominant error per category: wrong_join dominates 2 categories (count_by_country, sum_value_by_country); wrong_aggregation dominates 1 category (avg_price_by_symbol); wrong_filter dominates 6 categories (avg_quantity_by_side, count_by_date_range, count_by_side, sum_quantity_by_side_symbol, sum_quantity_filled_by_symbol, sum_value_by_side).
+
+- system_b: **0 failures** — nothing to cross-tabulate.
 
 Full failure list for manual error review: `results/failures.csv` (one row per failed question, both systems).
 
