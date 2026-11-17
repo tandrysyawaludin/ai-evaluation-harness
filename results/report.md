@@ -104,8 +104,8 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.03 ms | 0.02 ms |
-| system_b | 0.01 ms | 0.01 ms |
+| system_a | 0.02 ms | 0.01 ms |
+| system_b | 0.01 ms | 0.02 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
 
@@ -179,6 +179,14 @@ Every category × difficulty cell should hold enough questions for its per-categ
 Coverage: 11 of 60 cells have at least 3 questions, 11 thin, 38 empty.
 Empty cells: avg_price_by_symbol / medium, avg_price_by_symbol / hard, avg_quantity / medium, avg_quantity / hard, avg_quantity_by_side / medium, avg_quantity_by_side / hard, count_by_account / medium, count_by_account / hard, count_by_country / easy, count_by_country / medium, count_by_side / medium, count_by_side / hard, count_by_status / medium, count_by_status / hard, count_total / medium, count_total / hard, distinct_count / medium, distinct_count / hard, max_quantity / medium, max_quantity / hard, sum_quantity_by_side_symbol / easy, sum_quantity_by_side_symbol / medium, sum_quantity_by_symbol / medium, sum_quantity_by_symbol / hard, sum_quantity_filled_by_symbol / easy, sum_quantity_filled_by_symbol / medium, sum_value_by_country / easy, sum_value_by_country / medium, sum_value_by_side / medium, sum_value_by_side / hard, sum_value_by_symbol / easy, sum_value_by_symbol / medium, top_account_by_orders / easy, top_account_by_orders / medium, top_symbol_by_value / easy, top_symbol_by_value / medium, top_symbol_by_volume / easy, top_symbol_by_volume / medium.
 Thin cells: avg_quantity / easy (1), avg_quantity_by_side / easy (2), count_by_date_range / hard (2), count_by_side / easy (2), distinct_count / easy (2), max_quantity / easy (1), sum_value_by_country / hard (2), sum_value_by_side / easy (2), top_account_by_orders / hard (1), top_symbol_by_value / hard (1), top_symbol_by_volume / hard (1).
+
+## Gold-set near-duplicates
+
+1 group(s) of gold questions measure the same thing twice: they share a normalised question (same wording, different case / punctuation) or the same gold SQL under different wording. A shared gold SQL is a paraphrase — it tests robustness to phrasing, but it also double-counts one query in the headline accuracy. A shared question is a plain repeat.
+
+| Kind | IDs | Shared text / SQL |
+|---|---|---|
+| gold_sql | q061, q063 | `select count(*) from orders where order_date between '2025-07-01' and '2025-09-30'` |
 
 ## Split-half reliability
 

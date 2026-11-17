@@ -19,13 +19,14 @@ Usage:  PYTHONPATH=src python -m evalharness.run_eval --runs 3
 import argparse
 import json
 import os
+import re
 from collections import Counter, defaultdict
 
 from .compare import compare_results, render_compare
 from .db import build_db
 from .failures import write_failures_csv
 from .judge import DISAGREEMENT_PATTERNS, calibrate
-from .metrics import evaluate_system
+from .metrics import evaluate_system, normalise_sql
 from .stats import (bootstrap_ci, bootstrap_diff_ci, mcnemar,
                     sample_size_for_difference, wilson_interval)
 from .systems import SYSTEMS
@@ -339,6 +340,55 @@ def build_coverage_matrix(gold, thin_threshold=3):
     }
 
 
+def _normalise_question(question):
+    """Question text with case, punctuation and whitespace ignored.
+
+    "How many orders?" and "how many orders" are the same question
+    typed twice; the normalisation makes that visible. Numbers and
+    dates survive (they are part of what the question asks), so two
+    questions over different date ranges stay distinct.
+    """
+    s = re.sub(r"[^\w\s]", "", (question or "").lower())
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def build_gold_duplicates(gold):
+    """Groups of gold questions that measure the same thing twice.
+
+    Two items are near-duplicates when they share a normalised
+    question (see `_normalise_question`) or the same normalised gold
+    SQL (see `metrics.normalise_sql`). Exact duplicate question text
+    is already a schema error in `validate_gold`; this catches the
+    cases that slip past it — the same question retyped with different
+    punctuation, and two differently worded questions with identical
+    gold SQL (a paraphrase, or an accidental repeat).
+
+    A gold-SQL group whose id set exactly matches a question group is
+    dropped: the same pair reported twice adds noise, not information.
+    Returns {"groups": [...], "total_groups": n, "duplicate_ids": [...]}.
+    """
+    def groups_for(field, normalise, kind):
+        seen = {}
+        for item in gold:
+            key = normalise(item.get(field, ""))
+            if key:
+                seen.setdefault(key, []).append(item["id"])
+        return [{"kind": kind, "ids": ids, "shared": key}
+                for key, ids in seen.items() if len(ids) > 1]
+
+    q_groups = groups_for("question", _normalise_question, "question")
+    sql_groups = groups_for("gold_sql", normalise_sql, "gold_sql")
+    q_id_sets = {frozenset(g["ids"]) for g in q_groups}
+    sql_groups = [g for g in sql_groups
+                  if frozenset(g["ids"]) not in q_id_sets]
+    groups = sorted(q_groups + sql_groups, key=lambda g: g["ids"])
+    return {
+        "groups": groups,
+        "total_groups": len(groups),
+        "duplicate_ids": sorted({i for g in groups for i in g["ids"]}),
+    }
+
+
 def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     """Full evaluation under one DB seed. Judge calibration is
     seed-independent (it grades human labels, not DB rows), so only the
@@ -456,6 +506,7 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         "per_category": categories,
         "per_difficulty": difficulties,
         "coverage_matrix": build_coverage_matrix(gold),
+        "gold_duplicates": build_gold_duplicates(gold),
         "split_half": build_split_half(
             gold, per_system["system_a"]["records"],
             per_system["system_b"]["records"]),
@@ -674,6 +725,28 @@ def render_report(res, failures_csv=None):
             L.append("Thin cells: " + ", ".join(
                 f"{c['category']} / {c['difficulty']} ({c['count']})"
                 for c in matrix["thin_cells"]) + ".")
+        L.append("")
+    dups = res.get("gold_duplicates")
+    if dups:
+        L.append("## Gold-set near-duplicates\n")
+        if dups["total_groups"] == 0:
+            L.append("No two gold questions share a normalised question or "
+                     "the same gold SQL — every question measures something "
+                     "distinct, at least by this check.")
+        else:
+            L.append(f"{dups['total_groups']} group(s) of gold questions "
+                     f"measure the same thing twice: they share a "
+                     f"normalised question (same wording, different case / "
+                     f"punctuation) or the same gold SQL under different "
+                     f"wording. A shared gold SQL is a paraphrase — it "
+                     f"tests robustness to phrasing, but it also "
+                     f"double-counts one query in the headline accuracy. "
+                     f"A shared question is a plain repeat.\n")
+            L.append("| Kind | IDs | Shared text / SQL |")
+            L.append("|---|---|---|")
+            for g in dups["groups"]:
+                shared = g["shared"].replace("|", "\\|")
+                L.append(f"| {g['kind']} | {', '.join(g['ids'])} | `{shared}` |")
         L.append("")
     split = res.get("split_half")
     if split:

@@ -33,6 +33,17 @@ commit with tests passing and the regression gate green.
       metric vs wording/rounding) and report the counts, with tests
 - [x] Error-type × category cross-tab in the report: which error types
       cluster in which categories, with tests
+- [x] Near-duplicate gold questions: flag groups sharing a normalised
+      question or the same gold SQL, in results.json and the report,
+      with tests
+- [ ] Difficulty-monotonicity check: flag when per-difficulty accuracy
+      does not fall easy → medium → hard, in the report, with tests
+- [ ] Results provenance: record the gold-set hash and harness git
+      commit in results.json and the report header, with tests
+- [ ] `--category` filter flag: run the eval on a subset of gold
+      categories for targeted iteration, with tests
+- [ ] Per-category Wilson 95% CIs in the per-category accuracy table,
+      with tests
 
 ## Done
 
