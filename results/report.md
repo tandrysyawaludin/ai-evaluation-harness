@@ -104,7 +104,7 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.02 ms | 0.01 ms |
+| system_a | 0.02 ms | 0.02 ms |
 | system_b | 0.01 ms | 0.02 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
@@ -148,6 +148,13 @@ Each system answered every question 3 times in the repeated runs (plus the recor
 | easy | 36 | 58% | 100% |
 | medium | 4 | 0% | 100% |
 | hard | 25 | 32% | 100% |
+
+## Difficulty monotonicity
+
+Accuracy should fall easy → medium → hard: harder questions should be harder. A system that scores higher on a harder difficulty than on an easier one is a warning — either the difficulty labels are wrong for those questions, or the system has a blind spot on the "easier" kind. Check the n in the table above before reading much into a gap: a violation on a 4-question cell is a handful of questions, not a pattern.
+
+- system_a: **not monotonic** — hard 32% (n=25) beats medium 0% (n=4) by 32%.
+- system_b: **monotonic** — accuracy falls easy → medium → hard as it should.
 
 ## Gold-set coverage matrix
 

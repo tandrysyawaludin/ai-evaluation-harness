@@ -389,6 +389,54 @@ def build_gold_duplicates(gold):
     }
 
 
+def build_difficulty_monotonicity(per_difficulty):
+    """Check accuracy falls easy -> medium -> hard, per system.
+
+    `per_difficulty` is the per-difficulty breakdown built in
+    `_run_single_seed` (accuracy and n per difficulty per system).
+    Only the known ladder easy / medium / hard is checked, in that
+    order, and only the difficulties actually present: a missing
+    difficulty is skipped, so a gold set with no medium questions
+    compares easy against hard directly. Any other difficulty label
+    has no place in the ladder and is ignored. Adjacent pairs are
+    enough — any inversion in the ladder implies an adjacent one.
+
+    A violation is a harder difficulty scored *above* an easier one.
+    That is a warning, not a failure: it usually means the difficulty
+    labels are wrong for those questions, or the system has a blind
+    spot on the "easier" kind — often a small-n cell, which is why
+    each violation carries both n's so the reader can judge whether
+    the gap is a handful of questions or a real pattern.
+    """
+    ladder = ["easy", "medium", "hard"]
+    present = [d for d in ladder if d in per_difficulty]
+    systems = {}
+    for name in ("system_a", "system_b"):
+        violations = []
+        for easier, harder in zip(present, present[1:]):
+            acc_easier = per_difficulty[easier][f"{name}_accuracy"]
+            acc_harder = per_difficulty[harder][f"{name}_accuracy"]
+            if acc_harder > acc_easier:
+                violations.append({
+                    "easier": easier,
+                    "harder": harder,
+                    "easier_accuracy": acc_easier,
+                    "harder_accuracy": acc_harder,
+                    "easier_n": per_difficulty[easier]["n"],
+                    "harder_n": per_difficulty[harder]["n"],
+                    "gap": acc_harder - acc_easier,
+                })
+        systems[name] = {
+            "monotonic": not violations,
+            "violations": violations,
+        }
+    return {
+        "difficulties": present,
+        "systems": systems,
+        "monotonic": all(s["monotonic"] for s in systems.values()),
+    }
+
+
 def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     """Full evaluation under one DB seed. Judge calibration is
     seed-independent (it grades human labels, not DB rows), so only the
@@ -505,6 +553,7 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         },
         "per_category": categories,
         "per_difficulty": difficulties,
+        "difficulty_monotonicity": build_difficulty_monotonicity(difficulties),
         "coverage_matrix": build_coverage_matrix(gold),
         "gold_duplicates": build_gold_duplicates(gold),
         "split_half": build_split_half(
@@ -690,6 +739,34 @@ def render_report(res, failures_csv=None):
     for diff, v in res["per_difficulty"].items():
         L.append(f"| {diff} | {v['n']} | {v['system_a_accuracy']:.0%} | {v['system_b_accuracy']:.0%} |")
     L.append("")
+    mono = res.get("difficulty_monotonicity")
+    if mono:
+        L.append("## Difficulty monotonicity\n")
+        L.append("Accuracy should fall easy → medium → hard: harder "
+                 "questions should be harder. A system that scores "
+                 "higher on a harder difficulty than on an easier one "
+                 "is a warning — either the difficulty labels are "
+                 "wrong for those questions, or the system has a "
+                 "blind spot on the \"easier\" kind. Check the n in "
+                 "the table above before reading much into a gap: a "
+                 "violation on a 4-question cell is a handful of "
+                 "questions, not a pattern.\n")
+        for name in ("system_a", "system_b"):
+            s = mono["systems"][name]
+            if s["monotonic"]:
+                L.append(f"- {name}: **monotonic** — accuracy falls "
+                         f"{' → '.join(mono['difficulties'])} as it should.")
+            else:
+                parts = []
+                for v in s["violations"]:
+                    parts.append(
+                        f"{v['harder']} {v['harder_accuracy']:.0%} "
+                        f"(n={v['harder_n']}) beats {v['easier']} "
+                        f"{v['easier_accuracy']:.0%} (n={v['easier_n']}) "
+                        f"by {v['gap']:.0%}")
+                L.append(f"- {name}: **not monotonic** — "
+                         + "; ".join(parts) + ".")
+        L.append("")
     matrix = res.get("coverage_matrix")
     if matrix:
         L.append("## Gold-set coverage matrix\n")
