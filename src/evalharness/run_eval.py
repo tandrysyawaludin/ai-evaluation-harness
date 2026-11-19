@@ -17,9 +17,11 @@ Usage:  PYTHONPATH=src python -m evalharness.run_eval --runs 3
         PYTHONPATH=src python -m evalharness.run_eval --compare old.json new.json
 """
 import argparse
+import hashlib
 import json
 import os
 import re
+import subprocess
 from collections import Counter, defaultdict
 
 from .compare import compare_results, render_compare
@@ -437,6 +439,49 @@ def build_difficulty_monotonicity(per_difficulty):
     }
 
 
+def _git_output(args, cwd):
+    """Stdout of a read-only git command, or None when git fails.
+
+    Git is missing, `cwd` is not a checkout, or the command errors —
+    provenance degrades to "unknown" instead of crashing the eval.
+    A missing git binary and a timeout are the same kind of failure
+    here, so both return None.
+    """
+    try:
+        proc = subprocess.run(["git", "-C", cwd] + args,
+                              capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if proc.returncode != 0:
+        return None
+    return proc.stdout.strip()
+
+
+def build_provenance(gold_path, repo_root=ROOT):
+    """Provenance for one eval run: what gold set and what code.
+
+    `gold_sha256` is the SHA-256 of the raw bytes of the gold file, so
+    any edit to a question, an answer, or even a trailing newline
+    changes it — a results file can be matched to the exact gold set
+    that produced it. `harness_commit` is the git HEAD the harness
+    ran from; `harness_dirty` says whether the working tree had
+    uncommitted changes at that moment, because a commit hash alone
+    does not identify code that was edited after the commit. Both
+    git fields are None when the repo is not a git checkout (or git
+    is unavailable), so provenance degrades instead of failing.
+    """
+    with open(gold_path, "rb") as f:
+        gold_sha256 = hashlib.sha256(f.read()).hexdigest()
+    commit = _git_output(["rev-parse", "HEAD"], repo_root)
+    status = _git_output(["status", "--porcelain"], repo_root)
+    return {
+        "gold_path": os.path.relpath(gold_path, repo_root),
+        "gold_sha256": gold_sha256,
+        "harness_commit": commit,
+        "harness_dirty": bool(status) if status is not None else None,
+    }
+
+
 def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     """Full evaluation under one DB seed. Judge calibration is
     seed-independent (it grades human labels, not DB rows), so only the
@@ -582,19 +627,24 @@ def run(runs=3, seed=42, seeds=None):
     seeds = tuple(seeds)
     if not seeds:
         raise ValueError("at least one DB seed is required")
-    gold = load_jsonl(os.path.join(ROOT, "data", "gold.jsonl"))
+    gold_path = os.path.join(ROOT, "data", "gold.jsonl")
+    gold = load_jsonl(gold_path)
     # Fail fast on a broken ground truth: a malformed gold row would
     # otherwise silently skew every metric the harness reports.
     gold_errors = validate_gold(gold)
     if gold_errors:
         raise ValueError("gold.jsonl failed schema validation:\n"
                          + "\n".join(gold_errors))
+    provenance = build_provenance(gold_path)
 
     per_seed = {}
     for i, s in enumerate(seeds):
         per_seed[s] = _run_single_seed(runs, s, gold, calibrate_judge=(i == 0))
 
     primary = per_seed[seeds[0]]
+    # Provenance is seed-independent (same gold set, same code), so it
+    # is recorded once, on the primary result.
+    primary["provenance"] = provenance
     primary["db_seeds"] = list(seeds)
     primary["seed_sensitivity"] = (
         build_seed_sensitivity(per_seed) if len(seeds) > 1 else None)
@@ -607,6 +657,18 @@ def render_report(res, failures_csv=None):
     j = res["judge_calibration"]
     L = []
     L.append("# Evaluation Report — Brokerage Text-to-SQL Agent\n")
+    prov = res.get("provenance")
+    if prov:
+        commit = prov.get("harness_commit")
+        commit_text = (f"`{commit}`" if commit
+                       else "unknown (not a git checkout)")
+        dirty = prov.get("harness_dirty")
+        tree = (" — ⚠ working tree had uncommitted changes" if dirty else
+                " — clean working tree" if dirty is False else
+                " — working-tree state unknown")
+        L.append(f"Provenance: gold set `{prov.get('gold_path', 'data/gold.jsonl')}` "
+                 f"SHA-256 `{prov['gold_sha256']}` · harness commit "
+                 f"{commit_text}{tree}\n")
     L.append(f"Gold set: **{res['gold_size']} questions** · DB seed: {res['db_seed']} · "
              f"Runs per system: {res['runs_per_system']}\n")
     L.append("## Headline results\n")

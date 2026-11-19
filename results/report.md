@@ -1,5 +1,7 @@
 # Evaluation Report — Brokerage Text-to-SQL Agent
 
+Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `b71442c89028e64014ca78c0aa90f122141885df` — ⚠ working tree had uncommitted changes
+
 Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
 ## Headline results
@@ -105,7 +107,7 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 | System | Mean | p95 |
 |---|---|---|
 | system_a | 0.02 ms | 0.02 ms |
-| system_b | 0.01 ms | 0.02 ms |
+| system_b | 0.01 ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
 
