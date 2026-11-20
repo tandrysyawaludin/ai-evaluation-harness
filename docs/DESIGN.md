@@ -98,16 +98,26 @@ is 1.0 — the machinery is what matters, and it is exercised by the tests
 and the CLI so an LLM-backed system can be dropped in unchanged.
 
 A second, orthogonal source of noise is the database itself: the same
-systems on a different seeded database can score differently even with
-identical questions, because the data the questions run against changed.
-The harness therefore evaluates under two seeds by default (42 and 1234;
-`--seeds` overrides) and reports the largest swing of each headline
-metric across seeds, with a **stable** verdict when every swing is at
-most 5pp. Ground truth stays fair across seeds because each gold SQL is
-re-executed on that seed's data. The primary seed's full results remain
-the top-level `systems` block, so the regression gate and `--compare`
-are unaffected; the per-seed headline numbers live in
+questions and systems on a different seeded database can score
+differently even with identical questions, because the data the
+questions run against changed. The harness therefore evaluates under
+two seeds by default (42 and 1234; `--seeds` overrides) and reports
+the largest swing of each headline metric across seeds, with a
+**stable** verdict when every swing is at most 5pp. Ground truth
+stays fair across seeds because each gold SQL is re-executed on that
+seed's data. The primary seed's full results remain the top-level
+`systems` block, so the regression gate and `--compare` are
+unaffected; the per-seed headline numbers live in
 `seed_sensitivity` in `results.json` and in the report.
+
+For targeted iteration, `--category` restricts a run to the named gold
+categories (e.g. `--category count_by_date_range`), so a fix for one
+kind of question can be checked without re-running the whole set. A
+filtered run records the filter and the full gold-set size in
+`results.json` and in the report header, and its headline numbers are
+only comparable to runs on the same subset — never to the full-set
+baseline, and the regression gate must only be run on unfiltered
+results.
 
 ## 6. Regression gates
 

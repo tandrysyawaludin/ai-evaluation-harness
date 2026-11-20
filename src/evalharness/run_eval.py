@@ -14,6 +14,7 @@ the data moves, never the questions.
 
 Usage:  PYTHONPATH=src python -m evalharness.run_eval --runs 3
         PYTHONPATH=src python -m evalharness.run_eval --runs 3 --seeds 42 7
+        PYTHONPATH=src python -m evalharness.run_eval --runs 3 --category count_by_date_range
         PYTHONPATH=src python -m evalharness.run_eval --compare old.json new.json
 """
 import argparse
@@ -612,7 +613,29 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     }
 
 
-def run(runs=3, seed=42, seeds=None):
+def filter_gold_by_category(gold, categories):
+    """Restrict the gold set to the named categories.
+
+    `categories` is a list of category names (an empty list or None
+    means no filtering). A name that matches no gold question is an
+    error, not an empty run: a typo in `--category` should fail loudly
+    instead of producing a report over zero questions. Returns the
+    filtered gold list, in the original order.
+    """
+    if not categories:
+        return gold
+    available = sorted({item["category"] for item in gold})
+    unknown = sorted(set(categories) - set(available))
+    if unknown:
+        raise ValueError(
+            "unknown categor" + ("y" if len(unknown) == 1 else "ies") + ": "
+            + ", ".join(unknown) + ". Available categories: "
+            + ", ".join(available))
+    wanted = set(categories)
+    return [item for item in gold if item["category"] in wanted]
+
+
+def run(runs=3, seed=42, seeds=None, categories=None):
     """Evaluate under one or more DB seeds.
 
     `seeds` wins over `seed` when given; otherwise `seed` alone is used,
@@ -621,6 +644,14 @@ def run(runs=3, seed=42, seeds=None):
     block, so the regression gate and `--compare` keep working unchanged.
     With more than one seed the result also carries `db_seeds` and a
     `seed_sensitivity` summary of headline-metric stability.
+
+    `categories` restricts the gold set to the named categories, for
+    targeted iteration on one kind of question (e.g. date ranges).
+    The result records the filter and the full gold-set size, so a
+    filtered results.json is never mistaken for a full run — and the
+    regression gate must only be run against unfiltered results,
+    because a subset's accuracy is not comparable to the full-set
+    baseline.
     """
     if seeds is None:
         seeds = (seed,)
@@ -635,6 +666,8 @@ def run(runs=3, seed=42, seeds=None):
     if gold_errors:
         raise ValueError("gold.jsonl failed schema validation:\n"
                          + "\n".join(gold_errors))
+    gold_total = len(gold)
+    gold = filter_gold_by_category(gold, categories)
     provenance = build_provenance(gold_path)
 
     per_seed = {}
@@ -646,6 +679,8 @@ def run(runs=3, seed=42, seeds=None):
     # is recorded once, on the primary result.
     primary["provenance"] = provenance
     primary["db_seeds"] = list(seeds)
+    primary["category_filter"] = sorted(categories) if categories else None
+    primary["gold_total"] = gold_total
     primary["seed_sensitivity"] = (
         build_seed_sensitivity(per_seed) if len(seeds) > 1 else None)
     return primary
@@ -671,6 +706,15 @@ def render_report(res, failures_csv=None):
                  f"{commit_text}{tree}\n")
     L.append(f"Gold set: **{res['gold_size']} questions** · DB seed: {res['db_seed']} · "
              f"Runs per system: {res['runs_per_system']}\n")
+    category_filter = res.get("category_filter")
+    if category_filter:
+        total = res.get("gold_total", res["gold_size"])
+        L.append(f"Filtered to {len(category_filter)} "
+                 f"{'category' if len(category_filter) == 1 else 'categories'} "
+                 f"({', '.join(category_filter)}): {res['gold_size']} of "
+                 f"{total} gold questions. Headline numbers here are for "
+                 f"that subset only — compare them against a run on the "
+                 f"same subset, not against the full-set baseline.\n")
     L.append("## Headline results\n")
     L.append("| System | Execution accuracy | 95% Wilson CI | 95% bootstrap CI | Exact match | Pass-consistency |")
     L.append("|---|---|---|---|---|---|")
@@ -1046,6 +1090,11 @@ def main():
     ap.add_argument("--seeds", type=int, nargs="+", default=None,
                     help="evaluate under each DB seed and report headline-metric stability "
                          "(default: 42 1234)")
+    ap.add_argument("--category", nargs="+", default=None, metavar="CATEGORY",
+                    help="run the eval on a subset of gold categories only, "
+                         "for targeted iteration (e.g. --category "
+                         "count_by_date_range avg_price_by_symbol); "
+                         "unknown categories fail with the available list")
     ap.add_argument("--out-dir", default=os.path.join(ROOT, "results"))
     ap.add_argument("--failures-csv", default=None,
                     help="where to write the failures CSV (default: "
@@ -1075,7 +1124,7 @@ def main():
         seeds = [args.seed]
     else:
         seeds = list(DEFAULT_SEEDS)
-    res = run(runs=args.runs, seeds=seeds)
+    res = run(runs=args.runs, seeds=seeds, categories=args.category)
     os.makedirs(args.out_dir, exist_ok=True)
     failures_path = args.failures_csv or os.path.join(args.out_dir, "failures.csv")
     failures_rel = os.path.relpath(failures_path, ROOT)

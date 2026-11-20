@@ -40,7 +40,7 @@ commit with tests passing and the regression gate green.
       does not fall easy → medium → hard, in the report, with tests
 - [x] Results provenance: record the gold-set hash and harness git
       commit in results.json and the report header, with tests
-- [ ] `--category` filter flag: run the eval on a subset of gold
+- [x] `--category` filter flag: run the eval on a subset of gold
       categories for targeted iteration, with tests
 - [ ] Per-category Wilson 95% CIs in the per-category accuracy table,
       with tests
