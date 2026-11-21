@@ -15,7 +15,17 @@ def wilson_interval(successes, n, z=1.96):
     denom = 1 + z * z / n
     centre = (p + z * z / (2 * n)) / denom
     margin = (z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))) / denom
-    return (max(0.0, centre - margin), min(1.0, centre + margin))
+    lo = max(0.0, centre - margin)
+    hi = min(1.0, centre + margin)
+    # Floating-point noise can leave a bound a hair inside [0, 1] when
+    # the true value is exactly a bound (e.g. 6/6 gives hi = 0.999...9
+    # instead of 1.0): snap it, so the interval always contains the
+    # point estimate and never prints as 0.9999999999999999.
+    if hi > 1.0 - 1e-12:
+        hi = 1.0
+    if lo < 1e-12:
+        lo = 0.0
+    return (lo, hi)
 
 
 def bootstrap_ci(values, statistic=None, n_boot=2000, seed=123, alpha=0.05):

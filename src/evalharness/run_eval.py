@@ -440,6 +440,44 @@ def build_difficulty_monotonicity(per_difficulty):
     }
 
 
+def build_per_category(gold, records_a, records_b):
+    """Per-category accuracy with a Wilson 95% CI per system.
+
+    The CI is the point of this table: a category's headline
+    percentage alone overstates how much is known when the category
+    holds only a handful of questions — 100% on n=4 has a Wilson
+    interval roughly [0.40, 1.00], which says almost nothing. The
+    interval is computed from the same counts as the accuracy, so
+    the two can never disagree. Categories sort alphabetically;
+    records must align with gold by id, as in build_split_half.
+    """
+    if len(records_a) != len(records_b) or len(records_a) != len(gold):
+        raise ValueError(
+            "cannot build per-category breakdown: gold and record "
+            f"counts differ ({len(gold)} gold, {len(records_a)} system_a, "
+            f"{len(records_b)} system_b)")
+    for item, ra, rb in zip(gold, records_a, records_b):
+        if ra["id"] != item["id"] or rb["id"] != item["id"]:
+            raise ValueError(
+                "cannot build per-category breakdown: record ids "
+                f"misaligned with gold ({item['id']} vs {ra['id']} / "
+                f"{rb['id']})")
+    by_cat = defaultdict(lambda: {"n": 0, "a": 0, "b": 0})
+    for item, ra, rb in zip(gold, records_a, records_b):
+        c = by_cat[item["category"]]
+        c["n"] += 1
+        c["a"] += int(ra["execution_correct"])
+        c["b"] += int(rb["execution_correct"])
+    return {cat: {"n": v["n"],
+                  "system_a_correct": v["a"],
+                  "system_b_correct": v["b"],
+                  "system_a_accuracy": v["a"] / v["n"],
+                  "system_b_accuracy": v["b"] / v["n"],
+                  "system_a_wilson_95ci": wilson_interval(v["a"], v["n"]),
+                  "system_b_wilson_95ci": wilson_interval(v["b"], v["n"])}
+            for cat, v in sorted(by_cat.items())}
+
+
 def _git_output(args, cwd):
     """Stdout of a read-only git command, or None when git fails.
 
@@ -529,17 +567,12 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     mc = mcnemar(a_flags, b_flags)
     diff_ci = bootstrap_diff_ci(a_flags, b_flags)
 
-    # Per-category breakdown
-    by_cat = defaultdict(lambda: {"n": 0, "a": 0, "b": 0})
-    for item, ra, rb in zip(gold, per_system["system_a"]["records"],
-                            per_system["system_b"]["records"]):
-        c = by_cat[item["category"]]
-        c["n"] += 1
-        c["a"] += int(ra["execution_correct"])
-        c["b"] += int(rb["execution_correct"])
-    categories = {cat: {"n": v["n"], "system_a_accuracy": v["a"] / v["n"],
-                        "system_b_accuracy": v["b"] / v["n"]}
-                  for cat, v in sorted(by_cat.items())}
+    # Per-category breakdown, with a Wilson 95% CI per system: a
+    # category's headline percentage alone overstates how much is
+    # known when the category holds only a handful of questions.
+    categories = build_per_category(
+        gold, per_system["system_a"]["records"],
+        per_system["system_b"]["records"])
 
     # Per-difficulty breakdown (easy / medium / hard), same shape as above.
     # Difficulties are ordered easy -> medium -> hard; any unexpected value
@@ -684,6 +717,14 @@ def run(runs=3, seed=42, seeds=None, categories=None):
     primary["seed_sensitivity"] = (
         build_seed_sensitivity(per_seed) if len(seeds) > 1 else None)
     return primary
+
+
+def _wilson_cell(ci):
+    """Render a Wilson CI as [lo, hi]; "—" when a results file predates
+    the per-category CIs, so old results still render."""
+    if not ci:
+        return "—"
+    return f"[{ci[0]:.3f}, {ci[1]:.3f}]"
 
 
 def render_report(res, failures_csv=None):
@@ -834,10 +875,19 @@ def render_report(res, failures_csv=None):
                 L.append("")
         L.append("")
     L.append("## Per-category accuracy\n")
-    L.append("| Category | n | system_a | system_b |")
-    L.append("|---|---|---|---|")
+    L.append("A category's headline percentage alone overstates how much "
+             "is known when the category holds only a handful of "
+             "questions: 100% on n=4 has a Wilson interval roughly "
+             "[0.40, 1.00]. Read the interval, not just the point "
+             "estimate — a wide interval means the category needs more "
+             "questions before its accuracy can be trusted.\n")
+    L.append("| Category | n | system_a | system_a 95% Wilson CI | system_b | system_b 95% Wilson CI |")
+    L.append("|---|---|---|---|---|---|")
     for cat, v in res["per_category"].items():
-        L.append(f"| {cat} | {v['n']} | {v['system_a_accuracy']:.0%} | {v['system_b_accuracy']:.0%} |")
+        L.append(f"| {cat} | {v['n']} | {v['system_a_accuracy']:.0%} | "
+                 f"{_wilson_cell(v.get('system_a_wilson_95ci'))} | "
+                 f"{v['system_b_accuracy']:.0%} | "
+                 f"{_wilson_cell(v.get('system_b_wilson_95ci'))} |")
     L.append("")
     L.append("## Per-difficulty accuracy\n")
     L.append("| Difficulty | n | system_a | system_b |")

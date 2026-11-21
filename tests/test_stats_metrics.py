@@ -21,6 +21,13 @@ class TestStats(unittest.TestCase):
         self.assertGreater(lo, 0.9)
         self.assertAlmostEqual(hi, 1.0)
 
+    def test_wilson_perfect_score_hits_unit_bound_exactly(self):
+        # 6/6 used to return hi = 0.9999999999999999 through float
+        # noise; a perfect score's interval must end at exactly 1.0,
+        # and a zero score's must start at exactly 0.0.
+        self.assertEqual(stats.wilson_interval(6, 6)[1], 1.0)
+        self.assertEqual(stats.wilson_interval(0, 6)[0], 0.0)
+
     def test_bootstrap_ci_brackets_mean(self):
         lo, hi = stats.bootstrap_ci([0, 1] * 50, n_boot=500)
         self.assertLess(lo, 0.5)
