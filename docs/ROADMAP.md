@@ -44,6 +44,21 @@ commit with tests passing and the regression gate green.
       categories for targeted iteration, with tests
 - [x] Per-category Wilson 95% CIs in the per-category accuracy table,
       with tests
+- [x] Per-difficulty Wilson 95% CIs in the per-difficulty accuracy table,
+      with tests
+- [ ] Stratified headline accuracy: equal-weight average of the
+      per-difficulty accuracies, so a gold set heavy in easy questions
+      cannot inflate the headline, in results.json and the report, with
+      tests
+- [ ] Per-category paired bootstrap CI for the B − A accuracy difference,
+      in results.json and the per-category table, with tests
+- [ ] Exact-match gap per category: questions execution-correct but with
+      SQL different from gold, in results.json and the report, with tests
+- [ ] Bootstrap CI for per-system mean latency, in results.json and the
+      latency table, with tests
+- [ ] Judge calibration split by answer type: numeric vs text answers,
+      so a judge that is good on numbers and bad on words is visible,
+      with tests
 
 ## Done
 

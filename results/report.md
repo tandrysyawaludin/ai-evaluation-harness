@@ -1,6 +1,6 @@
 # Evaluation Report — Brokerage Text-to-SQL Agent
 
-Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `0e0d7e8c576217c89ee9c01eac430540822a7491` — ⚠ working tree had uncommitted changes
+Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `ce3056a1c22cc52f5b21c758e26fe5ebf0ea5648` — ⚠ working tree had uncommitted changes
 
 Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
@@ -147,11 +147,13 @@ A category's headline percentage alone overstates how much is known when the cat
 
 ## Per-difficulty accuracy
 
-| Difficulty | n | system_a | system_b |
-|---|---|---|---|
-| easy | 36 | 58% | 100% |
-| medium | 4 | 0% | 100% |
-| hard | 25 | 32% | 100% |
+Same reading as the per-category table: a difficulty's headline percentage alone overstates how much is known when the difficulty holds only a handful of questions. Read the interval, not just the point estimate — a wide interval means the difficulty needs more questions before its accuracy can be trusted.
+
+| Difficulty | n | system_a | system_a 95% Wilson CI | system_b | system_b 95% Wilson CI |
+|---|---|---|---|---|---|
+| easy | 36 | 58% | [0.422, 0.729] | 100% | [0.904, 1.000] |
+| medium | 4 | 0% | [0.000, 0.490] | 100% | [0.510, 1.000] |
+| hard | 25 | 32% | [0.172, 0.516] | 100% | [0.867, 1.000] |
 
 ## Difficulty monotonicity
 

@@ -478,6 +478,48 @@ def build_per_category(gold, records_a, records_b):
             for cat, v in sorted(by_cat.items())}
 
 
+def build_per_difficulty(gold, records_a, records_b):
+    """Per-difficulty accuracy with a Wilson 95% CI per system.
+
+    Same argument as the per-category table, which already carries
+    CIs: a difficulty's headline percentage overstates how much is
+    known when the difficulty holds only a handful of questions —
+    100% on hard n=4 has a Wilson interval roughly [0.40, 1.00].
+    Difficulties order easy -> medium -> hard; any unexpected value
+    sorts after those, alphabetically, rather than crashing the
+    report. Records must align with gold by id, as in
+    build_per_category.
+    """
+    if len(records_a) != len(records_b) or len(records_a) != len(gold):
+        raise ValueError(
+            "cannot build per-difficulty breakdown: gold and record "
+            f"counts differ ({len(gold)} gold, {len(records_a)} system_a, "
+            f"{len(records_b)} system_b)")
+    for item, ra, rb in zip(gold, records_a, records_b):
+        if ra["id"] != item["id"] or rb["id"] != item["id"]:
+            raise ValueError(
+                "cannot build per-difficulty breakdown: record ids "
+                f"misaligned with gold ({item['id']} vs {ra['id']} / "
+                f"{rb['id']})")
+    difficulty_order = {"easy": 0, "medium": 1, "hard": 2}
+    by_diff = defaultdict(lambda: {"n": 0, "a": 0, "b": 0})
+    for item, ra, rb in zip(gold, records_a, records_b):
+        d = by_diff[item["difficulty"]]
+        d["n"] += 1
+        d["a"] += int(ra["execution_correct"])
+        d["b"] += int(rb["execution_correct"])
+    return {diff: {"n": v["n"],
+                   "system_a_correct": v["a"],
+                   "system_b_correct": v["b"],
+                   "system_a_accuracy": v["a"] / v["n"],
+                   "system_b_accuracy": v["b"] / v["n"],
+                   "system_a_wilson_95ci": wilson_interval(v["a"], v["n"]),
+                   "system_b_wilson_95ci": wilson_interval(v["b"], v["n"])}
+            for diff, v in sorted(
+                by_diff.items(),
+                key=lambda kv: (difficulty_order.get(kv[0], 99), kv[0]))}
+
+
 def _git_output(args, cwd):
     """Stdout of a read-only git command, or None when git fails.
 
@@ -574,22 +616,13 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         gold, per_system["system_a"]["records"],
         per_system["system_b"]["records"])
 
-    # Per-difficulty breakdown (easy / medium / hard), same shape as above.
-    # Difficulties are ordered easy -> medium -> hard; any unexpected value
-    # sorts after those, alphabetically, rather than crashing the report.
-    difficulty_order = {"easy": 0, "medium": 1, "hard": 2}
-    by_diff = defaultdict(lambda: {"n": 0, "a": 0, "b": 0})
-    for item, ra, rb in zip(gold, per_system["system_a"]["records"],
-                            per_system["system_b"]["records"]):
-        d = by_diff[item["difficulty"]]
-        d["n"] += 1
-        d["a"] += int(ra["execution_correct"])
-        d["b"] += int(rb["execution_correct"])
-    difficulties = {diff: {"n": v["n"], "system_a_accuracy": v["a"] / v["n"],
-                           "system_b_accuracy": v["b"] / v["n"]}
-                    for diff, v in sorted(
-                        by_diff.items(),
-                        key=lambda kv: (difficulty_order.get(kv[0], 99), kv[0]))}
+    # Per-difficulty breakdown (easy / medium / hard), with a Wilson
+    # 95% CI per system: the same reason as the per-category table —
+    # a difficulty's headline percentage alone overstates how much is
+    # known when the difficulty holds only a handful of questions.
+    difficulties = build_per_difficulty(
+        gold, per_system["system_a"]["records"],
+        per_system["system_b"]["records"])
 
     errors_a = [r for r in per_system["system_a"]["records"] if r["error"]]
 
@@ -890,10 +923,19 @@ def render_report(res, failures_csv=None):
                  f"{_wilson_cell(v.get('system_b_wilson_95ci'))} |")
     L.append("")
     L.append("## Per-difficulty accuracy\n")
-    L.append("| Difficulty | n | system_a | system_b |")
-    L.append("|---|---|---|---|")
+    L.append("Same reading as the per-category table: a difficulty's "
+             "headline percentage alone overstates how much is known "
+             "when the difficulty holds only a handful of questions. "
+             "Read the interval, not just the point estimate — a wide "
+             "interval means the difficulty needs more questions before "
+             "its accuracy can be trusted.\n")
+    L.append("| Difficulty | n | system_a | system_a 95% Wilson CI | system_b | system_b 95% Wilson CI |")
+    L.append("|---|---|---|---|---|---|")
     for diff, v in res["per_difficulty"].items():
-        L.append(f"| {diff} | {v['n']} | {v['system_a_accuracy']:.0%} | {v['system_b_accuracy']:.0%} |")
+        L.append(f"| {diff} | {v['n']} | {v['system_a_accuracy']:.0%} | "
+                 f"{_wilson_cell(v.get('system_a_wilson_95ci'))} | "
+                 f"{v['system_b_accuracy']:.0%} | "
+                 f"{_wilson_cell(v.get('system_b_wilson_95ci'))} |")
     L.append("")
     mono = res.get("difficulty_monotonicity")
     if mono:
