@@ -46,7 +46,7 @@ commit with tests passing and the regression gate green.
       with tests
 - [x] Per-difficulty Wilson 95% CIs in the per-difficulty accuracy table,
       with tests
-- [ ] Stratified headline accuracy: equal-weight average of the
+- [x] Stratified headline accuracy: equal-weight average of the
       per-difficulty accuracies, so a gold set heavy in easy questions
       cannot inflate the headline, in results.json and the report, with
       tests

@@ -520,6 +520,43 @@ def build_per_difficulty(gold, records_a, records_b):
                 key=lambda kv: (difficulty_order.get(kv[0], 99), kv[0]))}
 
 
+def build_stratified_accuracy(per_difficulty):
+    """Stratified headline accuracy: equal-weight mean of the
+    per-difficulty accuracies, per system.
+
+    The headline accuracy weights every question equally, so a gold
+    set heavy in easy questions inflates it — easy questions carry
+    the headline. The stratified accuracy weights every difficulty
+    equally instead: it is the plain mean of the per-difficulty
+    accuracies, so a difficulty's share of the headline is 1 / (number
+    of difficulties), not its share of the questions. A system that is
+    strong only on easy questions scores lower here than in the
+    headline; a system equally strong everywhere scores the same.
+
+    `per_difficulty` is the breakdown built by build_per_difficulty;
+    every difficulty present is averaged, in the breakdown's order.
+    Returns the difficulties averaged over, the stratified accuracy
+    per system, and the stratified B − A difference. An empty
+    breakdown stratifies to 0.0 for both systems.
+    """
+    difficulties = list(per_difficulty)
+
+    def strat(name):
+        if not difficulties:
+            return 0.0
+        return sum(per_difficulty[d][f"{name}_accuracy"]
+                   for d in difficulties) / len(difficulties)
+
+    a = strat("system_a")
+    b = strat("system_b")
+    return {
+        "difficulties": difficulties,
+        "system_a_stratified_accuracy": a,
+        "system_b_stratified_accuracy": b,
+        "stratified_difference_b_minus_a": b - a,
+    }
+
+
 def _git_output(args, cwd):
     """Stdout of a read-only git command, or None when git fails.
 
@@ -624,6 +661,11 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         gold, per_system["system_a"]["records"],
         per_system["system_b"]["records"])
 
+    # Stratified headline accuracy: the plain mean of the per-difficulty
+    # accuracies, so a gold set heavy in easy questions cannot inflate
+    # the headline by volume alone.
+    stratified = build_stratified_accuracy(difficulties)
+
     errors_a = [r for r in per_system["system_a"]["records"] if r["error"]]
 
     judge_result = None
@@ -665,6 +707,7 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         },
         "per_category": categories,
         "per_difficulty": difficulties,
+        "stratified_accuracy": stratified,
         "difficulty_monotonicity": build_difficulty_monotonicity(difficulties),
         "coverage_matrix": build_coverage_matrix(gold),
         "gold_duplicates": build_gold_duplicates(gold),
@@ -798,6 +841,36 @@ def render_report(res, failures_csv=None):
                  f"| [{s['bootstrap_95ci'][0]:.3f}, {s['bootstrap_95ci'][1]:.3f}] "
                  f"| {s['exact_match_rate']:.1%} | {s['pass_consistency_mean']:.3f} |")
     L.append("")
+    strat = res.get("stratified_accuracy")
+    if strat:
+        L.append("## Stratified headline accuracy\n")
+        diffs = res.get("per_difficulty", {})
+        counts = ", ".join(
+            f"{d} n={diffs[d]['n']}" for d in strat["difficulties"]
+            if d in diffs)
+        L.append("The headline accuracy above weights every question "
+                 "equally, so a gold set heavy in easy questions inflates "
+                 f"it — this set has {counts}. The stratified accuracy "
+                 "weights every difficulty equally instead: it is the "
+                 "plain mean of the per-difficulty accuracies, so no "
+                 "difficulty can dominate the headline by volume alone. "
+                 "A system that is strong only where the questions are "
+                 "most numerous scores lower here than in the headline; "
+                 "a system equally strong everywhere scores the same.\n")
+        L.append("| System | Overall accuracy | Stratified accuracy | Inflation (overall − stratified) |")
+        L.append("|---|---|---|---|")
+        for name, s in (("system_a", a), ("system_b", b)):
+            sa = strat[f"{name}_stratified_accuracy"]
+            infl = s["execution_accuracy"] - sa
+            L.append(f"| {name} | {s['execution_accuracy']:.1%} "
+                     f"({s['correct']}/{s['n']}) | {sa:.1%} | {infl:+.1%} |")
+        L.append("")
+        L.append(f"The stratified B − A difference is "
+                 f"{strat['stratified_difference_b_minus_a']:+.1%}, against "
+                 f"{cmp_['accuracy_difference_b_minus_a']:+.1%} overall. "
+                 f"When the two disagree, the stratified number is the one "
+                 f"that survives rebalancing the gold set.")
+        L.append("")
     L.append("## Is the improvement real? (paired comparison)\n")
     L.append(f"- Accuracy difference (B − A): **{cmp_['accuracy_difference_b_minus_a']:+.1%}**, "
              f"bootstrap 95% CI [{cmp_['difference_bootstrap_95ci'][0]:+.3f}, "
@@ -1236,6 +1309,12 @@ def main():
               f"latency mean {lat['mean_ms']:.2f} ms / p95 {lat['p95_ms']:.2f} ms")
     mc = res["comparison"]["mcnemar"]
     print(f"McNemar: b={mc['b']} c={mc['c']} p={mc['p_value']:.4g}")
+    strat = res.get("stratified_accuracy")
+    if strat:
+        print(f"stratified accuracy (equal-weight by difficulty): "
+              f"system_a {strat['system_a_stratified_accuracy']:.1%}, "
+              f"system_b {strat['system_b_stratified_accuracy']:.1%} "
+              f"(B-A {strat['stratified_difference_b_minus_a']:+.1%})")
     sens = res.get("seed_sensitivity")
     if sens:
         for seed in sens["seeds"]:

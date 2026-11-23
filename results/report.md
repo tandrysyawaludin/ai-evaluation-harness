@@ -1,6 +1,6 @@
 # Evaluation Report — Brokerage Text-to-SQL Agent
 
-Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `ce3056a1c22cc52f5b21c758e26fe5ebf0ea5648` — ⚠ working tree had uncommitted changes
+Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `bba5faf9061c29f846dadd3bdcece1f2f7f79c01` — ⚠ working tree had uncommitted changes
 
 Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
@@ -10,6 +10,17 @@ Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 |---|---|---|---|---|---|
 | system_a (baseline) | 44.6% (29/65) | [0.332, 0.567] | [0.323, 0.569] | 44.6% | 0.446 |
 | system_b (improved) | 100.0% (65/65) | [0.944, 1.000] | [1.000, 1.000] | 92.3% | 1.000 |
+
+## Stratified headline accuracy
+
+The headline accuracy above weights every question equally, so a gold set heavy in easy questions inflates it — this set has easy n=36, medium n=4, hard n=25. The stratified accuracy weights every difficulty equally instead: it is the plain mean of the per-difficulty accuracies, so no difficulty can dominate the headline by volume alone. A system that is strong only where the questions are most numerous scores lower here than in the headline; a system equally strong everywhere scores the same.
+
+| System | Overall accuracy | Stratified accuracy | Inflation (overall − stratified) |
+|---|---|---|---|
+| system_a | 44.6% (29/65) | 30.1% | +14.5% |
+| system_b | 100.0% (65/65) | 100.0% | +0.0% |
+
+The stratified B − A difference is +69.9%, against +55.4% overall. When the two disagree, the stratified number is the one that survives rebalancing the gold set.
 
 ## Is the improvement real? (paired comparison)
 
@@ -106,8 +117,8 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.02 ms | 0.01 ms |
-| system_b | 0.01 ms | 0.01 ms |
+| system_a | 0.02 ms | 0.02 ms |
+| system_b | 0.01 ms | 0.02 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
 
