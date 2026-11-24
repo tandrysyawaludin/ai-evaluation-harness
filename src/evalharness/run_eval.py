@@ -441,7 +441,8 @@ def build_difficulty_monotonicity(per_difficulty):
 
 
 def build_per_category(gold, records_a, records_b):
-    """Per-category accuracy with a Wilson 95% CI per system.
+    """Per-category accuracy with a Wilson 95% CI per system, plus a
+    paired bootstrap 95% CI for the B − A accuracy difference.
 
     The CI is the point of this table: a category's headline
     percentage alone overstates how much is known when the category
@@ -450,6 +451,16 @@ def build_per_category(gold, records_a, records_b):
     interval is computed from the same counts as the accuracy, so
     the two can never disagree. Categories sort alphabetically;
     records must align with gold by id, as in build_split_half.
+
+    The per-category difference CI is the paired version of the
+    headline difference CI in `comparison`: the two systems answer
+    the same questions, so the paired interval on the per-question
+    differences is narrower than the two Wilson intervals would
+    suggest, and an interval that excludes 0 is evidence B really is
+    better (or worse) than A *in that category*, not just overall.
+    Each category's bootstrap uses a deterministic seed (123 plus
+    its position in the sorted category order), so repeated runs
+    reproduce the same interval.
     """
     if len(records_a) != len(records_b) or len(records_a) != len(gold):
         raise ValueError(
@@ -462,20 +473,29 @@ def build_per_category(gold, records_a, records_b):
                 "cannot build per-category breakdown: record ids "
                 f"misaligned with gold ({item['id']} vs {ra['id']} / "
                 f"{rb['id']})")
-    by_cat = defaultdict(lambda: {"n": 0, "a": 0, "b": 0})
+    by_cat = defaultdict(lambda: {"n": 0, "a": 0, "b": 0, "a_flags": [],
+                                  "b_flags": []})
     for item, ra, rb in zip(gold, records_a, records_b):
         c = by_cat[item["category"]]
         c["n"] += 1
         c["a"] += int(ra["execution_correct"])
         c["b"] += int(rb["execution_correct"])
-    return {cat: {"n": v["n"],
-                  "system_a_correct": v["a"],
-                  "system_b_correct": v["b"],
-                  "system_a_accuracy": v["a"] / v["n"],
-                  "system_b_accuracy": v["b"] / v["n"],
-                  "system_a_wilson_95ci": wilson_interval(v["a"], v["n"]),
-                  "system_b_wilson_95ci": wilson_interval(v["b"], v["n"])}
-            for cat, v in sorted(by_cat.items())}
+        c["a_flags"].append(int(ra["execution_correct"]))
+        c["b_flags"].append(int(rb["execution_correct"]))
+    out = {}
+    for i, (cat, v) in enumerate(sorted(by_cat.items())):
+        diff_ci = bootstrap_diff_ci(v["a_flags"], v["b_flags"],
+                                    seed=123 + i)
+        out[cat] = {"n": v["n"],
+                    "system_a_correct": v["a"],
+                    "system_b_correct": v["b"],
+                    "system_a_accuracy": v["a"] / v["n"],
+                    "system_b_accuracy": v["b"] / v["n"],
+                    "system_a_wilson_95ci": wilson_interval(v["a"], v["n"]),
+                    "system_b_wilson_95ci": wilson_interval(v["b"], v["n"]),
+                    "difference_b_minus_a": (v["b"] - v["a"]) / v["n"],
+                    "difference_bootstrap_95ci": diff_ci}
+    return out
 
 
 def build_per_difficulty(gold, records_a, records_b):
@@ -987,13 +1007,25 @@ def render_report(res, failures_csv=None):
              "[0.40, 1.00]. Read the interval, not just the point "
              "estimate — a wide interval means the category needs more "
              "questions before its accuracy can be trusted.\n")
-    L.append("| Category | n | system_a | system_a 95% Wilson CI | system_b | system_b 95% Wilson CI |")
-    L.append("|---|---|---|---|---|---|")
+    L.append("The B − A column is the paired difference inside the "
+             "category, with its own bootstrap 95% CI: both systems "
+             "answer the same questions, so this interval is narrower "
+             "than the two Wilson intervals would suggest, and an "
+             "interval that excludes 0 is evidence B really is better "
+             "(or worse) than A *on that kind of question* — the "
+             "headline difference alone cannot say where the "
+             "improvement lives.\n")
+    L.append("| Category | n | system_a | system_a 95% Wilson CI | system_b | system_b 95% Wilson CI | B − A | B − A 95% bootstrap CI |")
+    L.append("|---|---|---|---|---|---|---|---|")
     for cat, v in res["per_category"].items():
+        diff = v.get("difference_b_minus_a")
+        diff_text = f"{diff:+.0%}" if diff is not None else "—"
         L.append(f"| {cat} | {v['n']} | {v['system_a_accuracy']:.0%} | "
                  f"{_wilson_cell(v.get('system_a_wilson_95ci'))} | "
                  f"{v['system_b_accuracy']:.0%} | "
-                 f"{_wilson_cell(v.get('system_b_wilson_95ci'))} |")
+                 f"{_wilson_cell(v.get('system_b_wilson_95ci'))} | "
+                 f"{diff_text} | "
+                 f"{_wilson_cell(v.get('difference_bootstrap_95ci'))} |")
     L.append("")
     L.append("## Per-difficulty accuracy\n")
     L.append("Same reading as the per-category table: a difficulty's "

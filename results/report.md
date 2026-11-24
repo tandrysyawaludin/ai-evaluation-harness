@@ -1,6 +1,6 @@
 # Evaluation Report — Brokerage Text-to-SQL Agent
 
-Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `bba5faf9061c29f846dadd3bdcece1f2f7f79c01` — ⚠ working tree had uncommitted changes
+Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `cbde65da200ad1d262462c1cd64eb0a2e20c48df` — ⚠ working tree had uncommitted changes
 
 Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
@@ -118,7 +118,7 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 | System | Mean | p95 |
 |---|---|---|
 | system_a | 0.02 ms | 0.02 ms |
-| system_b | 0.01 ms | 0.02 ms |
+| system_b | 0.01 ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
 
@@ -133,28 +133,30 @@ Each system answered every question 3 times in the repeated runs (plus the recor
 
 A category's headline percentage alone overstates how much is known when the category holds only a handful of questions: 100% on n=4 has a Wilson interval roughly [0.40, 1.00]. Read the interval, not just the point estimate — a wide interval means the category needs more questions before its accuracy can be trusted.
 
-| Category | n | system_a | system_a 95% Wilson CI | system_b | system_b 95% Wilson CI |
-|---|---|---|---|---|---|
-| avg_price_by_symbol | 5 | 0% | [0.000, 0.434] | 100% | [0.566, 1.000] |
-| avg_quantity | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] |
-| avg_quantity_by_side | 2 | 0% | [0.000, 0.658] | 100% | [0.342, 1.000] |
-| count_by_account | 5 | 100% | [0.566, 1.000] | 100% | [0.566, 1.000] |
-| count_by_country | 4 | 0% | [0.000, 0.490] | 100% | [0.510, 1.000] |
-| count_by_date_range | 10 | 0% | [0.000, 0.278] | 100% | [0.722, 1.000] |
-| count_by_side | 2 | 0% | [0.000, 0.658] | 100% | [0.342, 1.000] |
-| count_by_status | 3 | 100% | [0.438, 1.000] | 100% | [0.438, 1.000] |
-| count_total | 4 | 100% | [0.510, 1.000] | 100% | [0.510, 1.000] |
-| distinct_count | 2 | 100% | [0.342, 1.000] | 100% | [0.342, 1.000] |
-| max_quantity | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] |
-| sum_quantity_by_side_symbol | 6 | 0% | [0.000, 0.390] | 100% | [0.610, 1.000] |
-| sum_quantity_by_symbol | 5 | 100% | [0.566, 1.000] | 100% | [0.566, 1.000] |
-| sum_quantity_filled_by_symbol | 3 | 0% | [0.000, 0.562] | 100% | [0.438, 1.000] |
-| sum_value_by_country | 2 | 0% | [0.000, 0.658] | 100% | [0.342, 1.000] |
-| sum_value_by_side | 2 | 0% | [0.000, 0.658] | 100% | [0.342, 1.000] |
-| sum_value_by_symbol | 5 | 100% | [0.566, 1.000] | 100% | [0.566, 1.000] |
-| top_account_by_orders | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] |
-| top_symbol_by_value | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] |
-| top_symbol_by_volume | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] |
+The B − A column is the paired difference inside the category, with its own bootstrap 95% CI: both systems answer the same questions, so this interval is narrower than the two Wilson intervals would suggest, and an interval that excludes 0 is evidence B really is better (or worse) than A *on that kind of question* — the headline difference alone cannot say where the improvement lives.
+
+| Category | n | system_a | system_a 95% Wilson CI | system_b | system_b 95% Wilson CI | B − A | B − A 95% bootstrap CI |
+|---|---|---|---|---|---|---|---|
+| avg_price_by_symbol | 5 | 0% | [0.000, 0.434] | 100% | [0.566, 1.000] | +100% | [1.000, 1.000] |
+| avg_quantity | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] | +0% | [0.000, 0.000] |
+| avg_quantity_by_side | 2 | 0% | [0.000, 0.658] | 100% | [0.342, 1.000] | +100% | [1.000, 1.000] |
+| count_by_account | 5 | 100% | [0.566, 1.000] | 100% | [0.566, 1.000] | +0% | [0.000, 0.000] |
+| count_by_country | 4 | 0% | [0.000, 0.490] | 100% | [0.510, 1.000] | +100% | [1.000, 1.000] |
+| count_by_date_range | 10 | 0% | [0.000, 0.278] | 100% | [0.722, 1.000] | +100% | [1.000, 1.000] |
+| count_by_side | 2 | 0% | [0.000, 0.658] | 100% | [0.342, 1.000] | +100% | [1.000, 1.000] |
+| count_by_status | 3 | 100% | [0.438, 1.000] | 100% | [0.438, 1.000] | +0% | [0.000, 0.000] |
+| count_total | 4 | 100% | [0.510, 1.000] | 100% | [0.510, 1.000] | +0% | [0.000, 0.000] |
+| distinct_count | 2 | 100% | [0.342, 1.000] | 100% | [0.342, 1.000] | +0% | [0.000, 0.000] |
+| max_quantity | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] | +0% | [0.000, 0.000] |
+| sum_quantity_by_side_symbol | 6 | 0% | [0.000, 0.390] | 100% | [0.610, 1.000] | +100% | [1.000, 1.000] |
+| sum_quantity_by_symbol | 5 | 100% | [0.566, 1.000] | 100% | [0.566, 1.000] | +0% | [0.000, 0.000] |
+| sum_quantity_filled_by_symbol | 3 | 0% | [0.000, 0.562] | 100% | [0.438, 1.000] | +100% | [1.000, 1.000] |
+| sum_value_by_country | 2 | 0% | [0.000, 0.658] | 100% | [0.342, 1.000] | +100% | [1.000, 1.000] |
+| sum_value_by_side | 2 | 0% | [0.000, 0.658] | 100% | [0.342, 1.000] | +100% | [1.000, 1.000] |
+| sum_value_by_symbol | 5 | 100% | [0.566, 1.000] | 100% | [0.566, 1.000] | +0% | [0.000, 0.000] |
+| top_account_by_orders | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] | +0% | [0.000, 0.000] |
+| top_symbol_by_value | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] | +0% | [0.000, 0.000] |
+| top_symbol_by_volume | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] | +0% | [0.000, 0.000] |
 
 ## Per-difficulty accuracy
 

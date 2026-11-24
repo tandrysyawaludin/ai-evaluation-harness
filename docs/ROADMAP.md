@@ -50,7 +50,7 @@ commit with tests passing and the regression gate green.
       per-difficulty accuracies, so a gold set heavy in easy questions
       cannot inflate the headline, in results.json and the report, with
       tests
-- [ ] Per-category paired bootstrap CI for the B − A accuracy difference,
+- [x] Per-category paired bootstrap CI for the B − A accuracy difference,
       in results.json and the per-category table, with tests
 - [ ] Exact-match gap per category: questions execution-correct but with
       SQL different from gold, in results.json and the report, with tests
