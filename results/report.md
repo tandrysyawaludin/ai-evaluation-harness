@@ -1,6 +1,6 @@
 # Evaluation Report — Brokerage Text-to-SQL Agent
 
-Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `cbde65da200ad1d262462c1cd64eb0a2e20c48df` — ⚠ working tree had uncommitted changes
+Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `723d57b9c12a393c074efbe53ef433be57cc5aae` — ⚠ working tree had uncommitted changes
 
 Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
@@ -117,7 +117,7 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 | System | Mean | p95 |
 |---|---|---|
-| system_a | 0.02 ms | 0.02 ms |
+| system_a | 0.02 ms | 0.01 ms |
 | system_b | 0.01 ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
@@ -157,6 +157,36 @@ The B − A column is the paired difference inside the category, with its own bo
 | top_account_by_orders | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] | +0% | [0.000, 0.000] |
 | top_symbol_by_value | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] | +0% | [0.000, 0.000] |
 | top_symbol_by_volume | 1 | 100% | [0.207, 1.000] | 100% | [0.207, 1.000] | +0% | [0.000, 0.000] |
+
+## Exact-match gap by category
+
+Execution accuracy says the answer is right; exact match says the SQL is the gold SQL. The gap is the questions a system got right by a different query — the same answer reached another way. A gap concentrated in one category means the gold SQL there is one of several equivalent forms, so exact-match rate understates the system there; a zero gap means that when the system is right it writes exactly the gold query. Read the gap before trusting exact match as a proxy for correctness: a system can be 100% execution-correct in a category and still show a large gap, and that is a property of the gold SQL, not a failure of the system.
+
+| Category | n | system_a exec | system_a exact | system_a gap | system_b exec | system_b exact | system_b gap |
+|---|---|---|---|---|---|---|---|
+| avg_price_by_symbol | 5 | 0 (0%) | 0 (0%) | 0 (0%) | 5 (100%) | 5 (100%) | 0 (0%) |
+| avg_quantity | 1 | 1 (100%) | 1 (100%) | 0 (0%) | 1 (100%) | 1 (100%) | 0 (0%) |
+| avg_quantity_by_side | 2 | 0 (0%) | 0 (0%) | 0 (0%) | 2 (100%) | 2 (100%) | 0 (0%) |
+| count_by_account | 5 | 5 (100%) | 5 (100%) | 0 (0%) | 5 (100%) | 5 (100%) | 0 (0%) |
+| count_by_country | 4 | 0 (0%) | 0 (0%) | 0 (0%) | 4 (100%) | 4 (100%) | 0 (0%) |
+| count_by_date_range | 10 | 0 (0%) | 0 (0%) | 0 (0%) | 10 (100%) | 5 (50%) | 5 (50%) |
+| count_by_side | 2 | 0 (0%) | 0 (0%) | 0 (0%) | 2 (100%) | 2 (100%) | 0 (0%) |
+| count_by_status | 3 | 3 (100%) | 3 (100%) | 0 (0%) | 3 (100%) | 3 (100%) | 0 (0%) |
+| count_total | 4 | 4 (100%) | 4 (100%) | 0 (0%) | 4 (100%) | 4 (100%) | 0 (0%) |
+| distinct_count | 2 | 2 (100%) | 2 (100%) | 0 (0%) | 2 (100%) | 2 (100%) | 0 (0%) |
+| max_quantity | 1 | 1 (100%) | 1 (100%) | 0 (0%) | 1 (100%) | 1 (100%) | 0 (0%) |
+| sum_quantity_by_side_symbol | 6 | 0 (0%) | 0 (0%) | 0 (0%) | 6 (100%) | 6 (100%) | 0 (0%) |
+| sum_quantity_by_symbol | 5 | 5 (100%) | 5 (100%) | 0 (0%) | 5 (100%) | 5 (100%) | 0 (0%) |
+| sum_quantity_filled_by_symbol | 3 | 0 (0%) | 0 (0%) | 0 (0%) | 3 (100%) | 3 (100%) | 0 (0%) |
+| sum_value_by_country | 2 | 0 (0%) | 0 (0%) | 0 (0%) | 2 (100%) | 2 (100%) | 0 (0%) |
+| sum_value_by_side | 2 | 0 (0%) | 0 (0%) | 0 (0%) | 2 (100%) | 2 (100%) | 0 (0%) |
+| sum_value_by_symbol | 5 | 5 (100%) | 5 (100%) | 0 (0%) | 5 (100%) | 5 (100%) | 0 (0%) |
+| top_account_by_orders | 1 | 1 (100%) | 1 (100%) | 0 (0%) | 1 (100%) | 1 (100%) | 0 (0%) |
+| top_symbol_by_value | 1 | 1 (100%) | 1 (100%) | 0 (0%) | 1 (100%) | 1 (100%) | 0 (0%) |
+| top_symbol_by_volume | 1 | 1 (100%) | 1 (100%) | 0 (0%) | 1 (100%) | 1 (100%) | 0 (0%) |
+
+Overall gap: system_a 0 of 65 (0%), system_b 5 of 65 (8%).
+The gap is concentrated: 5 of system_b's 5 gap questions sit in count_by_date_range — its month questions are written with `strftime('%Y-%m', order_date)` where the gold SQL uses `BETWEEN`, the same filter in another form.
 
 ## Per-difficulty accuracy
 

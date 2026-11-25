@@ -52,7 +52,7 @@ commit with tests passing and the regression gate green.
       tests
 - [x] Per-category paired bootstrap CI for the B − A accuracy difference,
       in results.json and the per-category table, with tests
-- [ ] Exact-match gap per category: questions execution-correct but with
+- [x] Exact-match gap per category: questions execution-correct but with
       SQL different from gold, in results.json and the report, with tests
 - [ ] Bootstrap CI for per-system mean latency, in results.json and the
       latency table, with tests

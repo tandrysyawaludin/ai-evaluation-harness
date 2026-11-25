@@ -442,7 +442,8 @@ def build_difficulty_monotonicity(per_difficulty):
 
 def build_per_category(gold, records_a, records_b):
     """Per-category accuracy with a Wilson 95% CI per system, plus a
-    paired bootstrap 95% CI for the B − A accuracy difference.
+    paired bootstrap 95% CI for the B − A accuracy difference, plus the
+    exact-match gap per system.
 
     The CI is the point of this table: a category's headline
     percentage alone overstates how much is known when the category
@@ -461,6 +462,17 @@ def build_per_category(gold, records_a, records_b):
     Each category's bootstrap uses a deterministic seed (123 plus
     its position in the sorted category order), so repeated runs
     reproduce the same interval.
+
+    The exact-match gap is the count of questions a system got
+    execution-correct but with SQL different from gold — the same
+    answer reached by a different query. Execution accuracy says
+    the answer is right; exact match says the SQL is the gold SQL;
+    the gap is the distance between the two. A gap concentrated in
+    one category means the gold SQL there is one of several
+    equivalent forms (a month written as strftime instead of
+    BETWEEN, say), so exact-match rate understates the system
+    there; a zero gap means that when the system is right it
+    writes exactly the gold query.
     """
     if len(records_a) != len(records_b) or len(records_a) != len(gold):
         raise ValueError(
@@ -474,7 +486,8 @@ def build_per_category(gold, records_a, records_b):
                 f"misaligned with gold ({item['id']} vs {ra['id']} / "
                 f"{rb['id']})")
     by_cat = defaultdict(lambda: {"n": 0, "a": 0, "b": 0, "a_flags": [],
-                                  "b_flags": []})
+                                  "b_flags": [], "a_em": 0, "b_em": 0,
+                                  "a_gap": 0, "b_gap": 0})
     for item, ra, rb in zip(gold, records_a, records_b):
         c = by_cat[item["category"]]
         c["n"] += 1
@@ -482,6 +495,20 @@ def build_per_category(gold, records_a, records_b):
         c["b"] += int(rb["execution_correct"])
         c["a_flags"].append(int(ra["execution_correct"]))
         c["b_flags"].append(int(rb["execution_correct"]))
+        c["a_em"] += int(ra.get("exact_match", False))
+        c["b_em"] += int(rb.get("exact_match", False))
+        # Exact match implies execution-correct (identical SQL on the
+        # same data returns identical rows), so the gap count is
+        # exactly the correct-but-not-exact count — computed directly
+        # from the flags rather than by subtraction, so a record that
+        # somehow broke that implication would show up as a mismatch
+        # instead of being silently absorbed. Records built before
+        # the exact_match flag existed carry no key and count as not
+        # exact, so the older per-category tests keep working.
+        c["a_gap"] += int(ra["execution_correct"]
+                          and not ra.get("exact_match", False))
+        c["b_gap"] += int(rb["execution_correct"]
+                          and not rb.get("exact_match", False))
     out = {}
     for i, (cat, v) in enumerate(sorted(by_cat.items())):
         diff_ci = bootstrap_diff_ci(v["a_flags"], v["b_flags"],
@@ -494,7 +521,15 @@ def build_per_category(gold, records_a, records_b):
                     "system_a_wilson_95ci": wilson_interval(v["a"], v["n"]),
                     "system_b_wilson_95ci": wilson_interval(v["b"], v["n"]),
                     "difference_b_minus_a": (v["b"] - v["a"]) / v["n"],
-                    "difference_bootstrap_95ci": diff_ci}
+                    "difference_bootstrap_95ci": diff_ci,
+                    "system_a_exact_match": v["a_em"],
+                    "system_b_exact_match": v["b_em"],
+                    "system_a_exact_match_rate": v["a_em"] / v["n"],
+                    "system_b_exact_match_rate": v["b_em"] / v["n"],
+                    "system_a_exact_match_gap": v["a_gap"],
+                    "system_b_exact_match_gap": v["b_gap"],
+                    "system_a_exact_match_gap_rate": v["a_gap"] / v["n"],
+                    "system_b_exact_match_gap_rate": v["b_gap"] / v["n"]}
     return out
 
 
@@ -1026,6 +1061,74 @@ def render_report(res, failures_csv=None):
                  f"{_wilson_cell(v.get('system_b_wilson_95ci'))} | "
                  f"{diff_text} | "
                  f"{_wilson_cell(v.get('difference_bootstrap_95ci'))} |")
+    L.append("")
+    L.append("## Exact-match gap by category\n")
+    L.append("Execution accuracy says the answer is right; exact match "
+             "says the SQL is the gold SQL. The gap is the questions a "
+             "system got right by a different query — the same answer "
+             "reached another way. A gap concentrated in one category "
+             "means the gold SQL there is one of several equivalent "
+             "forms, so exact-match rate understates the system there; "
+             "a zero gap means that when the system is right it writes "
+             "exactly the gold query. Read the gap before trusting "
+             "exact match as a proxy for correctness: a system can be "
+             "100% execution-correct in a category and still show a "
+             "large gap, and that is a property of the gold SQL, not a "
+             "failure of the system.\n")
+    L.append("| Category | n | system_a exec | system_a exact | system_a gap | system_b exec | system_b exact | system_b gap |")
+    L.append("|---|---|---|---|---|---|---|---|")
+
+    def _gap_cell(v, name):
+        em = v.get(f"{name}_exact_match")
+        gap = v.get(f"{name}_exact_match_gap")
+        if em is None or gap is None:
+            return "—"
+        return f"{gap} ({gap / v['n']:.0%})"
+
+    def _count_cell(v, key, acc_key):
+        n = v.get(key)
+        if n is None:
+            return "—"
+        return f"{n} ({v[acc_key]:.0%})"
+
+    total_gap = {"system_a": 0, "system_b": 0}
+    total_n = 0
+    for cat, v in res["per_category"].items():
+        total_n += v["n"]
+        for name in ("system_a", "system_b"):
+            gap = v.get(f"{name}_exact_match_gap")
+            if gap is not None:
+                total_gap[name] += gap
+        L.append(f"| {cat} | {v['n']} | "
+                 f"{_count_cell(v, 'system_a_correct', 'system_a_accuracy')} | "
+                 f"{_count_cell(v, 'system_a_exact_match', 'system_a_exact_match_rate')} | "
+                 f"{_gap_cell(v, 'system_a')} | "
+                 f"{_count_cell(v, 'system_b_correct', 'system_b_accuracy')} | "
+                 f"{_count_cell(v, 'system_b_exact_match', 'system_b_exact_match_rate')} | "
+                 f"{_gap_cell(v, 'system_b')} |")
+    L.append("")
+    if all(v.get("system_a_exact_match_gap") is not None
+           and v.get("system_b_exact_match_gap") is not None
+           for v in res["per_category"].values()):
+        L.append(f"Overall gap: system_a {total_gap['system_a']} of "
+                 f"{total_n} ({total_gap['system_a'] / total_n:.0%}), "
+                 f"system_b {total_gap['system_b']} of {total_n} "
+                 f"({total_gap['system_b'] / total_n:.0%}).")
+        worst = sorted(res["per_category"].items(),
+                       key=lambda kv: (-kv[1]["system_b_exact_match_gap"],
+                                       kv[0]))
+        top_cat, top_v = worst[0]
+        if top_v["system_b_exact_match_gap"]:
+            sentence = (f"The gap is concentrated: "
+                        f"{top_v['system_b_exact_match_gap']} of system_b's "
+                        f"{total_gap['system_b']} gap questions sit in "
+                        f"{top_cat}")
+            if top_cat == "count_by_date_range":
+                sentence += (" — its month questions are written with "
+                             "`strftime('%Y-%m', order_date)` where the gold "
+                             "SQL uses `BETWEEN`, the same filter in "
+                             "another form")
+            L.append(sentence + ".")
     L.append("")
     L.append("## Per-difficulty accuracy\n")
     L.append("Same reading as the per-category table: a difficulty's "
