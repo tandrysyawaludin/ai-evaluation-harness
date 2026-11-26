@@ -93,16 +93,24 @@ def percentile(values, q):
 
 
 def latency_summary(latencies_ms):
-    """Mean and p95 of per-question latencies, in milliseconds.
+    """Mean and p95 of per-question latencies, in milliseconds, plus a
+    percentile bootstrap 95% CI for the mean.
 
     p95 (not max) is the tail statistic: a single slow question should not
     dominate the headline number, but the slowest 5% still get reported.
+    The CI is the uncertainty on the mean: it resamples the per-question
+    latencies with the same deterministic seed as the other bootstrap
+    CIs, so repeated runs reproduce it. A mean whose interval is wide —
+    a handful of very slow questions among fast ones — is a mean driven
+    by its tail, and the p95 next to it says which questions do it.
     """
     if not latencies_ms:
-        return {"mean_ms": 0.0, "p95_ms": 0.0}
+        return {"mean_ms": 0.0, "p95_ms": 0.0,
+                "mean_bootstrap_95ci": (0.0, 0.0)}
     return {
         "mean_ms": sum(latencies_ms) / len(latencies_ms),
         "p95_ms": percentile(latencies_ms, 95),
+        "mean_bootstrap_95ci": bootstrap_ci(latencies_ms),
     }
 
 

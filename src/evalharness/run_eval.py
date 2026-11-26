@@ -858,6 +858,14 @@ def _wilson_cell(ci):
     return f"[{ci[0]:.3f}, {ci[1]:.3f}]"
 
 
+def _bootstrap_cell_ms(ci):
+    """Render a bootstrap CI over milliseconds as [lo, hi] ms; "—" when a
+    results file predates the latency CIs, so old results still render."""
+    if not ci:
+        return "—"
+    return f"[{ci[0]:.2f}, {ci[1]:.2f}] ms"
+
+
 def render_report(res, failures_csv=None):
     a, b = res["systems"]["system_a"], res["systems"]["system_b"]
     cmp_ = res["comparison"]
@@ -994,11 +1002,13 @@ def render_report(res, failures_csv=None):
         L.append(f"Verdict: the headline metrics are **{verdict}**.")
         L.append("")
     L.append("## Latency (per-question generation time, first pass)\n")
-    L.append("| System | Mean | p95 |")
-    L.append("|---|---|---|")
+    L.append("| System | Mean | Mean 95% bootstrap CI | p95 |")
+    L.append("|---|---|---|---|")
     for name, s in (("system_a", a), ("system_b", b)):
         lat = s["latency"]
-        L.append(f"| {name} | {lat['mean_ms']:.2f} ms | {lat['p95_ms']:.2f} ms |")
+        L.append(f"| {name} | {lat['mean_ms']:.2f} ms | "
+                 f"{_bootstrap_cell_ms(lat.get('mean_bootstrap_95ci'))} | "
+                 f"{lat['p95_ms']:.2f} ms |")
     L.append("")
     L.append("The rule-based systems here answer in well under a millisecond, so "
              "these numbers are a floor, not a finding: they exist so that when an "
@@ -1006,6 +1016,14 @@ def render_report(res, failures_csv=None):
              "latency cost shows up next to its accuracy gain instead of hiding "
              "behind it. A system that is 5 points more accurate but 100x slower "
              "is a different trade-off, and this table is where it becomes visible.")
+    L.append("")
+    L.append("The bootstrap CI is the uncertainty on the mean: it resamples the "
+             "per-question latencies, so a handful of very slow questions widens "
+             "it. Read the interval next to the p95 — a mean whose interval is "
+             "wide while the p95 sits far above it is a mean driven by its tail, "
+             "not by typical questions, and the two systems' intervals say "
+             "whether a mean-latency gap between them is real or just a few "
+             "slow questions landing on one side.")
     L.append("")
     flaky_a = a.get("flaky_questions")
     flaky_b = b.get("flaky_questions")
@@ -1438,10 +1456,13 @@ def main():
     for name in ("system_a", "system_b"):
         s = res["systems"][name]
         lat = s["latency"]
+        ci = lat["mean_bootstrap_95ci"]
         print(f"{name}: execution accuracy {s['execution_accuracy']:.1%} "
               f"({s['correct']}/{s['n']}), exact match {s['exact_match_rate']:.1%}, "
               f"pass-consistency {s['pass_consistency_mean']:.3f}, "
-              f"latency mean {lat['mean_ms']:.2f} ms / p95 {lat['p95_ms']:.2f} ms")
+              f"latency mean {lat['mean_ms']:.2f} ms "
+              f"(95% CI [{ci[0]:.2f}, {ci[1]:.2f}] ms) / "
+              f"p95 {lat['p95_ms']:.2f} ms")
     mc = res["comparison"]["mcnemar"]
     print(f"McNemar: b={mc['b']} c={mc['c']} p={mc['p_value']:.4g}")
     strat = res.get("stratified_accuracy")

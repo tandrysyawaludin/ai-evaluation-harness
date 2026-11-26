@@ -54,7 +54,7 @@ commit with tests passing and the regression gate green.
       in results.json and the per-category table, with tests
 - [x] Exact-match gap per category: questions execution-correct but with
       SQL different from gold, in results.json and the report, with tests
-- [ ] Bootstrap CI for per-system mean latency, in results.json and the
+- [x] Bootstrap CI for per-system mean latency, in results.json and the
       latency table, with tests
 - [ ] Judge calibration split by answer type: numeric vs text answers,
       so a judge that is good on numbers and bad on words is visible,

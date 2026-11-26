@@ -1,6 +1,6 @@
 # Evaluation Report — Brokerage Text-to-SQL Agent
 
-Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `723d57b9c12a393c074efbe53ef433be57cc5aae` — ⚠ working tree had uncommitted changes
+Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `6dd3fd16fce05954e02ad8241a1579a63ca9cca4` — ⚠ working tree had uncommitted changes
 
 Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
@@ -115,12 +115,14 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 ## Latency (per-question generation time, first pass)
 
-| System | Mean | p95 |
-|---|---|---|
-| system_a | 0.02 ms | 0.01 ms |
-| system_b | 0.01 ms | 0.01 ms |
+| System | Mean | Mean 95% bootstrap CI | p95 |
+|---|---|---|---|
+| system_a | 0.02 ms | [0.01, 0.07] ms | 0.02 ms |
+| system_b | 0.01 ms | [0.01, 0.01] ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
+
+The bootstrap CI is the uncertainty on the mean: it resamples the per-question latencies, so a handful of very slow questions widens it. Read the interval next to the p95 — a mean whose interval is wide while the p95 sits far above it is a mean driven by its tail, not by typical questions, and the two systems' intervals say whether a mean-latency gap between them is real or just a few slow questions landing on one side.
 
 ## Flaky questions (pass-consistency across repeated runs)
 

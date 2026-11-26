@@ -65,7 +65,8 @@ class TestStats(unittest.TestCase):
         self.assertAlmostEqual(summary["mean_ms"], 2.5)
         self.assertEqual(summary["p95_ms"], 4.0)
         self.assertEqual(stats.latency_summary([]),
-                         {"mean_ms": 0.0, "p95_ms": 0.0})
+                         {"mean_ms": 0.0, "p95_ms": 0.0,
+                          "mean_bootstrap_95ci": (0.0, 0.0)})
 
 
 class TestMetrics(unittest.TestCase):

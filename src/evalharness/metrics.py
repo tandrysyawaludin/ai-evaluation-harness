@@ -129,7 +129,7 @@ def evaluate_system(conn, system_fn, gold_items):
     function for that question (generation time, not SQL execution time).
     Generation is what an LLM-backed system would spend its budget on, so
     it is the latency that matters when comparing candidate systems; the
-    summary reports its mean and p95.
+    summary reports its mean and p95, plus a bootstrap 95% CI for the mean.
     """
     records = []
     for item in gold_items:
