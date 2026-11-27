@@ -11,7 +11,10 @@ from evalharness.run_eval import render_report, run
 
 # The designed disagreement cases in build_human_labels(): the first 34
 # labels agree with the judge; h35-h39 are false positives and h40-h44
-# false negatives, each written to exercise one pattern.
+# false negatives, each written to exercise one pattern. h45-h46 are
+# the correct text answers: the judge says "incorrect" because there
+# are no digits to match, and no named pattern explains that, so they
+# are "other" — a structural blind spot, not a borderline call.
 EXPECTED_PATTERNS = {
     "h35": "wrong_symbol",   # gold number for NVDA, candidate says AAPL
     "h36": "wrong_side",     # 185 SELL orders, gold counts BUY orders
@@ -23,6 +26,8 @@ EXPECTED_PATTERNS = {
     "h42": "wording",        # "roughly fifty-four"
     "h43": "wording",        # "two hundred shares"
     "h44": "wording",        # "twenty orders" (account id stays digits)
+    "h45": "other",          # text answer: no digits for the judge to match
+    "h46": "other",          # text answer: no digits for the judge to match
 }
 
 
@@ -37,7 +42,7 @@ class TestClassifyDisagreement(unittest.TestCase):
     def test_pattern_counts_match_designed_cases(self):
         result = calibrate(build_human_labels())
         self.assertEqual(result["disagreement_patterns"], {
-            "total": 10,
+            "total": 12,
             "counts": {
                 "wrong_symbol": 1,
                 "wrong_side": 1,
@@ -45,6 +50,7 @@ class TestClassifyDisagreement(unittest.TestCase):
                 "wrong_scope": 2,
                 "wording": 4,
                 "rounding": 1,
+                "other": 2,
             },
         })
 

@@ -42,3 +42,7 @@
 {"id": "h42", "gold_answer": "The average order quantity was 54.20.", "candidate_answer": "The average order quantity was roughly fifty-four.", "human_label": "correct"}
 {"id": "h43", "gold_answer": "There were 200 shares in the largest order.", "candidate_answer": "The largest order was for two hundred shares.", "human_label": "correct"}
 {"id": "h44", "gold_answer": "Account 5 placed 20 orders.", "candidate_answer": "Account 5 placed twenty orders.", "human_label": "correct"}
+{"id": "h45", "gold_answer": "The symbol with the highest traded value was NVDA.", "candidate_answer": "NVDA had the highest traded value.", "human_label": "correct"}
+{"id": "h46", "gold_answer": "The symbol with the most orders was AAPL.", "candidate_answer": "AAPL placed the most orders.", "human_label": "correct"}
+{"id": "h47", "gold_answer": "The most common order status was FILLED.", "candidate_answer": "Most orders were CANCELLED.", "human_label": "incorrect"}
+{"id": "h48", "gold_answer": "The client with the most orders was based in Japan.", "candidate_answer": "The busiest client was based in Canada.", "human_label": "incorrect"}

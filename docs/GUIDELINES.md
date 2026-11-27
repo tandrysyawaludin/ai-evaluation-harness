@@ -98,11 +98,11 @@ gold set, so:
 One JSON object per line in `data/human_labels.jsonl`:
 
 ```json
-{"id": "h45", "gold_answer": "360 orders were placed in total.",
+{"id": "h49", "gold_answer": "360 orders were placed in total.",
  "candidate_answer": "There were 360 orders in total.", "human_label": "correct"}
 ```
 
-- `id`: `h` followed by the next free number (`h01`–`h44` are taken).
+- `id`: `h` followed by the next free number (`h01`–`h48` are taken).
 - `gold_answer`: the correct answer in natural language.
 - `candidate_answer`: the answer being judged.
 - `human_label`: `correct` or `incorrect` — the human verdict, which is
@@ -111,13 +111,20 @@ One JSON object per line in `data/human_labels.jsonl`:
 ### 2.2 What a good label set looks like
 
 - **At least 30 examples**, balanced between `correct` and `incorrect`
-  (the current set is 44: 22 correct, 22 incorrect). A set of 30
+  (the current set is 48: 24 correct, 24 incorrect). A set of 30
   all-correct answers calibrates nothing.
+- **Cover both answer types.** Numeric answers state their headline as
+  digits; text answers state it as a name, symbol, status or country
+  with no digits at all. The current set has 44 numeric and 4 text
+  labels, and the calibration is reported split by type, so a judge
+  that is good on numbers and blind on words shows up as a gap
+  instead of hiding inside the headline kappa.
 - **Deliberately include cases where a naive judge is fooled.** The
-  current set has 10 designed disagreement cases (5 false positives, 5
+  current set has 12 designed disagreement cases (5 false positives, 7
   false negatives): the right number attached to the wrong symbol, side,
   or metric; the right answer written in words instead of digits; a
-  sensibly rounded number. Every new batch of labels should add at least
+  sensibly rounded number; a correct text answer a number-matching
+  judge cannot see. Every new batch of labels should add at least
   one such trap — a judge that is only tested on easy cases is not
   tested.
 - **Label the answer, not the SQL.** The judge grades natural-language
@@ -161,11 +168,20 @@ and `results/report.md`:
   verbatim number matching cannot see), or `other`. Read the counts
   before reading the individual cases: they say which judge blind
   spot is biggest, and therefore which fix is worth doing first.
+- The **calibration split by answer type** (`by_answer_type` in
+  `results.json`, "Calibration by answer type" in `report.md`):
+  agreement, kappa, precision/recall and confusion separately for
+  numeric and text gold answers. A number-matching judge can never
+  mark a text answer `correct`, so its text recall is 0 by
+  construction — the split is the evidence for that, not a surprise
+  to explain away.
 
-Current state, for reference: on 44 labels the heuristic judge agrees
-with humans 77.3% of the time, kappa = 0.545 (95% CI [0.289, 0.773]),
-confusion `tp 17 / fp 5 / fn 5 / tn 17`. That is moderate agreement —
-useful as a cheap first pass, not a release gate on its own.
+Current state, for reference: on 48 labels the heuristic judge agrees
+with humans 75.0% of the time, kappa = 0.500 (95% CI [0.250, 0.743]),
+confusion `tp 17 / fp 5 / fn 7 / tn 19`. Split by answer type: numeric
+(n=44) kappa = 0.545, text (n=4) kappa = 0.000 with recall 0. That is
+moderate agreement — useful as a cheap first pass, not a release gate
+on its own.
 
 ### 3.2 The review loop
 

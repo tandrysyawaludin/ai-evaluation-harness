@@ -56,7 +56,7 @@ commit with tests passing and the regression gate green.
       SQL different from gold, in results.json and the report, with tests
 - [x] Bootstrap CI for per-system mean latency, in results.json and the
       latency table, with tests
-- [ ] Judge calibration split by answer type: numeric vs text answers,
+- [x] Judge calibration split by answer type: numeric vs text answers,
       so a judge that is good on numbers and bad on words is visible,
       with tests
 

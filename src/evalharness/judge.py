@@ -238,40 +238,66 @@ def kappa_bootstrap_ci(pairs, n_boot=2000, seed=123, alpha=0.05):
     return (lo, hi)
 
 
+ANSWER_TYPES = ("numeric", "text")
+
+
+def answer_type(gold_answer):
+    """'numeric' when the gold answer states its headline as digits,
+    'text' when it contains no digits at all — a name, symbol, status
+    or country. The type is a property of the answer, not of the
+    candidate's phrasing: 'twenty orders' as a candidate for a numeric
+    gold answer is still a numeric answer, just worded. A
+    number-matching judge can only ever grade numeric answers, so the
+    split is what makes that blind spot measurable."""
+    return "numeric" if _numbers(gold_answer) else "text"
+
+
+def _calibration_stats(pairs):
+    """Agreement, kappa, precision/recall and confusion for one set of
+    (human, judge) label pairs. Shared by the overall calibration and
+    the per-answer-type splits so the two can never drift apart."""
+    n = len(pairs)
+    tp = sum(1 for h, j in pairs if h == "correct" and j == "correct")
+    fp = sum(1 for h, j in pairs if h == "incorrect" and j == "correct")
+    fn = sum(1 for h, j in pairs if h == "correct" and j == "incorrect")
+    tn = sum(1 for h, j in pairs if h == "incorrect" and j == "incorrect")
+    return {
+        "n": n,
+        "agreement": sum(1 for h, j in pairs if h == j) / n if n else 0.0,
+        "cohens_kappa": cohens_kappa(pairs),
+        "precision_correct": tp / (tp + fp) if (tp + fp) else 0.0,
+        "recall_correct": tp / (tp + fn) if (tp + fn) else 0.0,
+        "confusion": {"tp": tp, "fp": fp, "fn": fn, "tn": tn},
+    }
+
+
 def calibrate(labels):
     """labels: list of dicts with gold_answer, candidate_answer, human_label."""
     pairs, rows = [], []
-    tp = fp = fn = tn = 0
+    pairs_by_type = {t: [] for t in ANSWER_TYPES}
     for item in labels:
         verdict = judge(item["gold_answer"], item["candidate_answer"])
         human = item["human_label"]
         pairs.append((human, verdict))
+        pairs_by_type[answer_type(item["gold_answer"])].append((human, verdict))
         agree = verdict == human
-        if human == "correct" and verdict == "correct":
-            tp += 1
-        elif human == "incorrect" and verdict == "correct":
-            fp += 1
-        elif human == "correct" and verdict == "incorrect":
-            fn += 1
-        else:
-            tn += 1
         rows.append({**item, "judge_label": verdict, "agree": agree})
-    precision = tp / (tp + fp) if (tp + fp) else 0.0
-    recall = tp / (tp + fn) if (tp + fn) else 0.0
+    stats = _calibration_stats(pairs)
     disagreements = [r for r in rows if not r["agree"]]
     for d in disagreements:
         d["pattern"] = classify_disagreement(
             d["gold_answer"], d["candidate_answer"],
             d["human_label"], d["judge_label"])
     pattern_counts = dict(Counter(d["pattern"] for d in disagreements))
+    # Per-answer-type split: no bootstrap CI per type. With only a
+    # handful of text labels an interval would be noise dressed as
+    # precision; the split is a diagnostic — a judge good on numbers
+    # and blind on words must show up as a gap, not as two intervals.
     return {
-        "n": len(labels),
-        "agreement": sum(1 for h, j in pairs if h == j) / len(pairs) if pairs else 0.0,
-        "cohens_kappa": cohens_kappa(pairs),
+        **stats,
         "cohens_kappa_bootstrap_95ci": kappa_bootstrap_ci(pairs),
-        "precision_correct": precision,
-        "recall_correct": recall,
-        "confusion": {"tp": tp, "fp": fp, "fn": fn, "tn": tn},
+        "by_answer_type": {t: _calibration_stats(pairs_by_type[t])
+                           for t in ANSWER_TYPES},
         "disagreements": disagreements,
         "disagreement_patterns": {
             "total": len(disagreements),
@@ -281,8 +307,13 @@ def calibrate(labels):
 
 
 def build_human_labels():
-    """44 human-labelled examples: 34 the naive judge gets right,
-    10 designed disagreement cases (5 false positives, 5 false negatives)."""
+    """48 human-labelled examples: 36 the naive judge gets right,
+    12 designed disagreement cases (5 false positives, 7 false
+    negatives). The last four are text answers — gold answers with no
+    digits at all (a symbol, a status, a country) — so the calibration
+    split by answer type has a real text side: a number-matching judge
+    can never mark a text answer 'correct', and the two correct text
+    answers are false negatives by construction."""
     labels = []
 
     def add(gold, cand, human):
@@ -366,6 +397,25 @@ def build_human_labels():
     ]
     for g, c in fn_pairs:
         add(g, c, "correct")
+
+    # --- text answers: gold answer with no digits at all ---
+    # The judge matches numbers only, so it says "incorrect" to all
+    # four; the two correct ones are false negatives by construction,
+    # the two incorrect ones true negatives. That is the point: the
+    # answer-type split measures a structural blind spot, not a
+    # borderline call.
+    text_pairs = [
+        ("The symbol with the highest traded value was NVDA.",
+         "NVDA had the highest traded value.", "correct"),
+        ("The symbol with the most orders was AAPL.",
+         "AAPL placed the most orders.", "correct"),
+        ("The most common order status was FILLED.",
+         "Most orders were CANCELLED.", "incorrect"),
+        ("The client with the most orders was based in Japan.",
+         "The busiest client was based in Canada.", "incorrect"),
+    ]
+    for g, c, human in text_pairs:
+        add(g, c, human)
 
     return labels
 

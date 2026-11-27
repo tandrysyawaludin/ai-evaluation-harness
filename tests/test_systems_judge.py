@@ -95,7 +95,7 @@ class TestJudge(unittest.TestCase):
         self.assertGreaterEqual(hi, result["cohens_kappa"])
         self.assertGreaterEqual(lo, -1.0)
         self.assertLessEqual(hi, 1.0)
-        # With only 44 labels the interval must be honestly wide, not a
+        # With only 48 labels the interval must be honestly wide, not a
         # point: the judge's agreement is not known to a hair's breadth.
         self.assertGreater(hi - lo, 0.1)
 

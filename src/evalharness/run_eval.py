@@ -1361,7 +1361,7 @@ def render_report(res, failures_csv=None):
                  f"{j['precision_correct']:.3f}, recall {j['recall_correct']:.3f}, "
                  f"confusion {j['confusion']}.")
         L.append("")
-        L.append("Conclusion: at kappa ≈ 0.55 this judge is useful as a cheap first pass "
+        L.append(f"Conclusion: at kappa ≈ {j['cohens_kappa']:.2f} this judge is useful as a cheap first pass "
                  "but **must not gate a release alone** — it is fooled by the right number "
                  "attached to the wrong symbol/side/metric, and it rejects correct answers "
                  "written in words or sensibly rounded. Execution accuracy against ground "
@@ -1396,6 +1396,32 @@ def render_report(res, failures_csv=None):
                      "false negatives are the same lesson from the other "
                      "side: a correct answer need not repeat the gold "
                      "digits verbatim.")
+        by_type = j.get("by_answer_type")
+        if by_type:
+            L.append("")
+            L.append("### Calibration by answer type\n")
+            L.append("Split by whether the gold answer states its headline "
+                     "as digits (numeric) or as a name, symbol, status or "
+                     "country with no digits at all (text):\n")
+            L.append("| Answer type | n | Agreement | Cohen's kappa | "
+                     "Precision | Recall |")
+            L.append("|---|---|---|---|---|---|")
+            for t in ("numeric", "text"):
+                s = by_type[t]
+                L.append(f"| {t} | {s['n']} | {s['agreement']:.1%} | "
+                         f"{s['cohens_kappa']:.3f} | "
+                         f"{s['precision_correct']:.3f} | "
+                         f"{s['recall_correct']:.3f} |")
+            L.append("")
+            L.append("Reading: the judge matches digits only, so a text "
+                     "gold answer can never earn a 'correct' verdict — "
+                     "every correct text answer is a false negative by "
+                     "construction, whatever the threshold. Text answers "
+                     "need a different judge (a lookup, or a judge that "
+                     "reads words), not a tuned number matcher. The text "
+                     "split is small, so its kappa is a diagnostic of "
+                     "that blind spot, not a precise estimate — more "
+                     "text labels would sharpen it.")
     L.append("")
     return "\n".join(L)
 
