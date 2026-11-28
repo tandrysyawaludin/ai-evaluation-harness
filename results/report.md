@@ -1,6 +1,6 @@
 # Evaluation Report — Brokerage Text-to-SQL Agent
 
-Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `e50d286a6b9abb2bf174032db31ed2462cd818f9` — ⚠ working tree had uncommitted changes
+Provenance: gold set `data/gold.jsonl` SHA-256 `e383917514ff10694b673f614d892910917f107176e181c710611bc8b9cc8ea1` · harness commit `edb4d3e2e5033ade669098ffb51e2d446cf9a309` — ⚠ working tree had uncommitted changes
 
 Gold set: **65 questions** · DB seed: 42 · Runs per system: 3
 
@@ -117,8 +117,8 @@ Verdict: the headline metrics are **stable — every headline metric moves at mo
 
 | System | Mean | Mean 95% bootstrap CI | p95 |
 |---|---|---|---|
-| system_a | 0.03 ms | [0.01, 0.08] ms | 0.02 ms |
-| system_b | 0.01 ms | [0.01, 0.01] ms | 0.02 ms |
+| system_a | 0.02 ms | [0.01, 0.07] ms | 0.02 ms |
+| system_b | 0.01 ms | [0.01, 0.01] ms | 0.01 ms |
 
 The rule-based systems here answer in well under a millisecond, so these numbers are a floor, not a finding: they exist so that when an LLM-backed system is dropped into the same harness boundary, its latency cost shows up next to its accuracy gain instead of hiding behind it. A system that is 5 points more accurate but 100x slower is a different trade-off, and this table is where it becomes visible.
 
@@ -257,6 +257,18 @@ The gold set is split into two interleaved halves (even- vs odd-positioned quest
 
 Half-to-half gap: system_a 1.7%, system_b 0.0%, B − A difference 1.7%.
 Verdict: the split-half reliability is **balanced — every gap is within 5%, so the headline numbers are not carried by one half of the gold set**.
+
+## Leave-one-out sensitivity
+
+One bad gold row should not move the headline. Each question is dropped in turn and the headline numbers recomputed: the largest move is the headline's sensitivity to a single question. With 65 questions, one question can move an accuracy by at most 1.5% — a headline that moves more than that on one question is a headline carried by that question, and the most influential question is the gold row to re-check first.
+
+| Number | Overall | Without most influential question | Max single-question influence | Most influential question |
+|---|---|---|---|---|
+| system_a accuracy | 44.6% | 43.8% | 0.9% | q001 (29 tie) |
+| system_b accuracy | 100.0% | 100.0% | 0.0% | q001 (65 tie) |
+| B − A difference | +55.4% | +56.2% | 0.9% | q001 (29 tie) |
+
+The most sensitive headline number moves by at most 0.9% when one question is dropped. For scale, one question is 1.5% of the 65-question set: a headline that moved by several times that on one question would be a headline carried by that question.
 
 ## Error analysis — system_a
 

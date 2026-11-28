@@ -612,6 +612,83 @@ def build_stratified_accuracy(per_difficulty):
     }
 
 
+def _leave_one_out_series(values, ids):
+    """Sensitivity of a per-question mean to dropping one question.
+
+    `values` is one number per question (0/1 correct flags for a
+    system, or the per-question B − A difference in {-1, 0, 1});
+    `ids` are the question ids in the same order. Returns the overall
+    mean, the largest absolute move when any single question is
+    dropped, the sorted ids attaining that move, and the mean without
+    the first of them. The mean-without depends only on the dropped
+    question's value, so every tied question shares it unless two
+    different values happen to move the mean by exactly the same
+    amount — the first id is then the representative, and the tie
+    count says how many questions share the maximum.
+
+    With fewer than 2 questions there is nothing to leave out, so the
+    influence is 0.0 and the mean-without is None.
+    """
+    n = len(values)
+    if n < 2:
+        return {
+            "n": n,
+            "overall": sum(values) / n if n else 0.0,
+            "max_influence": 0.0,
+            "most_influential_ids": [],
+            "value_without": None,
+        }
+    total = sum(values)
+    overall = total / n
+    scored = []
+    for value, qid in zip(values, ids):
+        without = (total - value) / (n - 1)
+        scored.append((abs(overall - without), qid, without))
+    max_influence = max(s[0] for s in scored)
+    tied = sorted(qid for inf, qid, _ in scored if inf == max_influence)
+    without = next(w for _, qid, w in scored if qid == tied[0])
+    return {
+        "n": n,
+        "overall": overall,
+        "max_influence": max_influence,
+        "most_influential_ids": tied,
+        "value_without": without,
+    }
+
+
+def build_leave_one_out(records_a, records_b):
+    """Leave-one-out sensitivity of the headline numbers.
+
+    Each question is dropped in turn and the headline numbers
+    recomputed: each system's accuracy and the B − A difference.
+    The largest move is the headline's sensitivity to a single
+    question — with n questions one question can move an accuracy by
+    at most 1/n, so a headline that moves much more than that on one
+    question is a headline carried by that question, and the most
+    influential question is the gold row to re-check first. Records
+    must align with each other by id, as in build_split_half.
+    """
+    if len(records_a) != len(records_b):
+        raise ValueError(
+            "cannot build leave-one-out sensitivity: record counts "
+            f"differ ({len(records_a)} vs {len(records_b)})")
+    for ra, rb in zip(records_a, records_b):
+        if ra["id"] != rb["id"]:
+            raise ValueError(
+                "cannot build leave-one-out sensitivity: record ids "
+                f"misaligned ({ra['id']} vs {rb['id']})")
+    ids = [r["id"] for r in records_a]
+    a_flags = [int(r["execution_correct"]) for r in records_a]
+    b_flags = [int(r["execution_correct"]) for r in records_b]
+    diffs = [b - a for a, b in zip(a_flags, b_flags)]
+    return {
+        "n": len(records_a),
+        "system_a": _leave_one_out_series(a_flags, ids),
+        "system_b": _leave_one_out_series(b_flags, ids),
+        "difference_b_minus_a": _leave_one_out_series(diffs, ids),
+    }
+
+
 def _git_output(args, cwd):
     """Stdout of a read-only git command, or None when git fails.
 
@@ -721,6 +798,13 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
     # the headline by volume alone.
     stratified = build_stratified_accuracy(difficulties)
 
+    # Leave-one-out sensitivity: how much the headline numbers move
+    # when any single question is dropped — one bad gold row should
+    # not carry the headline.
+    leave_one_out = build_leave_one_out(
+        per_system["system_a"]["records"],
+        per_system["system_b"]["records"])
+
     errors_a = [r for r in per_system["system_a"]["records"] if r["error"]]
 
     judge_result = None
@@ -763,6 +847,7 @@ def _run_single_seed(runs, seed, gold, calibrate_judge=True):
         "per_category": categories,
         "per_difficulty": difficulties,
         "stratified_accuracy": stratified,
+        "leave_one_out": leave_one_out,
         "difficulty_monotonicity": build_difficulty_monotonicity(difficulties),
         "coverage_matrix": build_coverage_matrix(gold),
         "gold_duplicates": build_gold_duplicates(gold),
@@ -1283,6 +1368,54 @@ def render_report(res, failures_csv=None):
                    f"number that large could be an artefact of which "
                    f"half of the questions happened to be asked")
         L.append(f"Verdict: the split-half reliability is **{verdict}**.")
+        L.append("")
+    loo = res.get("leave_one_out")
+    if loo:
+        L.append("## Leave-one-out sensitivity\n")
+        if loo["n"] < 2:
+            L.append("Fewer than two questions — there is nothing to "
+                     "leave out.")
+        else:
+            L.append("One bad gold row should not move the headline. Each "
+                     "question is dropped in turn and the headline numbers "
+                     "recomputed: the largest move is the headline's "
+                     "sensitivity to a single question. With "
+                     f"{loo['n']} questions, one question can move an "
+                     "accuracy by at most "
+                     f"{1 / loo['n']:.1%} — a headline that moves more "
+                     "than that on one question is a headline carried by "
+                     "that question, and the most influential question is "
+                     "the gold row to re-check first.\n")
+            L.append("| Number | Overall | Without most influential question | Max single-question influence | Most influential question |")
+            L.append("|---|---|---|---|---|")
+
+            def _loo_row(label, series, signed):
+                fmt = "{:+.1%}" if signed else "{:.1%}"
+                ids = series["most_influential_ids"]
+                first = ids[0] if ids else "—"
+                tie = (f" ({len(ids)} tie)"
+                       if len(ids) > 1 else "")
+                without = (fmt.format(series["value_without"])
+                           if series["value_without"] is not None else "—")
+                L.append(f"| {label} | {fmt.format(series['overall'])} | "
+                         f"{without} | "
+                         f"{series['max_influence']:.1%} | "
+                         f"{first}{tie} |")
+
+            _loo_row("system_a accuracy", loo["system_a"], signed=False)
+            _loo_row("system_b accuracy", loo["system_b"], signed=False)
+            _loo_row("B − A difference", loo["difference_b_minus_a"],
+                     signed=True)
+            L.append("")
+            worst = max(s["max_influence"]
+                        for s in (loo["system_a"], loo["system_b"],
+                                  loo["difference_b_minus_a"]))
+            L.append(f"The most sensitive headline number moves by at most "
+                     f"{worst:.1%} when one question is dropped. For scale, "
+                     f"one question is {1 / loo['n']:.1%} of the "
+                     f"{loo['n']}-question set: a headline that moved by "
+                     f"several times that on one question would be a "
+                     f"headline carried by that question.")
         L.append("")
     L.append("## Error analysis — system_a\n")
     if res["system_a_errors"]:

@@ -59,6 +59,19 @@ commit with tests passing and the regression gate green.
 - [x] Judge calibration split by answer type: numeric vs text answers,
       so a judge that is good on numbers and bad on words is visible,
       with tests
+- [x] Leave-one-out headline sensitivity: how much each system's
+      accuracy and the B − A difference move when any single question
+      is dropped, in results.json and the report, with tests
+- [ ] Per-difficulty paired bootstrap CI for the B − A accuracy
+      difference, in results.json and the per-difficulty table, with
+      tests
+- [ ] Stable vs seed-dependent failures: questions failing under both
+      DB seeds vs one seed only, in results.json and the report, with
+      tests
+- [ ] Judge calibration split by question difficulty, in results.json
+      and the report, with tests
+- [ ] Gold SQL complexity profile: joins / filters / aggregates per
+      question, summarised per category in the report, with tests
 
 ## Done
 
